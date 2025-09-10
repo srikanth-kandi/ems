@@ -5,23 +5,12 @@ import CssBaseline from '@mui/material/CssBaseline';
 // Import components
 import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
-import EmployeeList from './components/employees/EmployeeList';
+import EmployeeList from './components/employees/EmployeeListEnhanced';
 import Attendance from './components/attendance/Attendance';
 import Reports from './components/reports/Reports';
 import Layout from './components/layout/Layout';
 import { useAuthStore } from './store/auth';
-
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
+import { useThemeStore } from './store/theme';
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const token = useAuthStore((s) => s.token);
@@ -32,6 +21,24 @@ function PrivateRoute({ children }: { children: JSX.Element }) {
 }
 
 function App() {
+  const mode = useThemeStore((s) => s.mode);
+  
+  const theme = createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: mode === 'dark' ? '#90caf9' : '#1976d2',
+      },
+      secondary: {
+        main: mode === 'dark' ? '#f48fb1' : '#dc004e',
+      },
+      background: {
+        default: mode === 'dark' ? '#121212' : '#fafafa',
+        paper: mode === 'dark' ? '#1e1e1e' : '#ffffff',
+      },
+    },
+  });
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
