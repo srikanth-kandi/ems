@@ -1,16 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box } from '@mui/material';
 
-// Import components (to be created)
+// Import components
 import Login from './components/auth/Login';
+import Dashboard from './components/dashboard/Dashboard';
 import EmployeeList from './components/employees/EmployeeList';
 import Attendance from './components/attendance/Attendance';
 import Reports from './components/reports/Reports';
+import Layout from './components/layout/Layout';
 import { useAuthStore } from './store/auth';
-// import Dashboard from './components/dashboard/Dashboard';
-// import EmployeeList from './components/employees/EmployeeList';
 
 const theme = createTheme({
   palette: {
@@ -37,22 +36,21 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <Routes>
-            {/* Temporary placeholder - will be replaced with actual components */}
-            <Route path="/" element={<PrivateRoute>
-              <Box sx={{ p: 4, textAlign: 'center' }}>
-                <h1>Employee Management System</h1>
-                <p>Welcome to EMS - You are logged in.</p>
-              </Box>
-            </PrivateRoute>} />
-            <Route path="/employees" element={<PrivateRoute><EmployeeList /></PrivateRoute>} />
-            <Route path="/attendance" element={<PrivateRoute><Attendance /></PrivateRoute>} />
-            <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
-        </Box>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/*" element={
+            <PrivateRoute>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/employees" element={<EmployeeList />} />
+                  <Route path="/attendance" element={<Attendance />} />
+                  <Route path="/reports" element={<Reports />} />
+                </Routes>
+              </Layout>
+            </PrivateRoute>
+          } />
+        </Routes>
       </Router>
     </ThemeProvider>
   );

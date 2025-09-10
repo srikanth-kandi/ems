@@ -77,8 +77,18 @@ dotnet run
 ```bash
 cd frontend
 npm install
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env to match your backend configuration
+
 npm run dev
 ```
+
+**Environment Configuration:**
+- Copy `.env.example` to `.env` and configure the API URL
+- Default API URL: `http://localhost:5001`
+- See `frontend/README.md` for detailed configuration options
 
 ## API Endpoints
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
-import { Box, Button, Card, CardContent, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Stack, TextField, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 
 type AttendanceItem = {
   id: number;
@@ -13,17 +13,40 @@ type AttendanceItem = {
   date: string;
 };
 
+type Employee = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
 export default function Attendance() {
   const [employeeId, setEmployeeId] = useState<number>(1);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [items, setItems] = useState<AttendanceItem[]>([]);
   const [notes, setNotes] = useState<string>('');
 
-  const load = async () => {
-    const data = await api.getAttendance(employeeId);
-    setItems(data);
+  const loadEmployees = async () => {
+    const data = await api.getEmployees();
+    setEmployees(data);
+    if (data.length > 0 && !employeeId) {
+      setEmployeeId(data[0].id);
+    }
   };
 
-  useEffect(() => { load();
+  const load = async () => {
+    if (employeeId) {
+      const data = await api.getAttendance(employeeId);
+      setItems(data);
+    }
+  };
+
+  useEffect(() => { 
+    loadEmployees();
+  }, []);
+
+  useEffect(() => { 
+    load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employeeId]);
 
@@ -43,7 +66,20 @@ export default function Attendance() {
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" sx={{ mb: 2 }}>Attendance</Typography>
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <TextField label="Employee ID" type="number" value={employeeId} onChange={(e) => setEmployeeId(Number(e.target.value))} />
+        <FormControl sx={{ minWidth: 200 }}>
+          <InputLabel>Employee</InputLabel>
+          <Select
+            value={employeeId}
+            label="Employee"
+            onChange={(e) => setEmployeeId(Number(e.target.value))}
+          >
+            {employees.map((emp) => (
+              <MenuItem key={emp.id} value={emp.id}>
+                {emp.firstName} {emp.lastName}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <TextField label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} sx={{ minWidth: 240 }} />
         <Button variant="contained" onClick={onCheckIn}>Check In</Button>
         <Button variant="outlined" onClick={onCheckOut}>Check Out</Button>
