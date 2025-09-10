@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from '@mui/material';
 
 type Employee = {
