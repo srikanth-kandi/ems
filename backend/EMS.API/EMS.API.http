@@ -1,0 +1,82 @@
+@EMS.API_HostAddress = http://localhost:5000
+
+### Health Check
+GET {{EMS.API_HostAddress}}/health
+Accept: application/json
+
+### Authentication - Login
+POST {{EMS.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### Authentication - Register
+POST {{EMS.API_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123",
+  "role": "User"
+}
+
+### Get All Employees
+GET {{EMS.API_HostAddress}}/api/employees
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Get Employee by ID
+GET {{EMS.API_HostAddress}}/api/employees/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Create Employee
+POST {{EMS.API_HostAddress}}/api/employees
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@company.com",
+  "phoneNumber": "+1234567890",
+  "address": "123 Main St, City, State",
+  "dateOfBirth": "1990-01-01T00:00:00Z",
+  "dateOfJoining": "2024-01-01T00:00:00Z",
+  "position": "Software Developer",
+  "salary": 75000.00,
+  "departmentId": 1
+}
+
+### Get All Departments
+GET {{EMS.API_HostAddress}}/api/departments
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Check In
+POST {{EMS.API_HostAddress}}/api/attendance/check-in
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "employeeId": 1,
+  "notes": "Starting work day"
+}
+
+### Check Out
+POST {{EMS.API_HostAddress}}/api/attendance/check-out
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "employeeId": 1,
+  "notes": "Ending work day"
+}
+
+### Generate Employee Directory Report
+GET {{EMS.API_HostAddress}}/api/reports/directory?format=pdf
+Authorization: Bearer {{token}}
