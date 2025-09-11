@@ -531,3 +531,6 @@ dist/
 *.iws
 .DS_Store
 Thumbs.db
+
+.clinerules/
+memory-bank/

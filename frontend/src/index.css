@@ -3,12 +3,19 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: "Montserrat", "Roboto", "Helvetica", "Arial", sans-serif;
+  background: var(--main-bg, #fafafa);
+  color: var(--main-text, #222);
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark {
+  background: #181a1b;
+  color: #e0e0e0;
 }
 
 #root {
@@ -22,12 +29,19 @@ button {
   padding: 0;
   margin: 0;
   cursor: pointer;
+  font-family: inherit;
 }
 
 /* Remove default link styles */
 a {
   text-decoration: none;
   color: inherit;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: #1976d2;
 }
 
 /* Utility classes */
