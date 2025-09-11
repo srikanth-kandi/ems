@@ -179,7 +179,7 @@ export default function Reports() {
               textShadow: '0 2px 4px rgba(0,0,0,0.1)',
             }}
           >
-            Reports & Analytics
+            📈 Reports & Analytics
           </Typography>
           <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
             Generate comprehensive reports and gain insights into your workforce

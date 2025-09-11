@@ -21,6 +21,7 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
+import { convertUtcToLocalDate, formatDateForInput } from "../../utils/timezone";
 import {
   Add as AddIcon,
   Upload as UploadIcon,
@@ -166,9 +167,7 @@ export default function EmployeeListEnhanced() {
       salary: row.salary,
       position: row.position || "",
       dateOfBirth: "",
-      dateOfJoining: row.dateOfJoining
-        ? new Date(row.dateOfJoining).toISOString().split("T")[0]
-        : "",
+      dateOfJoining: formatDateForInput(row.dateOfJoining) || "",
     });
     setOpen(true);
   };
@@ -331,7 +330,7 @@ export default function EmployeeListEnhanced() {
           variant="h4"
           sx={{ fontWeight: 700, color: "primary.main" }}
         >
-          Employee Management
+          👥 Employee Management
         </Typography>
         <Stack direction="row" spacing={2}>
           <Button

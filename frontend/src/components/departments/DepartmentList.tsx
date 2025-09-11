@@ -298,7 +298,7 @@ export default function DepartmentList() {
                     textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }}
                 >
-                  Department Management
+                  🏢 Department Management
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
                   Organize your workforce with structured department management

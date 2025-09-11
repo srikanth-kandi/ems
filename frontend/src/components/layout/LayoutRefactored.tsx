@@ -30,6 +30,7 @@ import {
 import { useState } from "react";
 import { useAuthStore } from "../../store/auth";
 import { useTheme as useCustomTheme } from "../../hooks/useTheme";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
 const drawerWidth = 240;
 
@@ -46,6 +47,9 @@ export default function LayoutRefactored({ children }: LayoutProps) {
 
   const { username, logout } = useAuthStore();
   const { mode, toggleMode } = useCustomTheme();
+  
+  // Update document title and favicon based on current route
+  useDocumentTitle(location.pathname);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -72,9 +76,12 @@ export default function LayoutRefactored({ children }: LayoutProps) {
   const drawer = (
     <Box>
       <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          EMS
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <PeopleIcon sx={{ fontSize: 28, color: 'primary.main' }} />
+          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 700 }}>
+            EMS
+          </Typography>
+        </Box>
       </Toolbar>
       <Divider />
       <List>

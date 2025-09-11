@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { api } from "../../lib/api";
+import { api, type Attendance } from "../../lib/api";
 import {
   Box,
   Button,
@@ -13,17 +13,7 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-
-type AttendanceItem = {
-  id: number;
-  employeeId: number;
-  employeeName: string;
-  checkInTime: string;
-  checkOutTime?: string;
-  totalHours?: string;
-  notes?: string;
-  date: string;
-};
+import { convertUtcToLocalTime, convertUtcToLocalDate } from "../../utils/timezone";
 
 type Employee = {
   id: number;
@@ -35,7 +25,7 @@ type Employee = {
 export default function Attendance() {
   const [employeeId, setEmployeeId] = useState<number>(1);
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [items, setItems] = useState<AttendanceItem[]>([]);
+  const [items, setItems] = useState<Attendance[]>([]);
   const [notes, setNotes] = useState<string>("");
 
   const loadEmployees = useCallback(async () => {
@@ -93,7 +83,7 @@ export default function Attendance() {
           textAlign: { xs: "center", md: "left" },
         }}
       >
-        Attendance
+        ⏰ Attendance
       </Typography>
       <Stack
         direction={{ xs: "column", sm: "row" }}
@@ -138,12 +128,12 @@ export default function Attendance() {
                 spacing={2}
               >
                 <Typography variant="subtitle1">
-                  {a.date} - {a.employeeName}
+                  {convertUtcToLocalDate(a.date)} - {a.employeeName}
                 </Typography>
                 <Typography variant="body2">
-                  In: {new Date(a.checkInTime).toLocaleTimeString()} | Out:{" "}
+                  In: {convertUtcToLocalTime(a.checkInTime)} | Out:{" "}
                   {a.checkOutTime
-                    ? new Date(a.checkOutTime).toLocaleTimeString()
+                    ? convertUtcToLocalTime(a.checkOutTime)
                     : "-"}{" "}
                   | Hours: {a.totalHours ?? "-"}
                 </Typography>

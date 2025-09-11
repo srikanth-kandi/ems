@@ -30,6 +30,7 @@ import {
   Fade,
   Zoom,
 } from '@mui/material';
+import { convertUtcToLocalDate, formatDateForInput } from '../../utils/timezone';
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -191,6 +192,18 @@ export default function EmployeeList() {
         </Typography>
       )
     },
+    { 
+      field: 'dateOfJoining', 
+      headerName: 'Date of Joining', 
+      width: 150,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <Typography variant="body2">
+          {convertUtcToLocalDate(params.value)}
+        </Typography>
+      )
+    },
     {
       field: 'actions', 
       headerName: 'Actions', 
@@ -235,7 +248,7 @@ export default function EmployeeList() {
     setEditingId(row.id);
     setForm({ 
       ...row, 
-      dateOfJoining: row.dateOfJoining || new Date().toISOString().split('T')[0]
+      dateOfJoining: formatDateForInput(row.dateOfJoining) || new Date().toISOString().split('T')[0]
     });
     setOpen(true);
   };
@@ -320,7 +333,7 @@ export default function EmployeeList() {
                     textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }}
                 >
-                  Employee Management
+                  👥 Employee Management
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
                   Manage your workforce efficiently with comprehensive employee data

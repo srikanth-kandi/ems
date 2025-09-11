@@ -15,6 +15,7 @@ import {
   LinearProgress,
   Collapse,
 } from "@mui/material";
+import { convertUtcToLocalDate } from "../../utils/timezone";
 import {
   People as PeopleIcon,
   AccessTime as AccessTimeIcon,
@@ -151,7 +152,7 @@ export default function Dashboard() {
         activeEmployees: employees.filter((emp) => emp.isActive).length,
         todayAttendance: attendance.filter(
           (att) =>
-            new Date(att.date).toDateString() === new Date().toDateString()
+            convertUtcToLocalDate(att.date) === convertUtcToLocalDate(new Date().toISOString())
         ).length,
         totalDepartments: departments.length,
       });
@@ -212,7 +213,7 @@ export default function Dashboard() {
                 textShadow: '0 2px 4px rgba(0,0,0,0.1)',
               }}
             >
-              Welcome to EMS Dashboard
+              📊 Welcome to EMS Dashboard
             </Typography>
             <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
               Monitor your workforce and track key performance indicators

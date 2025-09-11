@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { api } from "../../lib/api";
 import { useAuthStore } from "../../store/auth";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import {
   Box,
   Button,
@@ -13,11 +14,15 @@ import {
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const setAuth = useAuthStore((s) => s.setAuth);
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("admin123");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Update document title and favicon
+  useDocumentTitle(location.pathname);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
