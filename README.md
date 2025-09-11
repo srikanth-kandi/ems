@@ -10,7 +10,10 @@ ems/
 │   ├── EMS.API/            # Main API project
 │   ├── EMS.Core/           # Domain models and interfaces
 │   ├── EMS.Infrastructure/ # Data access and external services
-│   └── EMS.Application/    # Business logic and services
+│   ├── EMS.Application/    # Business logic and services
+│   ├── database-management.ps1  # PowerShell database management script
+│   ├── database-management.bat  # Windows batch database management script
+│   └── DATABASE_SEEDING.md      # Comprehensive seeding documentation
 ├── frontend/               # React.js with TypeScript
 │   ├── src/
 │   ├── public/
@@ -56,6 +59,9 @@ ems/
 - 📈 Department Growth Tracking
 - 📋 Attendance Pattern Reports
 - 🎯 Performance Metrics with PDF Export
+- 🌱 Comprehensive Database Seeding with 200+ realistic test records
+- 🔄 Database Management Scripts (PowerShell & Batch)
+- 📊 Real-time Database Status Monitoring
 
 ## Getting Started
 
@@ -71,6 +77,115 @@ cd backend/EMS.API
 dotnet restore
 dotnet ef database update
 dotnet run
+```
+
+### Database Seeding
+The EMS API includes comprehensive seed data generation for development and testing:
+
+#### Quick Start
+```bash
+# Using PowerShell (Recommended)
+cd backend
+.\database-management.ps1 -Action seed
+
+# Using Batch File
+cd backend
+database-management.bat seed
+
+# Using API directly (requires running API)
+curl -X POST http://localhost:5000/api/seed/seed
+```
+
+#### Available Seeding Commands
+
+**PowerShell Script (`database-management.ps1`):**
+```powershell
+# Show all available commands
+.\database-management.ps1 -Action help
+
+# Apply database migrations
+.\database-management.ps1 -Action migrate
+
+# Seed database with initial data
+.\database-management.ps1 -Action seed
+
+# Reseed database with fresh data (clears existing data)
+.\database-management.ps1 -Action reseed -Force
+
+# Clear all data from database
+.\database-management.ps1 -Action clear
+
+# Show current database status
+.\database-management.ps1 -Action status
+
+# Reset database (drop, recreate, migrate, seed)
+.\database-management.ps1 -Action reset -Force
+```
+
+**Batch File (`database-management.bat`):**
+```cmd
+# Show all available commands
+database-management.bat help
+
+# Apply database migrations
+database-management.bat migrate
+
+# Seed database with initial data
+database-management.bat seed
+
+# Reseed database with fresh data
+database-management.bat reseed
+
+# Clear all data from database
+database-management.bat clear
+
+# Show current database status
+database-management.bat status
+
+# Reset database (drop, recreate, migrate, seed)
+database-management.bat reset
+```
+
+#### Seed Data Overview
+The seeding system generates realistic test data including:
+- **10 Departments** with detailed descriptions and managers
+- **200+ Employees** with realistic names, positions, and salaries
+- **90 Days of Attendance Records** per employee with realistic work schedules
+- **2 Years of Performance Metrics** with quarterly reviews
+- **Multiple User Accounts** with different roles (Admin, HR, Manager)
+
+#### API Seeding Endpoints
+All seeding endpoints require Admin authentication:
+
+```bash
+# Seed database (only if empty)
+POST /api/seed/seed
+
+# Reseed database (clears existing data first)
+POST /api/seed/reseed
+
+# Clear all data
+DELETE /api/seed/clear
+
+# Get database status
+GET /api/seed/status
+```
+
+**Example API Usage:**
+```bash
+# Get authentication token first
+TOKEN=$(curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}' | jq -r '.token')
+
+# Seed database
+curl -X POST http://localhost:5000/api/seed/seed \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json"
+
+# Check status
+curl -X GET http://localhost:5000/api/seed/status \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
 ### Frontend Setup
@@ -115,6 +230,12 @@ npm run dev
 - `POST /api/attendance/check-out` - Check out
 - `GET /api/attendance/{employeeId}` - Get attendance history
 
+### Database Seeding (Admin Only)
+- `POST /api/seed/seed` - Seed database with initial data
+- `POST /api/seed/reseed` - Clear and reseed with fresh data
+- `DELETE /api/seed/clear` - Clear all data from database
+- `GET /api/seed/status` - Get current database record counts
+
 ## Deployment
 
 ### Production URLs
@@ -137,6 +258,43 @@ npm run dev
 6. **Testing** - Unit and integration tests
 7. **Deployment** - Oracle Cloud setup
 8. **Documentation** - API docs and user guide
+
+## Troubleshooting
+
+### Database Seeding Issues
+
+**Common Problems:**
+
+1. **"API is not running" Error**
+   ```bash
+   # Make sure the API is running first
+   cd backend/EMS.API
+   dotnet run
+   ```
+
+2. **"Database already contains data" Error**
+   ```bash
+   # Use reseed instead of seed
+   .\database-management.ps1 -Action reseed -Force
+   ```
+
+3. **Authentication Required**
+   ```bash
+   # Get admin token first
+   curl -X POST http://localhost:5000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"admin","password":"admin123"}'
+   ```
+
+4. **Database Connection Issues**
+   - Verify connection string in `appsettings.json`
+   - Ensure MySQL server is running
+   - Check database permissions
+
+**Performance Notes:**
+- Full reseed takes 30-60 seconds
+- Large datasets require adequate memory
+- Full seed data creates ~50MB database
 
 ## Contributing
 

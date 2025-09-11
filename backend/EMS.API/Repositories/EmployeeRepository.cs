@@ -4,6 +4,7 @@ using EMS.API.DTOs;
 using EMS.API.Interfaces;
 using EMS.API.Models;
 using EMS.API.Common;
+using System.Linq.Expressions;
 
 namespace EMS.API.Repositories;
 
@@ -34,6 +35,28 @@ public class EmployeeRepository : BaseRepository<Employee, EmployeeDto>, IEmploy
     protected override void UpdateEntity(Employee existing, EmployeeDto dto)
     {
         throw new NotImplementedException("Use UpdateEmployeeDto for updates");
+    }
+
+    protected override Expression<Func<Employee, EmployeeDto>> GetMapToDtoExpression()
+    {
+        return e => new EmployeeDto
+        {
+            Id = e.Id,
+            FirstName = e.FirstName,
+            LastName = e.LastName,
+            Email = e.Email,
+            PhoneNumber = e.PhoneNumber,
+            Address = e.Address,
+            DateOfBirth = e.DateOfBirth,
+            DateOfJoining = e.DateOfJoining,
+            Position = e.Position,
+            Salary = e.Salary,
+            DepartmentId = e.DepartmentId,
+            DepartmentName = e.Department != null ? e.Department.Name : string.Empty,
+            IsActive = e.IsActive,
+            CreatedAt = e.CreatedAt,
+            UpdatedAt = e.UpdatedAt
+        };
     }
 
     public async Task<EmployeeDto> CreateAsync(CreateEmployeeDto createEmployeeDto)
@@ -92,7 +115,7 @@ public class EmployeeRepository : BaseRepository<Employee, EmployeeDto>, IEmploy
         return await _context.Employees
             .Include(e => e.Department)
             .Where(e => e.DepartmentId == departmentId && e.IsActive)
-            .Select(e => MapToDto(e))
+            .Select(GetMapToDtoExpression())
             .ToListAsync();
     }
 
@@ -123,7 +146,7 @@ public class EmployeeRepository : BaseRepository<Employee, EmployeeDto>, IEmploy
             var result = await _context.Employees
                 .Include(e => e.Department)
                 .Where(e => createdIds.Contains(e.Id))
-                .Select(e => MapToDto(e))
+                .Select(GetMapToDtoExpression())
                 .ToListAsync();
 
             await transaction.CommitAsync();
@@ -192,7 +215,7 @@ public class EmployeeRepository : BaseRepository<Employee, EmployeeDto>, IEmploy
         var employees = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(e => MapToDto(e))
+            .Select(GetMapToDtoExpression())
             .ToListAsync();
 
         return new PagedResult<EmployeeDto>
@@ -230,7 +253,7 @@ public class EmployeeRepository : BaseRepository<Employee, EmployeeDto>, IEmploy
         var employees = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(e => MapToDto(e))
+            .Select(GetMapToDtoExpression())
             .ToListAsync();
 
         return new PagedResult<EmployeeDto>

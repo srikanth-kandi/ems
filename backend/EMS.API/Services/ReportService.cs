@@ -97,6 +97,7 @@ public class ReportService : IReportService
     public async Task<byte[]> GenerateHiringTrendReportAsync()
     {
         var data = await _context.Employees
+            .Include(e => e.Department)
             .Where(e => e.IsActive)
             .GroupBy(e => new { e.DateOfJoining.Year, e.DateOfJoining.Month })
             .Select(g => new
@@ -687,7 +688,10 @@ public class ReportService : IReportService
 
     public async Task<byte[]> GenerateSalaryReportExcelAsync()
     {
-        var data = await _context.Employees.Where(e => e.IsActive).ToListAsync();
+        var data = await _context.Employees
+            .Include(e => e.Department)
+            .Where(e => e.IsActive)
+            .ToListAsync();
         
         using var package = new ExcelPackage();
         var worksheet = package.Workbook.Worksheets.Add("Salary Report");

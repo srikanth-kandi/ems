@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using EMS.API.Data;
 using EMS.API.Interfaces;
+using System.Linq.Expressions;
 
 namespace EMS.API.Common;
 
@@ -19,11 +20,12 @@ public abstract class BaseRepository<TEntity, TDto> where TEntity : class
     protected abstract TDto MapToDto(TEntity entity);
     protected abstract TEntity MapToEntity(TDto dto);
     protected abstract void UpdateEntity(TEntity existing, TDto dto);
+    protected abstract Expression<Func<TEntity, TDto>> GetMapToDtoExpression();
 
     public virtual async Task<IEnumerable<TDto>> GetAllAsync()
     {
         return await GetBaseQuery()
-            .Select(entity => MapToDto(entity))
+            .Select(GetMapToDtoExpression())
             .ToListAsync();
     }
 
@@ -32,7 +34,7 @@ public abstract class BaseRepository<TEntity, TDto> where TEntity : class
         var entity = await GetBaseQuery()
             .FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
         
-        return entity != null ? MapToDto(entity) : null;
+        return entity != null ? MapToDto(entity) : default(TDto);
     }
 
     public virtual async Task<bool> ExistsAsync(int id)

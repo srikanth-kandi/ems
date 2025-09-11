@@ -10,7 +10,7 @@ import {
   MenuItem,
   IconButton,
   InputAdornment,
-  Zoom,
+  Collapse,
 } from '@mui/material';
 import { Search as SearchIcon, Refresh as RefreshIcon } from '@mui/icons-material';
 
@@ -32,7 +32,7 @@ export default function FilterSection({
   onRefresh,
 }: FilterSectionProps) {
   return (
-    <Zoom in timeout={800}>
+    <Collapse in timeout={800}>
       <Card sx={{ mb: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
         <CardContent sx={{ p: 2 }}>
           <Stack 
@@ -81,6 +81,6 @@ export default function FilterSection({
           </Stack>
         </CardContent>
       </Card>
-    </Zoom>
+    </Collapse>
   );
 }

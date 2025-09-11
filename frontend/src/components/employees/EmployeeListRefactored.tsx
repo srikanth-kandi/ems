@@ -18,7 +18,7 @@ import {
   Typography,
   Tooltip,
   Paper,
-  Zoom,
+  Collapse,
 } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import {
@@ -36,7 +36,6 @@ import PageHeader from '../common/PageHeader';
 import FilterSection from '../common/FilterSection';
 import FormDialog from '../common/FormDialog';
 import NotificationSnackbar from '../common/NotificationSnackbar';
-import type { Employee } from '../../lib/api';
 
 export default function EmployeeListRefactored() {
   const {
@@ -45,6 +44,7 @@ export default function EmployeeListRefactored() {
     loading,
     open,
     form,
+    editingId,
     searchTerm,
     selectedDepartment,
     notification,
@@ -225,7 +225,7 @@ export default function EmployeeListRefactored() {
         onRefresh={() => window.location.reload()}
       />
 
-      <Zoom in timeout={1000}>
+      <Collapse in timeout={1000}>
         <Paper 
           sx={{ 
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
@@ -268,7 +268,7 @@ export default function EmployeeListRefactored() {
             />
           </Box>
         </Paper>
-      </Zoom>
+      </Collapse>
 
       <Menu
         anchorEl={anchorEl}
@@ -301,8 +301,8 @@ export default function EmployeeListRefactored() {
         open={open}
         onClose={() => setOpen(false)}
         onSave={handleSave}
-        title={form.id ? 'Edit Employee' : 'Add New Employee'}
-        saveButtonText={form.id ? 'Update' : 'Create'}
+        title={editingId ? 'Edit Employee' : 'Add New Employee'}
+        saveButtonText={editingId ? 'Update' : 'Create'}
       >
         <Stack direction="row" spacing={2}>
           <TextField 

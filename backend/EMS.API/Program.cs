@@ -28,6 +28,11 @@ builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryPdfGenerato
 // Register report service
 builder.Services.AddScoped<IReportService, RefactoredReportService>();
 
+// Register database services
+builder.Services.AddScoped<DatabaseMigrationService>();
+builder.Services.AddScoped<DatabaseSeedingService>();
+builder.Services.AddScoped<SeedDataService>();
+
 // Add Entity Framework
 builder.Services.AddDbContext<EMSDbContext>(options =>
     options.UseMySql(
@@ -69,6 +74,27 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Setup database on startup
+using (var scope = app.Services.CreateScope())
+{
+    var migrationService = scope.ServiceProvider.GetRequiredService<DatabaseMigrationService>();
+    var seedingService = scope.ServiceProvider.GetRequiredService<DatabaseSeedingService>();
+    
+    try
+    {
+        // Apply migrations
+        await migrationService.MigrateDatabaseAsync();
+        
+        // Seed database if empty
+        await seedingService.SeedDatabaseAsync();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while setting up the database.");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
