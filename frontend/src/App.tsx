@@ -5,7 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 // Import components
 import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
-import EmployeeList from './components/employees/EmployeeListEnhanced';
+import EmployeeList from './components/employees/EmployeeList';
+import DepartmentList from './components/departments/DepartmentList';
 import Attendance from './components/attendance/Attendance';
 import Reports from './components/reports/Reports';
 import Layout from './components/layout/Layout';
@@ -51,6 +52,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/employees" element={<EmployeeList />} />
+                  <Route path="/departments" element={<DepartmentList />} />
                   <Route path="/attendance" element={<Attendance />} />
                   <Route path="/reports" element={<Reports />} />
                 </Routes>

@@ -22,6 +22,7 @@ import {
   People as PeopleIcon,
   AccessTime as AccessTimeIcon,
   Assessment as AssessmentIcon,
+  Business as BusinessIcon,
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
   Logout as LogoutIcon,
@@ -58,9 +59,15 @@ export default function Layout({ children }: LayoutProps) {
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
     { text: "Employees", icon: <PeopleIcon />, path: "/employees" },
+    { text: "Departments", icon: <BusinessIcon />, path: "/departments" },
     { text: "Attendance", icon: <AccessTimeIcon />, path: "/attendance" },
     { text: "Reports", icon: <AssessmentIcon />, path: "/reports" },
   ];
+
+  const getPageTitle = () => {
+    const currentItem = menuItems.find(item => item.path === location.pathname);
+    return currentItem ? currentItem.text : "Employee Management System";
+  };
 
   const drawer = (
     <Box>
@@ -138,7 +145,7 @@ export default function Layout({ children }: LayoutProps) {
               color: "inherit",
             }}
           >
-            Employee Management System
+            {getPageTitle()}
           </Typography>
           <IconButton
             color="inherit"
@@ -227,13 +234,31 @@ export default function Layout({ children }: LayoutProps) {
           p: { xs: 1, sm: 2, md: 3 },
           width: { md: `calc(100% - ${drawerWidth}px)` },
           mt: 8,
-          bgcolor: mode === "dark" ? "grey.950" : "background.default",
+          background: mode === "dark" 
+            ? "linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)"
+            : "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
           borderRadius: { xs: 0, md: 3 },
-          boxShadow: { xs: "none", md: "0 4px 24px rgba(0,0,0,0.08)" },
+          boxShadow: { xs: "none", md: "0 8px 32px rgba(0,0,0,0.12)" },
           minHeight: "calc(100vh - 64px)",
+          position: "relative",
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: mode === "dark"
+              ? "radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%)"
+              : "radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.05) 0%, transparent 50%)",
+            borderRadius: "inherit",
+            pointerEvents: "none",
+          },
         }}
       >
-        {children}
+        <Box sx={{ position: "relative", zIndex: 1 }}>
+          {children}
+        </Box>
       </Box>
     </Box>
   );

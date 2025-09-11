@@ -23,10 +23,7 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  FormControl,
-  InputLabel,
-  Select,
-  InputAdornment,
+  Divider,
   Fade,
   Zoom,
 } from '@mui/material';
@@ -34,49 +31,36 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
+  Download as DownloadIcon,
   MoreVert as MoreVertIcon,
   Search as SearchIcon,
+  Refresh as RefreshIcon,
+  Business as BusinessIcon,
+  People as PeopleIcon,
   PictureAsPdf as PdfIcon,
   TableChart as ExcelIcon,
   FileDownload as CsvIcon,
-  Refresh as RefreshIcon,
 } from '@mui/icons-material';
-
-type Employee = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  departmentId: number;
-  departmentName: string;
-  position?: string;
-  salary: number;
-  isActive: boolean;
-  dateOfJoining?: string;
-};
 
 type Department = {
   id: number;
   name: string;
+  description?: string;
+  managerName?: string;
+  employeeCount?: number;
 };
 
-export default function EmployeeList() {
-  const [rows, setRows] = useState<Employee[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
+export default function DepartmentList() {
+  const [rows, setRows] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<any>({ 
-    firstName: '', 
-    lastName: '', 
-    email: '', 
-    departmentId: 1, 
-    salary: 0,
-    position: '',
-    dateOfJoining: new Date().toISOString().split('T')[0]
+    name: '', 
+    description: '', 
+    managerName: ''
   });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState<number | ''>('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -87,21 +71,12 @@ export default function EmployeeList() {
   const load = async () => {
     setLoading(true);
     try {
-    const data = await api.getEmployees();
-    setRows(data);
-    } catch (error) {
-      showSnackbar('Error loading employees', 'error');
-    } finally {
-    setLoading(false);
-    }
-  };
-
-  const loadDepartments = async () => {
-    try {
       const data = await api.getDepartments();
-      setDepartments(data);
+      setRows(data);
     } catch (error) {
       showSnackbar('Error loading departments', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,8 +86,8 @@ export default function EmployeeList() {
 
   const handleDownload = async (format: 'pdf' | 'excel' | 'csv') => {
     try {
-      const filename = `employees.${format === 'csv' ? 'csv' : format === 'pdf' ? 'pdf' : 'xlsx'}`;
-      const endpoint = format === 'csv' ? 'employees' : `employees/${format}`;
+      const filename = `departments.${format === 'csv' ? 'csv' : format === 'pdf' ? 'pdf' : 'xlsx'}`;
+      const endpoint = format === 'csv' ? 'departments' : `departments/${format}`;
       await api.downloadReport(endpoint, filename);
       showSnackbar(`${filename} downloaded successfully`);
     } catch (error) {
@@ -130,7 +105,6 @@ export default function EmployeeList() {
 
   useEffect(() => { 
     load(); 
-    loadDepartments();
   }, []);
 
   const columns: GridColDef[] = [
@@ -142,52 +116,63 @@ export default function EmployeeList() {
       align: 'center',
     },
     { 
-      field: 'firstName', 
-      headerName: 'First Name', 
+      field: 'name', 
+      headerName: 'Department Name', 
       flex: 1,
-      minWidth: 120,
-    },
-    { 
-      field: 'lastName', 
-      headerName: 'Last Name', 
-      flex: 1,
-      minWidth: 120,
-    },
-    { 
-      field: 'email', 
-      headerName: 'Email', 
-      flex: 1.5,
       minWidth: 200,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <BusinessIcon color="primary" fontSize="small" />
+          <Typography variant="body2" fontWeight="medium">
+            {params.value}
+          </Typography>
+        </Box>
+      )
     },
     { 
-      field: 'departmentName', 
-      headerName: 'Department', 
+      field: 'managerName', 
+      headerName: 'Manager', 
       flex: 1,
-      minWidth: 120,
+      minWidth: 150,
+      renderCell: (params) => (
+        <Typography variant="body2" color="text.secondary">
+          {params.value || 'Not assigned'}
+        </Typography>
+      )
+    },
+    { 
+      field: 'employeeCount', 
+      headerName: 'Employees', 
+      width: 120,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
         <Chip 
-          label={params.value} 
+          label={params.value || 0} 
           color="primary" 
           variant="outlined"
           size="small"
+          icon={<PeopleIcon />}
         />
       )
     },
     { 
-      field: 'position', 
-      headerName: 'Position', 
-      flex: 1,
-      minWidth: 120,
-    },
-    { 
-      field: 'salary', 
-      headerName: 'Salary', 
-      width: 120,
-      headerAlign: 'right',
-      align: 'right',
+      field: 'description', 
+      headerName: 'Description', 
+      flex: 1.5,
+      minWidth: 200,
       renderCell: (params) => (
-        <Typography variant="body2" fontWeight="medium">
-          ${params.value.toLocaleString()}
+        <Typography 
+          variant="body2" 
+          color="text.secondary"
+          sx={{ 
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            maxWidth: 200
+          }}
+        >
+          {params.value || 'No description'}
         </Typography>
       )
     },
@@ -231,11 +216,12 @@ export default function EmployeeList() {
     }
   ];
 
-  const onEdit = (row: Employee) => {
+  const onEdit = (row: Department) => {
     setEditingId(row.id);
     setForm({ 
-      ...row, 
-      dateOfJoining: row.dateOfJoining || new Date().toISOString().split('T')[0]
+      name: row.name,
+      description: row.description || '',
+      managerName: row.managerName || ''
     });
     setOpen(true);
   };
@@ -243,53 +229,45 @@ export default function EmployeeList() {
   const onCreate = () => {
     setEditingId(null);
     setForm({ 
-      firstName: '', 
-      lastName: '', 
-      email: '', 
-      departmentId: departments[0]?.id || 1, 
-      salary: 0,
-      position: '',
-      dateOfJoining: new Date().toISOString().split('T')[0]
+      name: '', 
+      description: '', 
+      managerName: ''
     });
     setOpen(true);
   };
 
   const onSave = async () => {
     try {
-    if (editingId) {
-      await api.updateEmployee(editingId, form);
-        showSnackbar('Employee updated successfully');
-    } else {
-      await api.createEmployee(form);
-        showSnackbar('Employee created successfully');
-    }
-    setOpen(false);
-    await load();
+      if (editingId) {
+        await api.updateDepartment(editingId, form);
+        showSnackbar('Department updated successfully');
+      } else {
+        await api.createDepartment(form);
+        showSnackbar('Department created successfully');
+      }
+      setOpen(false);
+      await load();
     } catch (error) {
-      showSnackbar('Error saving employee', 'error');
+      showSnackbar('Error saving department', 'error');
     }
   };
 
   const onDelete = async (id: number) => {
     try {
-    await api.deleteEmployee(id);
-      showSnackbar('Employee deleted successfully');
-    await load();
+      await api.deleteDepartment(id);
+      showSnackbar('Department deleted successfully');
+      await load();
     } catch (error) {
-      showSnackbar('Error deleting employee', 'error');
+      showSnackbar('Error deleting department', 'error');
     }
   };
 
-  const filteredRows = rows.filter(row => {
-    const matchesSearch = !searchTerm || 
-      row.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesDepartment = !selectedDepartment || row.departmentId === selectedDepartment;
-    
-    return matchesSearch && matchesDepartment;
-  });
+  const filteredRows = rows.filter(row => 
+    !searchTerm || 
+    row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (row.managerName && row.managerName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.description && row.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
@@ -320,10 +298,10 @@ export default function EmployeeList() {
                     textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }}
                 >
-                  Employee Management
+                  Department Management
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                  Manage your workforce efficiently with comprehensive employee data
+                  Organize your workforce with structured department management
                 </Typography>
               </Box>
               <Stack direction="row" spacing={2}>
@@ -344,7 +322,7 @@ export default function EmployeeList() {
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  Add Employee
+                  Add Department
                 </Button>
                 <IconButton
                   onClick={handleMenuClick}
@@ -368,7 +346,7 @@ export default function EmployeeList() {
         </Card>
       </Fade>
 
-      {/* Filters Section */}
+      {/* Search Section */}
       <Zoom in timeout={800}>
         <Card sx={{ mb: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
           <CardContent sx={{ p: 2 }}>
@@ -378,34 +356,17 @@ export default function EmployeeList() {
               alignItems="center"
             >
               <TextField
-                placeholder="Search employees..."
+                placeholder="Search departments..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 InputProps={{
                   startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon color="action" />
-                    </InputAdornment>
+                    <SearchIcon color="action" />
                   ),
                 }}
                 sx={{ flexGrow: 1, minWidth: 200 }}
                 size="small"
               />
-              <FormControl size="small" sx={{ minWidth: 150 }}>
-                <InputLabel>Department</InputLabel>
-                <Select
-                  value={selectedDepartment}
-                  onChange={(e) => setSelectedDepartment(e.target.value as number | '')}
-                  label="Department"
-                >
-                  <MenuItem value="">All Departments</MenuItem>
-                  {departments.map((dept) => (
-                    <MenuItem key={dept.id} value={dept.id}>
-                      {dept.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
               <IconButton 
                 onClick={load}
                 sx={{ 
@@ -415,7 +376,7 @@ export default function EmployeeList() {
               >
                 <RefreshIcon />
               </IconButton>
-      </Stack>
+            </Stack>
           </CardContent>
         </Card>
       </Zoom>
@@ -494,7 +455,7 @@ export default function EmployeeList() {
         </MenuItem>
       </Menu>
 
-      {/* Employee Form Dialog */}
+      {/* Department Form Dialog */}
       <Dialog 
         open={open} 
         onClose={() => setOpen(false)} 
@@ -512,75 +473,31 @@ export default function EmployeeList() {
           color: 'white',
           fontWeight: 600,
         }}>
-          {editingId ? 'Edit Employee' : 'Add New Employee'}
+          {editingId ? 'Edit Department' : 'Add New Department'}
         </DialogTitle>
         <DialogContent sx={{ p: 3 }}>
           <Stack spacing={3} sx={{ mt: 1 }}>
-            <Stack direction="row" spacing={2}>
-              <TextField 
-                label="First Name" 
-                value={form.firstName} 
-                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                fullWidth
-                required
-              />
-              <TextField 
-                label="Last Name" 
-                value={form.lastName} 
-                onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                fullWidth
-                required
-              />
-            </Stack>
             <TextField 
-              label="Email" 
-              type="email"
-              value={form.email} 
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              label="Department Name" 
+              value={form.name} 
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
               fullWidth
               required
             />
-            <FormControl fullWidth required>
-              <InputLabel>Department</InputLabel>
-              <Select
-                value={form.departmentId}
-                onChange={(e) => setForm({ ...form, departmentId: Number(e.target.value) })}
-                label="Department"
-              >
-                {departments.map((dept) => (
-                  <MenuItem key={dept.id} value={dept.id}>
-                    {dept.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
             <TextField 
-              label="Position" 
-              value={form.position || ''} 
-              onChange={(e) => setForm({ ...form, position: e.target.value })}
+              label="Manager Name" 
+              value={form.managerName} 
+              onChange={(e) => setForm({ ...form, managerName: e.target.value })}
               fullWidth
             />
-            <Stack direction="row" spacing={2}>
-              <TextField 
-                label="Salary" 
-                type="number"
-                value={form.salary} 
-                onChange={(e) => setForm({ ...form, salary: Number(e.target.value) })}
-                fullWidth
-                required
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                }}
-              />
-              <TextField 
-                label="Date of Joining" 
-                type="date"
-                value={form.dateOfJoining} 
-                onChange={(e) => setForm({ ...form, dateOfJoining: e.target.value })}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-              />
-            </Stack>
+            <TextField 
+              label="Description" 
+              value={form.description} 
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              fullWidth
+              multiline
+              rows={3}
+            />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 3, pt: 0 }}>
@@ -629,5 +546,3 @@ export default function EmployeeList() {
     </Box>
   );
 }
-
-

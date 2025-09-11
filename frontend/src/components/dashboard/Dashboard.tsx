@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { api, type Attendance, type Employee } from "../../lib/api";
+import { api } from "../../lib/api";
 import {
   Box,
   Grid,
   Card,
   CardContent,
   Typography,
-  Paper,
   List,
   ListItem,
   ListItemText,
   Chip,
+  Button,
+  Stack,
+  Fade,
+  Zoom,
+  LinearProgress,
 } from "@mui/material";
 import {
   People as PeopleIcon,
   AccessTime as AccessTimeIcon,
   Assessment as AssessmentIcon,
+  Business as BusinessIcon,
+  TrendingUp as TrendingUpIcon,
+  Add as AddIcon,
+  Assessment as ReportIcon,
+  Visibility as ViewIcon,
 } from "@mui/icons-material";
 
 type DashboardStats = {
@@ -36,23 +45,75 @@ const StatCard = ({
   title,
   value,
   icon,
-  color,
+  gradient,
+  loading = false,
 }: {
   title: string;
   value: number;
   icon: React.JSX.Element;
-  color: string;
+  gradient: string;
+  loading?: boolean;
 }) => (
-  <Card>
-    <CardContent>
+  <Card 
+    sx={{ 
+      height: '100%',
+      borderRadius: 3,
+      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        transform: 'translateY(-4px)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+      },
+    }}
+  >
+    <CardContent sx={{ p: 3 }}>
       <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Box>
-          <Typography color="textSecondary" gutterBottom variant="h6">
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography 
+            color="textSecondary" 
+            gutterBottom 
+            variant="h6"
+            sx={{ 
+              fontWeight: 500,
+              fontSize: '0.9rem',
+              textTransform: 'uppercase',
+              letterSpacing: 1,
+            }}
+          >
             {title}
           </Typography>
-          <Typography variant="h4">{value}</Typography>
+          {loading ? (
+            <LinearProgress sx={{ mt: 1, borderRadius: 1 }} />
+          ) : (
+            <Typography 
+              variant="h3" 
+              sx={{ 
+                fontWeight: 700,
+                background: gradient,
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontFamily: 'Montserrat, Roboto, Arial',
+              }}
+            >
+              {value.toLocaleString()}
+            </Typography>
+          )}
         </Box>
-        <Box color={color} fontSize="3rem">
+        <Box 
+          sx={{ 
+            p: 2,
+            borderRadius: 2,
+            background: gradient,
+            color: 'white',
+            fontSize: '2.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: 80,
+            minHeight: 80,
+          }}
+        >
           {icon}
         </Box>
       </Box>
@@ -65,9 +126,10 @@ export default function Dashboard() {
     totalEmployees: 0,
     activeEmployees: 0,
     todayAttendance: 0,
-    totalDepartments: 4,
+    totalDepartments: 0,
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadDashboardData();
@@ -75,18 +137,21 @@ export default function Dashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const employees: Employee[] = await api.getEmployees();
-      const attendance: Attendance[] = await api.getAttendance(1); // Get attendance for first employee as sample
+      setLoading(true);
+      const [employees, departments, attendance] = await Promise.all([
+        api.getEmployees(),
+        api.getDepartments(),
+        api.getAttendance(1) // Get attendance for first employee as sample
+      ]);
 
       setStats({
         totalEmployees: employees.length,
-        activeEmployees: employees.filter((emp) => emp.isActive)
-          .length,
+        activeEmployees: employees.filter((emp) => emp.isActive).length,
         todayAttendance: attendance.filter(
           (att) =>
             new Date(att.date).toDateString() === new Date().toDateString()
         ).length,
-        totalDepartments: 4,
+        totalDepartments: departments.length,
       });
 
       // Mock recent activity
@@ -109,126 +174,282 @@ export default function Dashboard() {
           message: "Monthly report generated",
           timestamp: "3 hours ago",
         },
+        {
+          id: 4,
+          type: "department",
+          message: "IT Department created",
+          timestamp: "4 hours ago",
+        },
       ]);
     } catch (error) {
       console.error("Error loading dashboard data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Box
-      className="main-content font-montserrat"
-      sx={{
-        bgcolor: "background.paper",
-        borderRadius: 3,
-        boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-        p: { xs: 1, sm: 2, md: 3 },
-      }}
-    >
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{
-          fontWeight: 700,
-          color: "primary.main",
-          mb: 3,
-          textAlign: { xs: "center", md: "left" },
-        }}
-      >
-        Dashboard
-      </Typography>
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
+      {/* Header Section */}
+      <Fade in timeout={600}>
+        <Card 
+          sx={{ 
+            mb: 4, 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          }}
+        >
+          <CardContent sx={{ p: 4 }}>
+            <Typography 
+              variant="h3" 
+              fontWeight="700" 
+              sx={{ 
+                mb: 2,
+                fontFamily: 'Montserrat, Roboto, Arial',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+              }}
+            >
+              Welcome to EMS Dashboard
+            </Typography>
+            <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
+              Monitor your workforce and track key performance indicators
+            </Typography>
+          </CardContent>
+        </Card>
+      </Fade>
+
+      {/* Stats Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Zoom in timeout={800}>
+            <StatCard
+              title="Total Employees"
+              value={stats.totalEmployees}
+              icon={<PeopleIcon />}
+              gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+              loading={loading}
+            />
+          </Zoom>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Zoom in timeout={1000}>
+            <StatCard
+              title="Active Employees"
+              value={stats.activeEmployees}
+              icon={<PeopleIcon />}
+              gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+              loading={loading}
+            />
+          </Zoom>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Zoom in timeout={1200}>
+            <StatCard
+              title="Today's Attendance"
+              value={stats.todayAttendance}
+              icon={<AccessTimeIcon />}
+              gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+              loading={loading}
+            />
+          </Zoom>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Zoom in timeout={1400}>
+            <StatCard
+              title="Departments"
+              value={stats.totalDepartments}
+              icon={<BusinessIcon />}
+              gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+              loading={loading}
+            />
+          </Zoom>
+        </Grid>
+      </Grid>
+
+      {/* Content Grid */}
       <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Employees"
-            value={stats.totalEmployees}
-            icon={<PeopleIcon />}
-            color="primary.main"
-          />
-        </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <StatCard
-            title="Active Employees"
-            value={stats.activeEmployees}
-            icon={<PeopleIcon />}
-            color="success.main"
-          />
-        </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <StatCard
-            title="Today's Attendance"
-            value={stats.todayAttendance}
-            icon={<AccessTimeIcon />}
-            color="info.main"
-          />
-        </Grid>
-        <Grid xs={12} sm={6} md={3}>
-          <StatCard
-            title="Departments"
-            value={stats.totalDepartments}
-            icon={<AssessmentIcon />}
-            color="secondary.main"
-          />
-        </Grid>
-        <Grid xs={12} md={8}>
-          <Paper
-            className="border-rounded shadow-lg"
-            sx={{ p: { xs: 1, sm: 2 }, mb: 2 }}
-          >
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ fontWeight: 600, color: "secondary.main" }}
+        <Grid item xs={12} md={8}>
+          <Zoom in timeout={1600}>
+            <Card 
+              sx={{ 
+                borderRadius: 3,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                height: '100%',
+              }}
             >
-              Recent Activity
-            </Typography>
-            <List>
-              {recentActivity.map((activity) => (
-                <ListItem key={activity.id} divider>
-                  <ListItemText
-                    primary={activity.message}
-                    secondary={activity.timestamp}
-                  />
-                  <Chip
-                    label={activity.type}
-                    size="small"
-                    color={
-                      activity.type === "employee"
-                        ? "primary"
-                        : activity.type === "attendance"
-                        ? "success"
-                        : "default"
-                    }
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Paper>
+              <CardContent sx={{ p: 3 }}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{ 
+                    fontWeight: 600, 
+                    color: "primary.main",
+                    mb: 3,
+                    fontFamily: 'Montserrat, Roboto, Arial',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <TrendingUpIcon />
+                  Recent Activity
+                </Typography>
+                <List sx={{ '& .MuiListItem-root': { px: 0 } }}>
+                  {recentActivity.map((activity, index) => (
+                    <ListItem 
+                      key={activity.id} 
+                      divider={index < recentActivity.length - 1}
+                      sx={{ 
+                        py: 2,
+                        '&:hover': { 
+                          bgcolor: 'rgba(102, 126, 234, 0.04)',
+                          borderRadius: 2,
+                        },
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="body1" fontWeight="500">
+                            {activity.message}
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="body2" color="text.secondary">
+                            {activity.timestamp}
+                          </Typography>
+                        }
+                      />
+                      <Chip
+                        label={activity.type}
+                        size="small"
+                        sx={{
+                          bgcolor: 
+                            activity.type === "employee"
+                              ? "rgba(102, 126, 234, 0.1)"
+                              : activity.type === "attendance"
+                              ? "rgba(67, 233, 123, 0.1)"
+                              : activity.type === "department"
+                              ? "rgba(240, 147, 251, 0.1)"
+                              : "rgba(0, 0, 0, 0.1)",
+                          color: 
+                            activity.type === "employee"
+                              ? "primary.main"
+                              : activity.type === "attendance"
+                              ? "success.main"
+                              : activity.type === "department"
+                              ? "secondary.main"
+                              : "text.primary",
+                          fontWeight: 500,
+                          borderRadius: 2,
+                        }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </CardContent>
+            </Card>
+          </Zoom>
         </Grid>
-        <Grid xs={12} md={4}>
-          <Paper
-            className="border-rounded shadow-lg"
-            sx={{ p: { xs: 1, sm: 2 }, mb: 2 }}
-          >
-            <Typography
-              variant="h6"
-              gutterBottom
-              sx={{ fontWeight: 600, color: "primary.main" }}
+        
+        <Grid item xs={12} md={4}>
+          <Zoom in timeout={1800}>
+            <Card 
+              sx={{ 
+                borderRadius: 3,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                height: '100%',
+              }}
             >
-              Quick Actions
-            </Typography>
-            <List>
-              <ListItem>
-                <ListItemText primary="Add New Employee" />
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="Generate Reports" />
-              </ListItem>
-              <ListItem>
-                <ListItemText primary="View Attendance" />
-              </ListItem>
-            </List>
-          </Paper>
+              <CardContent sx={{ p: 3 }}>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{ 
+                    fontWeight: 600, 
+                    color: "primary.main",
+                    mb: 3,
+                    fontFamily: 'Montserrat, Roboto, Arial',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <AssessmentIcon />
+                  Quick Actions
+                </Typography>
+                <Stack spacing={2}>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    fullWidth
+                    sx={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                      },
+                      transition: 'all 0.3s ease',
+                      borderRadius: 2,
+                      py: 1.5,
+                    }}
+                  >
+                    Add New Employee
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<ReportIcon />}
+                    fullWidth
+                    sx={{ 
+                      borderRadius: 2,
+                      py: 1.5,
+                      '&:hover': {
+                        bgcolor: 'primary.50',
+                        transform: 'translateY(-1px)',
+                      },
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    Generate Reports
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<ViewIcon />}
+                    fullWidth
+                    sx={{ 
+                      borderRadius: 2,
+                      py: 1.5,
+                      '&:hover': {
+                        bgcolor: 'info.50',
+                        transform: 'translateY(-1px)',
+                      },
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    View Attendance
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    startIcon={<BusinessIcon />}
+                    fullWidth
+                    sx={{ 
+                      borderRadius: 2,
+                      py: 1.5,
+                      '&:hover': {
+                        bgcolor: 'secondary.50',
+                        transform: 'translateY(-1px)',
+                      },
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    Manage Departments
+                  </Button>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Zoom>
         </Grid>
       </Grid>
     </Box>

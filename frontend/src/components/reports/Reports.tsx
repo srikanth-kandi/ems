@@ -13,8 +13,9 @@ import {
   Paper,
   Tabs,
   Tab,
+  Grid,
+  Divider,
 } from "@mui/material";
-import { Grid } from "@mui/material";
 import {
   Download as DownloadIcon,
   Assessment as AssessmentIcon,
@@ -22,6 +23,12 @@ import {
   People as PeopleIcon,
   AccessTime as AccessTimeIcon,
   AttachMoney as MoneyIcon,
+  PictureAsPdf as PdfIcon,
+  TableChart as ExcelIcon,
+  FileDownload as CsvIcon,
+  Business as BusinessIcon,
+  Analytics as AnalyticsIcon,
+  BarChart as BarChartIcon,
 } from "@mui/icons-material";
 import { api } from "../../lib/api";
 
@@ -70,16 +77,20 @@ export default function Reports() {
   const handleDownload = async (
     reportType: string,
     filename: string,
+    format: 'csv' | 'pdf' | 'excel' = 'csv',
     params?: Record<string, string>
   ) => {
     try {
+      const endpoint = format === 'csv' ? reportType : `${reportType}/${format}`;
+      const finalFilename = filename.replace(/\.[^/.]+$/, `.${format === 'csv' ? 'csv' : format === 'pdf' ? 'pdf' : 'xlsx'}`);
+      
       if (params) {
         const queryString = new URLSearchParams(params).toString();
-        await api.downloadReport(`${reportType}?${queryString}`, filename);
+        await api.downloadReport(`${endpoint}?${queryString}`, finalFilename);
       } else {
-        await api.downloadReport(reportType, filename);
+        await api.downloadReport(endpoint, finalFilename);
       }
-      showSnackbar(`${filename} downloaded successfully`);
+      showSnackbar(`${finalFilename} downloaded successfully`);
     } catch {
       showSnackbar("Error downloading report", "error");
     }
@@ -91,24 +102,28 @@ export default function Reports() {
       type: "employees",
       icon: <PeopleIcon />,
       color: "primary",
+      description: "Complete employee information and contact details",
     },
     {
       name: "Departments",
       type: "departments",
-      icon: <AssessmentIcon />,
+      icon: <BusinessIcon />,
       color: "secondary",
+      description: "Department structure and employee distribution",
     },
     {
       name: "Attendance",
       type: "attendance",
       icon: <AccessTimeIcon />,
       color: "info",
+      description: "Employee attendance records and time tracking",
     },
     {
       name: "Salary Report",
       type: "salaries",
       icon: <MoneyIcon />,
       color: "success",
+      description: "Salary information and compensation analysis",
     },
   ];
 
@@ -118,54 +133,83 @@ export default function Reports() {
       type: "hiring-trends",
       icon: <TrendingUpIcon />,
       color: "warning",
+      description: "Analysis of hiring patterns over time",
     },
     {
       name: "Department Growth",
       type: "department-growth",
-      icon: <AssessmentIcon />,
+      icon: <BarChartIcon />,
       color: "info",
+      description: "Department expansion and growth metrics",
     },
     {
       name: "Attendance Patterns",
       type: "attendance-patterns",
-      icon: <AccessTimeIcon />,
+      icon: <AnalyticsIcon />,
       color: "secondary",
+      description: "Employee attendance behavior analysis",
     },
     {
       name: "Performance Metrics",
       type: "performance-metrics",
-      icon: <TrendingUpIcon />,
+      icon: <AssessmentIcon />,
       color: "success",
+      description: "Employee performance evaluation data",
     },
   ];
 
   return (
-    <Box
-      className="main-content font-montserrat"
-      sx={{
-        bgcolor: "background.paper",
-        borderRadius: 3,
-        boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-        p: { xs: 1, sm: 2, md: 3 },
-      }}
-    >
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{
-          fontWeight: 700,
-          color: "primary.main",
-          mb: 3,
-          textAlign: { xs: "center", md: "left" },
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
+      {/* Header Section */}
+      <Card 
+        sx={{ 
+          mb: 4, 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
         }}
       >
-        Reports & Analytics
-      </Typography>
-      <Paper className="border-rounded shadow-lg" sx={{ width: "100%" }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography 
+            variant="h3" 
+            fontWeight="700" 
+            sx={{ 
+              mb: 2,
+              fontFamily: 'Montserrat, Roboto, Arial',
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            }}
+          >
+            Reports & Analytics
+          </Typography>
+          <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
+            Generate comprehensive reports and gain insights into your workforce
+          </Typography>
+        </CardContent>
+      </Card>
+
+      <Paper 
+        sx={{ 
+          width: "100%",
+          borderRadius: 3,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+          overflow: 'hidden',
+        }}
+      >
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-          <Tabs
+            <Tabs
             value={tabValue}
-            onChange={(e, newValue) => setTabValue(newValue)}
+            onChange={(_, newValue) => setTabValue(newValue)}
+            sx={{
+              '& .MuiTab-root': {
+                fontWeight: 600,
+                fontSize: '1rem',
+                textTransform: 'none',
+                minHeight: 60,
+              },
+              '& .Mui-selected': {
+                color: 'primary.main',
+              },
+            }}
           >
             <Tab label="Basic Reports" />
             <Tab label="Advanced Analytics" />
@@ -173,219 +217,506 @@ export default function Reports() {
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{ fontWeight: 600, color: "secondary.main" }}
-          >
-            Standard Reports
-          </Typography>
-          <Grid container spacing={3}>
-            {basicReports.map((report) => (
-              <Grid item xs={12} sm={6} md={3} key={report.type}>
-                <Card className="border-rounded shadow-lg">
-                  <CardContent>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      sx={{ mb: 2 }}
-                    >
-                      <Box color={`${report.color}.main`} fontSize="3rem">
-                        {report.icon}
+          <Box sx={{ p: 3 }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ 
+                fontWeight: 600, 
+                color: "primary.main",
+                mb: 3,
+                fontFamily: 'Montserrat, Roboto, Arial',
+              }}
+            >
+              Standard Reports
+            </Typography>
+            <Grid container spacing={3}>
+              {basicReports.map((report) => (
+                <Grid item xs={12} sm={6} md={3} key={report.type}>
+                  <Card 
+                    sx={{ 
+                      height: '100%',
+                      borderRadius: 3,
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        sx={{ 
+                          mb: 2,
+                          p: 2,
+                          borderRadius: 2,
+                          background: `linear-gradient(135deg, ${report.color === 'primary' ? '#667eea' : report.color === 'secondary' ? '#f093fb' : report.color === 'info' ? '#4facfe' : '#43e97b'} 0%, ${report.color === 'primary' ? '#764ba2' : report.color === 'secondary' ? '#f5576c' : report.color === 'info' ? '#00f2fe' : '#38f9d7'} 100%)`,
+                          color: 'white',
+                        }}
+                      >
+                        <Box fontSize="2.5rem">
+                          {report.icon}
+                        </Box>
                       </Box>
-                    </Box>
-                    <Typography variant="h6" align="center" gutterBottom>
-                      {report.name}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      startIcon={<DownloadIcon />}
-                      onClick={() =>
-                        handleDownload(report.type, `${report.type}.csv`)
-                      }
-                      color={report.color as any}
-                    >
-                      Download CSV
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                      <Typography 
+                        variant="h6" 
+                        align="center" 
+                        gutterBottom
+                        sx={{ 
+                          fontWeight: 600,
+                          mb: 1,
+                          color: 'text.primary',
+                        }}
+                      >
+                        {report.name}
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        align="center" 
+                        sx={{ 
+                          color: 'text.secondary',
+                          mb: 3,
+                          flexGrow: 1,
+                        }}
+                      >
+                        {report.description}
+                      </Typography>
+                      <Stack spacing={1}>
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          startIcon={<CsvIcon />}
+                          onClick={() => handleDownload(report.type, `${report.type}.csv`, 'csv')}
+                          sx={{
+                            background: `linear-gradient(135deg, ${report.color === 'primary' ? '#667eea' : report.color === 'secondary' ? '#f093fb' : report.color === 'info' ? '#4facfe' : '#43e97b'} 0%, ${report.color === 'primary' ? '#764ba2' : report.color === 'secondary' ? '#f5576c' : report.color === 'info' ? '#00f2fe' : '#38f9d7'} 100%)`,
+                            '&:hover': {
+                              transform: 'translateY(-1px)',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                            },
+                            transition: 'all 0.3s ease',
+                          }}
+                        >
+                          Download CSV
+                        </Button>
+                        <Stack direction="row" spacing={1}>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<PdfIcon />}
+                            onClick={() => handleDownload(report.type, `${report.type}.pdf`, 'pdf')}
+                            sx={{ flex: 1 }}
+                          >
+                            PDF
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<ExcelIcon />}
+                            onClick={() => handleDownload(report.type, `${report.type}.xlsx`, 'excel')}
+                            sx={{ flex: 1 }}
+                          >
+                            Excel
+                          </Button>
+                        </Stack>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{ fontWeight: 600, color: "primary.main" }}
-          >
-            Advanced Analytics & Insights
-          </Typography>
-          <Grid container spacing={3}>
-            {advancedReports.map((report) => (
-              <Grid item xs={12} sm={6} md={3} key={report.type}>
-                <Card className="border-rounded shadow-lg">
-                  <CardContent>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      sx={{ mb: 2 }}
-                    >
-                      <Box color={`${report.color}.main`} fontSize="3rem">
-                        {report.icon}
+          <Box sx={{ p: 3 }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ 
+                fontWeight: 600, 
+                color: "primary.main",
+                mb: 3,
+                fontFamily: 'Montserrat, Roboto, Arial',
+              }}
+            >
+              Advanced Analytics & Insights
+            </Typography>
+            <Grid container spacing={3}>
+              {advancedReports.map((report) => (
+                <Grid item xs={12} sm={6} md={3} key={report.type}>
+                  <Card 
+                    sx={{ 
+                      height: '100%',
+                      borderRadius: 3,
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                      },
+                    }}
+                  >
+                    <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        sx={{ 
+                          mb: 2,
+                          p: 2,
+                          borderRadius: 2,
+                          background: `linear-gradient(135deg, ${report.color === 'warning' ? '#f093fb' : report.color === 'info' ? '#4facfe' : report.color === 'secondary' ? '#f093fb' : '#43e97b'} 0%, ${report.color === 'warning' ? '#f5576c' : report.color === 'info' ? '#00f2fe' : report.color === 'secondary' ? '#f5576c' : '#38f9d7'} 100%)`,
+                          color: 'white',
+                        }}
+                      >
+                        <Box fontSize="2.5rem">
+                          {report.icon}
+                        </Box>
                       </Box>
-                    </Box>
-                    <Typography variant="h6" align="center" gutterBottom>
-                      {report.name}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      startIcon={<DownloadIcon />}
-                      onClick={() =>
-                        handleDownload(report.type, `${report.type}.csv`)
+                      <Typography 
+                        variant="h6" 
+                        align="center" 
+                        gutterBottom
+                        sx={{ 
+                          fontWeight: 600,
+                          mb: 1,
+                          color: 'text.primary',
+                        }}
+                      >
+                        {report.name}
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        align="center" 
+                        sx={{ 
+                          color: 'text.secondary',
+                          mb: 3,
+                          flexGrow: 1,
+                        }}
+                      >
+                        {report.description}
+                      </Typography>
+                      <Stack spacing={1}>
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          startIcon={<CsvIcon />}
+                          onClick={() => handleDownload(report.type, `${report.type}.csv`, 'csv')}
+                          sx={{
+                            background: `linear-gradient(135deg, ${report.color === 'warning' ? '#f093fb' : report.color === 'info' ? '#4facfe' : report.color === 'secondary' ? '#f093fb' : '#43e97b'} 0%, ${report.color === 'warning' ? '#f5576c' : report.color === 'info' ? '#00f2fe' : report.color === 'secondary' ? '#f5576c' : '#38f9d7'} 100%)`,
+                            '&:hover': {
+                              transform: 'translateY(-1px)',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                            },
+                            transition: 'all 0.3s ease',
+                          }}
+                        >
+                          Download CSV
+                        </Button>
+                        <Stack direction="row" spacing={1}>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<PdfIcon />}
+                            onClick={() => handleDownload(report.type, `${report.type}.pdf`, 'pdf')}
+                            sx={{ flex: 1 }}
+                          >
+                            PDF
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            startIcon={<ExcelIcon />}
+                            onClick={() => handleDownload(report.type, `${report.type}.xlsx`, 'excel')}
+                            sx={{ flex: 1 }}
+                          >
+                            Excel
+                          </Button>
+                        </Stack>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </TabPanel>
+        <TabPanel value={tabValue} index={2}>
+          <Box sx={{ p: 3 }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ 
+                fontWeight: 600, 
+                color: "primary.main",
+                mb: 3,
+                fontFamily: 'Montserrat, Roboto, Arial',
+              }}
+            >
+              Custom Date Range Reports
+            </Typography>
+            
+            {/* Date Range Selector */}
+            <Card sx={{ mb: 4, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+                  Select Date Range
+                </Typography>
+                <Grid container spacing={3} alignItems="center">
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="Start Date"
+                      type="date"
+                      value={dateRange.startDate}
+                      onChange={(e) =>
+                        setDateRange({ ...dateRange, startDate: e.target.value })
                       }
-                      color={report.color as any}
+                      InputLabelProps={{ shrink: true }}
+                      fullWidth
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="End Date"
+                      type="date"
+                      value={dateRange.endDate}
+                      onChange={(e) =>
+                        setDateRange({ ...dateRange, endDate: e.target.value })
+                      }
+                      InputLabelProps={{ shrink: true }}
+                      fullWidth
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <Stack direction="row" spacing={1}>
+                      <Button
+                        variant="contained"
+                        startIcon={<CsvIcon />}
+                        onClick={() =>
+                          handleDownload("attendance", "custom-attendance.csv", 'csv', {
+                            startDate: dateRange.startDate,
+                            endDate: dateRange.endDate,
+                          })
+                        }
+                        sx={{ 
+                          flex: 1,
+                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          '&:hover': {
+                            transform: 'translateY(-1px)',
+                            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                          },
+                          transition: 'all 0.3s ease',
+                        }}
+                      >
+                        CSV
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<PdfIcon />}
+                        onClick={() =>
+                          handleDownload("attendance", "custom-attendance.pdf", 'pdf', {
+                            startDate: dateRange.startDate,
+                            endDate: dateRange.endDate,
+                          })
+                        }
+                        sx={{ flex: 1 }}
+                      >
+                        PDF
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<ExcelIcon />}
+                        onClick={() =>
+                          handleDownload("attendance", "custom-attendance.xlsx", 'excel', {
+                            startDate: dateRange.startDate,
+                            endDate: dateRange.endDate,
+                          })
+                        }
+                        sx={{ flex: 1 }}
+                      >
+                        Excel
+                      </Button>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+
+            {/* Features Info */}
+            <Alert 
+              severity="info" 
+              sx={{ 
+                mb: 4, 
+                borderRadius: 3,
+                '& .MuiAlert-message': { width: '100%' }
+              }}
+            >
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                Report Features
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" component="div">
+                    <strong>Basic Reports:</strong>
+                    <ul style={{ marginTop: 8, marginBottom: 0 }}>
+                      <li>Employee directory with contact information</li>
+                      <li>Department-wise employee distribution</li>
+                      <li>Attendance tracking with check-in/out times</li>
+                      <li>Salary analysis and reporting</li>
+                    </ul>
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" component="div">
+                    <strong>Advanced Analytics:</strong>
+                    <ul style={{ marginTop: 8, marginBottom: 0 }}>
+                      <li>Hiring trend analysis over time</li>
+                      <li>Department growth tracking</li>
+                      <li>Attendance pattern analysis</li>
+                      <li>Performance metrics with PDF export</li>
+                    </ul>
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Alert>
+
+            {/* Quick Actions */}
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <Card sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+                  <CardContent sx={{ p: 3 }}>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{ 
+                        fontWeight: 600, 
+                        color: "primary.main",
+                        mb: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                      }}
                     >
-                      Download Report
-                    </Button>
+                      <DownloadIcon />
+                      Quick Actions
+                    </Typography>
+                    <Stack spacing={2}>
+                      <Button
+                        variant="outlined"
+                        startIcon={<CsvIcon />}
+                        onClick={() => handleDownload("employees", "all-employees.csv", 'csv')}
+                        fullWidth
+                        sx={{ justifyContent: 'flex-start', borderRadius: 2 }}
+                      >
+                        Export All Employees (CSV)
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<PdfIcon />}
+                        onClick={() => handleDownload("employees", "all-employees.pdf", 'pdf')}
+                        fullWidth
+                        sx={{ justifyContent: 'flex-start', borderRadius: 2 }}
+                      >
+                        Export All Employees (PDF)
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<ExcelIcon />}
+                        onClick={() => handleDownload("employees", "all-employees.xlsx", 'excel')}
+                        fullWidth
+                        sx={{ justifyContent: 'flex-start', borderRadius: 2 }}
+                      >
+                        Export All Employees (Excel)
+                      </Button>
+                      <Divider />
+                      <Button
+                        variant="outlined"
+                        startIcon={<CsvIcon />}
+                        onClick={() => handleDownload("attendance", "monthly-attendance.csv", 'csv')}
+                        fullWidth
+                        sx={{ justifyContent: 'flex-start', borderRadius: 2 }}
+                      >
+                        Monthly Attendance Report
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<CsvIcon />}
+                        onClick={() => handleDownload("salaries", "salary-summary.csv", 'csv')}
+                        fullWidth
+                        sx={{ justifyContent: 'flex-start', borderRadius: 2 }}
+                      >
+                        Salary Summary Report
+                      </Button>
+                    </Stack>
                   </CardContent>
                 </Card>
               </Grid>
-            ))}
-          </Grid>
-        </TabPanel>
-        <TabPanel value={tabValue} index={2}>
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{ fontWeight: 600, color: "secondary.main" }}
-          >
-            Custom Date Range Reports
-          </Typography>
-          <Box sx={{ mb: 3 }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Start Date"
-                  type="date"
-                  value={dateRange.startDate}
-                  onChange={(e) =>
-                    setDateRange({ ...dateRange, startDate: e.target.value })
-                  }
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="End Date"
-                  type="date"
-                  value={dateRange.endDate}
-                  onChange={(e) =>
-                    setDateRange({ ...dateRange, endDate: e.target.value })
-                  }
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  startIcon={<DownloadIcon />}
-                  onClick={() =>
-                    handleDownload("attendance", "custom-attendance.csv", {
-                      startDate: dateRange.startDate,
-                      endDate: dateRange.endDate,
-                    })
-                  }
-                >
-                  Generate Report
-                </Button>
+              <Grid item xs={12} md={6}>
+                <Card sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+                  <CardContent sx={{ p: 3 }}>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{ 
+                        fontWeight: 600, 
+                        color: "secondary.main",
+                        mb: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                      }}
+                    >
+                      <AssessmentIcon />
+                      Supported Formats
+                    </Typography>
+                    <Stack spacing={2}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Chip 
+                          icon={<CsvIcon />} 
+                          label="CSV" 
+                          color="primary" 
+                          variant="outlined"
+                          sx={{ borderRadius: 2 }}
+                        />
+                        <Typography variant="body2" color="text.secondary">
+                          Comma-separated values for data analysis
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Chip 
+                          icon={<PdfIcon />} 
+                          label="PDF" 
+                          color="error" 
+                          variant="outlined"
+                          sx={{ borderRadius: 2 }}
+                        />
+                        <Typography variant="body2" color="text.secondary">
+                          Portable document format for sharing
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Chip 
+                          icon={<ExcelIcon />} 
+                          label="Excel" 
+                          color="success" 
+                          variant="outlined"
+                          sx={{ borderRadius: 2 }}
+                        />
+                        <Typography variant="body2" color="text.secondary">
+                          Spreadsheet format for detailed analysis
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </CardContent>
+                </Card>
               </Grid>
             </Grid>
           </Box>
-          <Alert severity="info" sx={{ mb: 2 }}>
-            <Typography variant="body2">
-              <strong>Report Features:</strong>
-            </Typography>
-            <ul>
-              <li>Employee directory with contact information</li>
-              <li>Department-wise employee distribution</li>
-              <li>Attendance tracking with check-in/out times</li>
-              <li>Salary analysis and reporting</li>
-              <li>Hiring trend analysis over time</li>
-              <li>Department growth tracking</li>
-              <li>Attendance pattern analysis</li>
-              <li>Performance metrics with PDF export</li>
-            </ul>
-          </Alert>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <Card className="border-rounded shadow-lg">
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: 600, color: "primary.main" }}
-                  >
-                    Quick Actions
-                  </Typography>
-                  <Stack spacing={1}>
-                    <Button
-                      variant="outlined"
-                      startIcon={<DownloadIcon />}
-                      onClick={() =>
-                        handleDownload("employees", "all-employees.csv")
-                      }
-                    >
-                      Export All Employees
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      startIcon={<DownloadIcon />}
-                      onClick={() =>
-                        handleDownload("attendance", "monthly-attendance.csv")
-                      }
-                    >
-                      Monthly Attendance
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      startIcon={<DownloadIcon />}
-                      onClick={() =>
-                        handleDownload("salaries", "salary-summary.csv")
-                      }
-                    >
-                      Salary Summary
-                    </Button>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Card className="border-rounded shadow-lg">
-                <CardContent>
-                  <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: 600, color: "secondary.main" }}
-                  >
-                    Report Formats
-                  </Typography>
-                  <Stack spacing={1}>
-                    <Chip label="CSV" color="primary" />
-                    <Chip label="PDF" color="secondary" />
-                    <Chip label="Excel" color="success" />
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
         </TabPanel>
       </Paper>
       <Snackbar
