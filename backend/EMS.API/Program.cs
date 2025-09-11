@@ -19,8 +19,14 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Register report generators
+builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryCsvGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryPdfGenerator>();
+
+// Register report service
+builder.Services.AddScoped<IReportService, RefactoredReportService>();
 
 // Add Entity Framework
 builder.Services.AddDbContext<EMSDbContext>(options =>

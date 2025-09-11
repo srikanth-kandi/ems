@@ -3,94 +3,42 @@ using EMS.API.Data;
 using EMS.API.DTOs;
 using EMS.API.Interfaces;
 using EMS.API.Models;
+using EMS.API.Common;
 
 namespace EMS.API.Repositories;
 
-public class EmployeeRepository : IEmployeeRepository
+public class EmployeeRepository : BaseRepository<Employee, EmployeeDto>, IEmployeeRepository
 {
-    private readonly EMSDbContext _context;
-    private readonly ILogger<EmployeeRepository> _logger;
-
-    public EmployeeRepository(EMSDbContext context, ILogger<EmployeeRepository> logger)
+    public EmployeeRepository(EMSDbContext context, ILogger<EmployeeRepository> logger) 
+        : base(context, logger)
     {
-        _context = context;
-        _logger = logger;
     }
 
-    public async Task<IEnumerable<EmployeeDto>> GetAllAsync()
+    protected override IQueryable<Employee> GetBaseQuery()
     {
-        var employees = await _context.Employees
+        return _context.Employees
             .Include(e => e.Department)
-            .Where(e => e.IsActive)
-            .Select(e => new EmployeeDto
-            {
-                Id = e.Id,
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                Email = e.Email,
-                PhoneNumber = e.PhoneNumber,
-                Address = e.Address,
-                DateOfBirth = e.DateOfBirth,
-                DateOfJoining = e.DateOfJoining,
-                Position = e.Position,
-                Salary = e.Salary,
-                DepartmentId = e.DepartmentId,
-                DepartmentName = e.Department.Name,
-                IsActive = e.IsActive,
-                CreatedAt = e.CreatedAt,
-                UpdatedAt = e.UpdatedAt
-            })
-            .ToListAsync();
-
-        return employees;
+            .Where(e => e.IsActive);
     }
 
-    public async Task<EmployeeDto?> GetByIdAsync(int id)
+    protected override EmployeeDto MapToDto(Employee entity)
     {
-        var employee = await _context.Employees
-            .Include(e => e.Department)
-            .Where(e => e.Id == id && e.IsActive)
-            .Select(e => new EmployeeDto
-            {
-                Id = e.Id,
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                Email = e.Email,
-                PhoneNumber = e.PhoneNumber,
-                Address = e.Address,
-                DateOfBirth = e.DateOfBirth,
-                DateOfJoining = e.DateOfJoining,
-                Position = e.Position,
-                Salary = e.Salary,
-                DepartmentId = e.DepartmentId,
-                DepartmentName = e.Department.Name,
-                IsActive = e.IsActive,
-                CreatedAt = e.CreatedAt,
-                UpdatedAt = e.UpdatedAt
-            })
-            .FirstOrDefaultAsync();
+        return EmployeeMapper.ToDto(entity);
+    }
 
-        return employee;
+    protected override Employee MapToEntity(EmployeeDto dto)
+    {
+        throw new NotImplementedException("Use CreateEmployeeDto for creation");
+    }
+
+    protected override void UpdateEntity(Employee existing, EmployeeDto dto)
+    {
+        throw new NotImplementedException("Use UpdateEmployeeDto for updates");
     }
 
     public async Task<EmployeeDto> CreateAsync(CreateEmployeeDto createEmployeeDto)
     {
-        var employee = new Employee
-        {
-            FirstName = createEmployeeDto.FirstName,
-            LastName = createEmployeeDto.LastName,
-            Email = createEmployeeDto.Email,
-            PhoneNumber = createEmployeeDto.PhoneNumber,
-            Address = createEmployeeDto.Address,
-            DateOfBirth = createEmployeeDto.DateOfBirth,
-            DateOfJoining = createEmployeeDto.DateOfJoining,
-            Position = createEmployeeDto.Position,
-            Salary = createEmployeeDto.Salary,
-            DepartmentId = createEmployeeDto.DepartmentId,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow
-        };
-
+        var employee = EmployeeMapper.ToEntity(createEmployeeDto);
         _context.Employees.Add(employee);
         await _context.SaveChangesAsync();
 
@@ -105,19 +53,7 @@ public class EmployeeRepository : IEmployeeRepository
             return null;
         }
 
-        employee.FirstName = updateEmployeeDto.FirstName;
-        employee.LastName = updateEmployeeDto.LastName;
-        employee.Email = updateEmployeeDto.Email;
-        employee.PhoneNumber = updateEmployeeDto.PhoneNumber;
-        employee.Address = updateEmployeeDto.Address;
-        employee.DateOfBirth = updateEmployeeDto.DateOfBirth;
-        employee.DateOfJoining = updateEmployeeDto.DateOfJoining;
-        employee.Position = updateEmployeeDto.Position;
-        employee.Salary = updateEmployeeDto.Salary;
-        employee.DepartmentId = updateEmployeeDto.DepartmentId;
-        employee.IsActive = updateEmployeeDto.IsActive;
-        employee.UpdatedAt = DateTime.UtcNow;
-
+        EmployeeMapper.UpdateEntity(employee, updateEmployeeDto);
         await _context.SaveChangesAsync();
 
         return await GetByIdAsync(id);
@@ -139,11 +75,6 @@ public class EmployeeRepository : IEmployeeRepository
         return true;
     }
 
-    public async Task<bool> ExistsAsync(int id)
-    {
-        return await _context.Employees.AnyAsync(e => e.Id == id && e.IsActive);
-    }
-
     public async Task<bool> EmailExistsAsync(string email, int? excludeId = null)
     {
         var query = _context.Employees.Where(e => e.Email == email);
@@ -158,30 +89,11 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task<IEnumerable<EmployeeDto>> GetByDepartmentAsync(int departmentId)
     {
-        var employees = await _context.Employees
+        return await _context.Employees
             .Include(e => e.Department)
             .Where(e => e.DepartmentId == departmentId && e.IsActive)
-            .Select(e => new EmployeeDto
-            {
-                Id = e.Id,
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                Email = e.Email,
-                PhoneNumber = e.PhoneNumber,
-                Address = e.Address,
-                DateOfBirth = e.DateOfBirth,
-                DateOfJoining = e.DateOfJoining,
-                Position = e.Position,
-                Salary = e.Salary,
-                DepartmentId = e.DepartmentId,
-                DepartmentName = e.Department.Name,
-                IsActive = e.IsActive,
-                CreatedAt = e.CreatedAt,
-                UpdatedAt = e.UpdatedAt
-            })
+            .Select(e => MapToDto(e))
             .ToListAsync();
-
-        return employees;
     }
 
     public async Task<IEnumerable<EmployeeDto>> BulkCreateAsync(IEnumerable<CreateEmployeeDto> employees)
@@ -189,21 +101,7 @@ public class EmployeeRepository : IEmployeeRepository
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
-            var employeeEntities = employees.Select(dto => new Employee
-            {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber,
-                Address = dto.Address,
-                DateOfBirth = dto.DateOfBirth,
-                DateOfJoining = dto.DateOfJoining,
-                Position = dto.Position,
-                Salary = dto.Salary,
-                DepartmentId = dto.DepartmentId,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-            }).ToList();
+            var employeeEntities = employees.Select(EmployeeMapper.ToEntity).ToList();
 
             // Validate all emails are unique before adding
             var emails = employeeEntities.Select(e => e.Email).ToList();
@@ -225,24 +123,7 @@ public class EmployeeRepository : IEmployeeRepository
             var result = await _context.Employees
                 .Include(e => e.Department)
                 .Where(e => createdIds.Contains(e.Id))
-                .Select(e => new EmployeeDto
-                {
-                    Id = e.Id,
-                    FirstName = e.FirstName,
-                    LastName = e.LastName,
-                    Email = e.Email,
-                    PhoneNumber = e.PhoneNumber,
-                    Address = e.Address,
-                    DateOfBirth = e.DateOfBirth,
-                    DateOfJoining = e.DateOfJoining,
-                    Position = e.Position,
-                    Salary = e.Salary,
-                    DepartmentId = e.DepartmentId,
-                    DepartmentName = e.Department.Name,
-                    IsActive = e.IsActive,
-                    CreatedAt = e.CreatedAt,
-                    UpdatedAt = e.UpdatedAt
-                })
+                .Select(e => MapToDto(e))
                 .ToListAsync();
 
             await transaction.CommitAsync();
@@ -289,10 +170,7 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task<PagedResult<EmployeeDto>> GetPagedAsync(PaginationRequest request)
     {
-        var query = _context.Employees
-            .Include(e => e.Department)
-            .Where(e => e.IsActive)
-            .AsQueryable();
+        var query = GetBaseQuery().AsQueryable();
 
         // Apply search filter
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
@@ -307,41 +185,14 @@ public class EmployeeRepository : IEmployeeRepository
         }
 
         // Apply sorting
-        query = request.SortBy?.ToLower() switch
-        {
-            "firstname" => request.SortDescending ? query.OrderByDescending(e => e.FirstName) : query.OrderBy(e => e.FirstName),
-            "lastname" => request.SortDescending ? query.OrderByDescending(e => e.LastName) : query.OrderBy(e => e.LastName),
-            "email" => request.SortDescending ? query.OrderByDescending(e => e.Email) : query.OrderBy(e => e.Email),
-            "position" => request.SortDescending ? query.OrderByDescending(e => e.Position) : query.OrderBy(e => e.Position),
-            "salary" => request.SortDescending ? query.OrderByDescending(e => e.Salary) : query.OrderBy(e => e.Salary),
-            "department" => request.SortDescending ? query.OrderByDescending(e => e.Department.Name) : query.OrderBy(e => e.Department.Name),
-            "dateofjoining" => request.SortDescending ? query.OrderByDescending(e => e.DateOfJoining) : query.OrderBy(e => e.DateOfJoining),
-            _ => query.OrderBy(e => e.FirstName)
-        };
+        query = ApplySorting(query, request);
 
         var totalCount = await query.CountAsync();
 
         var employees = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(e => new EmployeeDto
-            {
-                Id = e.Id,
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                Email = e.Email,
-                PhoneNumber = e.PhoneNumber,
-                Address = e.Address,
-                DateOfBirth = e.DateOfBirth,
-                DateOfJoining = e.DateOfJoining,
-                Position = e.Position,
-                Salary = e.Salary,
-                DepartmentId = e.DepartmentId,
-                DepartmentName = e.Department.Name,
-                IsActive = e.IsActive,
-                CreatedAt = e.CreatedAt,
-                UpdatedAt = e.UpdatedAt
-            })
+            .Select(e => MapToDto(e))
             .ToListAsync();
 
         return new PagedResult<EmployeeDto>
@@ -372,40 +223,14 @@ public class EmployeeRepository : IEmployeeRepository
         }
 
         // Apply sorting
-        query = request.SortBy?.ToLower() switch
-        {
-            "firstname" => request.SortDescending ? query.OrderByDescending(e => e.FirstName) : query.OrderBy(e => e.FirstName),
-            "lastname" => request.SortDescending ? query.OrderByDescending(e => e.LastName) : query.OrderBy(e => e.LastName),
-            "email" => request.SortDescending ? query.OrderByDescending(e => e.Email) : query.OrderBy(e => e.Email),
-            "position" => request.SortDescending ? query.OrderByDescending(e => e.Position) : query.OrderBy(e => e.Position),
-            "salary" => request.SortDescending ? query.OrderByDescending(e => e.Salary) : query.OrderBy(e => e.Salary),
-            "dateofjoining" => request.SortDescending ? query.OrderByDescending(e => e.DateOfJoining) : query.OrderBy(e => e.DateOfJoining),
-            _ => query.OrderBy(e => e.FirstName)
-        };
+        query = ApplySorting(query, request);
 
         var totalCount = await query.CountAsync();
 
         var employees = await query
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(e => new EmployeeDto
-            {
-                Id = e.Id,
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                Email = e.Email,
-                PhoneNumber = e.PhoneNumber,
-                Address = e.Address,
-                DateOfBirth = e.DateOfBirth,
-                DateOfJoining = e.DateOfJoining,
-                Position = e.Position,
-                Salary = e.Salary,
-                DepartmentId = e.DepartmentId,
-                DepartmentName = e.Department.Name,
-                IsActive = e.IsActive,
-                CreatedAt = e.CreatedAt,
-                UpdatedAt = e.UpdatedAt
-            })
+            .Select(e => MapToDto(e))
             .ToListAsync();
 
         return new PagedResult<EmployeeDto>
@@ -414,6 +239,21 @@ public class EmployeeRepository : IEmployeeRepository
             TotalCount = totalCount,
             PageNumber = request.PageNumber,
             PageSize = request.PageSize
+        };
+    }
+
+    private static IQueryable<Employee> ApplySorting(IQueryable<Employee> query, PaginationRequest request)
+    {
+        return request.SortBy?.ToLower() switch
+        {
+            "firstname" => request.SortDescending ? query.OrderByDescending(e => e.FirstName) : query.OrderBy(e => e.FirstName),
+            "lastname" => request.SortDescending ? query.OrderByDescending(e => e.LastName) : query.OrderBy(e => e.LastName),
+            "email" => request.SortDescending ? query.OrderByDescending(e => e.Email) : query.OrderBy(e => e.Email),
+            "position" => request.SortDescending ? query.OrderByDescending(e => e.Position) : query.OrderBy(e => e.Position),
+            "salary" => request.SortDescending ? query.OrderByDescending(e => e.Salary) : query.OrderBy(e => e.Salary),
+            "department" => request.SortDescending ? query.OrderByDescending(e => e.Department.Name) : query.OrderBy(e => e.Department.Name),
+            "dateofjoining" => request.SortDescending ? query.OrderByDescending(e => e.DateOfJoining) : query.OrderBy(e => e.DateOfJoining),
+            _ => query.OrderBy(e => e.FirstName)
         };
     }
 }
