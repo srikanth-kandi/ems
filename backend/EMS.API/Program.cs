@@ -24,6 +24,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Register report generators
 builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryCsvGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryPdfGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.AttendanceExcelGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.AttendancePdfGenerator>();
 
 // Register report service
 builder.Services.AddScoped<IReportService, RefactoredReportService>();

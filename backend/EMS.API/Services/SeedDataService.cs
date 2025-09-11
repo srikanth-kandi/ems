@@ -25,18 +25,57 @@ public class SeedDataService
 
     public async Task ClearAllDataAsync()
     {
+        // Clear data in the correct order to respect foreign key constraints
+        // First clear dependent tables
         _context.Attendances.RemoveRange(_context.Attendances);
         _context.PerformanceMetrics.RemoveRange(_context.PerformanceMetrics);
+        await _context.SaveChangesAsync();
+
+        // Then clear independent tables
         _context.Employees.RemoveRange(_context.Employees);
         _context.Departments.RemoveRange(_context.Departments);
         _context.Users.RemoveRange(_context.Users);
         await _context.SaveChangesAsync();
+
+        // Reset identity columns to start from 1 (MySQL syntax)
+        try
+        {
+            await _context.Database.ExecuteSqlRawAsync("ALTER TABLE Attendances AUTO_INCREMENT = 1");
+            await _context.Database.ExecuteSqlRawAsync("ALTER TABLE PerformanceMetrics AUTO_INCREMENT = 1");
+            await _context.Database.ExecuteSqlRawAsync("ALTER TABLE Employees AUTO_INCREMENT = 1");
+            await _context.Database.ExecuteSqlRawAsync("ALTER TABLE Departments AUTO_INCREMENT = 1");
+            await _context.Database.ExecuteSqlRawAsync("ALTER TABLE Users AUTO_INCREMENT = 1");
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't fail the operation
+            // Some databases might not support AUTO_INCREMENT reset or might have different syntax
+            Console.WriteLine($"Warning: Could not reset AUTO_INCREMENT values: {ex.Message}");
+        }
     }
 
     public async Task ReseedAllDataAsync()
     {
-        await ClearAllDataAsync();
-        await SeedAllDataAsync();
+        try
+        {
+            await ClearAllDataAsync();
+            
+            // Verify that all data has been cleared
+            var remainingEmployees = await _context.Employees.CountAsync();
+            var remainingDepartments = await _context.Departments.CountAsync();
+            var remainingUsers = await _context.Users.CountAsync();
+            
+            if (remainingEmployees > 0 || remainingDepartments > 0 || remainingUsers > 0)
+            {
+                throw new InvalidOperationException($"Data clearing incomplete. Remaining: {remainingEmployees} employees, {remainingDepartments} departments, {remainingUsers} users");
+            }
+            
+            await SeedAllDataAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Reseeding failed: {ex.Message}", ex);
+        }
     }
 
     public async Task<int> GetDepartmentCountAsync() => await _context.Departments.CountAsync();
@@ -124,6 +163,8 @@ public class SeedDataService
             ["Quality Assurance"] = (50000, 120000)
         };
 
+        var usedEmails = new HashSet<string>();
+
         for (int i = 0; i < 200; i++)
         {
             var firstName = firstNames[_random.Next(firstNames.Length)];
@@ -137,11 +178,23 @@ public class SeedDataService
             var dateOfBirth = DateTime.Now.AddYears(-_random.Next(22, 65)).AddDays(-_random.Next(0, 365));
             var dateOfJoining = DateTime.Now.AddDays(-_random.Next(30, 3650)); // Last 10 years
 
+            // Generate unique email
+            var baseEmail = $"{firstName.ToLower()}.{lastName.ToLower()}@company.com";
+            var email = baseEmail;
+            var counter = 1;
+            
+            while (usedEmails.Contains(email))
+            {
+                email = $"{firstName.ToLower()}.{lastName.ToLower()}{counter}@company.com";
+                counter++;
+            }
+            usedEmails.Add(email);
+
             var employee = new Employee
             {
                 FirstName = firstName,
                 LastName = lastName,
-                Email = $"{firstName.ToLower()}.{lastName.ToLower()}@company.com",
+                Email = email,
                 PhoneNumber = GeneratePhoneNumber(),
                 Address = GenerateAddress(),
                 DateOfBirth = dateOfBirth,

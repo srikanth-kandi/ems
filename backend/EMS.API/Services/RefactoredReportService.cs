@@ -7,13 +7,19 @@ public class RefactoredReportService : IReportService
 {
     private readonly EmployeeDirectoryCsvGenerator _csvGenerator;
     private readonly EmployeeDirectoryPdfGenerator _pdfGenerator;
+    private readonly AttendanceExcelGenerator _attendanceExcelGenerator;
+    private readonly AttendancePdfGenerator _attendancePdfGenerator;
 
     public RefactoredReportService(
         EmployeeDirectoryCsvGenerator csvGenerator,
-        EmployeeDirectoryPdfGenerator pdfGenerator)
+        EmployeeDirectoryPdfGenerator pdfGenerator,
+        AttendanceExcelGenerator attendanceExcelGenerator,
+        AttendancePdfGenerator attendancePdfGenerator)
     {
         _csvGenerator = csvGenerator;
         _pdfGenerator = pdfGenerator;
+        _attendanceExcelGenerator = attendanceExcelGenerator;
+        _attendancePdfGenerator = attendancePdfGenerator;
     }
 
     // CSV Reports
@@ -78,8 +84,7 @@ public class RefactoredReportService : IReportService
 
     public async Task<byte[]> GenerateAttendanceReportPdfAsync(DateTime? startDate = null, DateTime? endDate = null)
     {
-        // TODO: Implement attendance PDF generator
-        throw new NotImplementedException();
+        return await _attendancePdfGenerator.GenerateAsync(startDate, endDate);
     }
 
     public async Task<byte[]> GenerateSalaryReportPdfAsync()
@@ -103,8 +108,7 @@ public class RefactoredReportService : IReportService
 
     public async Task<byte[]> GenerateAttendanceReportExcelAsync(DateTime? startDate = null, DateTime? endDate = null)
     {
-        // TODO: Implement attendance Excel generator
-        throw new NotImplementedException();
+        return await _attendanceExcelGenerator.GenerateAsync(startDate, endDate);
     }
 
     public async Task<byte[]> GenerateSalaryReportExcelAsync()

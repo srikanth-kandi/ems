@@ -106,59 +106,5 @@ public class EMSDbContext : DbContext
                   .HasForeignKey(p => p.EmployeeId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
-
-        // Seed data
-        SeedData(modelBuilder);
-    }
-
-    private void SeedData(ModelBuilder modelBuilder)
-    {
-        // Seed Departments
-        modelBuilder.Entity<Department>().HasData(
-            new Department { Id = 1, Name = "Human Resources", Description = "Manages employee relations, recruitment, and benefits", ManagerName = "Sarah Johnson", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 2, Name = "Information Technology", Description = "Handles all technology infrastructure and software development", ManagerName = "Michael Chen", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 3, Name = "Finance", Description = "Manages financial planning, accounting, and budgeting", ManagerName = "Robert Williams", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 4, Name = "Marketing", Description = "Responsible for brand management and customer acquisition", ManagerName = "Emily Davis", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 5, Name = "Sales", Description = "Handles customer relationships and revenue generation", ManagerName = "David Martinez", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 6, Name = "Operations", Description = "Manages day-to-day business operations and logistics", ManagerName = "Lisa Anderson", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 7, Name = "Customer Support", Description = "Provides customer service and technical support", ManagerName = "James Wilson", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 8, Name = "Research & Development", Description = "Conducts product research and innovation", ManagerName = "Dr. Jennifer Taylor", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 9, Name = "Legal", Description = "Handles legal compliance and contract management", ManagerName = "Attorney Mark Brown", CreatedAt = DateTime.UtcNow },
-            new Department { Id = 10, Name = "Quality Assurance", Description = "Ensures product and service quality standards", ManagerName = "Patricia Garcia", CreatedAt = DateTime.UtcNow }
-        );
-
-        // Seed default users
-        modelBuilder.Entity<User>().HasData(
-            new User 
-            { 
-                Id = 1, 
-                Username = "admin", 
-                Email = "admin@ems.com", 
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"), 
-                Role = "Admin", 
-                IsActive = true, 
-                CreatedAt = DateTime.UtcNow 
-            },
-            new User 
-            { 
-                Id = 2, 
-                Username = "hr_manager", 
-                Email = "hr@ems.com", 
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("hr123"), 
-                Role = "HR", 
-                IsActive = true, 
-                CreatedAt = DateTime.UtcNow 
-            },
-            new User 
-            { 
-                Id = 3, 
-                Username = "manager", 
-                Email = "manager@ems.com", 
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("manager123"), 
-                Role = "Manager", 
-                IsActive = true, 
-                CreatedAt = DateTime.UtcNow 
-            }
-        );
     }
 }

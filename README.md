@@ -11,9 +11,8 @@ ems/
 │   ├── EMS.Core/           # Domain models and interfaces
 │   ├── EMS.Infrastructure/ # Data access and external services
 │   ├── EMS.Application/    # Business logic and services
-│   ├── database-management.ps1  # PowerShell database management script
-│   ├── database-management.bat  # Windows batch database management script
-│   └── DATABASE_SEEDING.md      # Comprehensive seeding documentation
+│   ├── seed-database.bat   # Windows batch database management script
+│   └── DATABASE_SEEDING.md # Comprehensive seeding documentation
 ├── frontend/               # React.js with TypeScript
 │   ├── src/
 │   ├── public/
@@ -60,7 +59,7 @@ ems/
 - 📋 Attendance Pattern Reports
 - 🎯 Performance Metrics with PDF Export
 - 🌱 Comprehensive Database Seeding with 200+ realistic test records
-- 🔄 Database Management Scripts (PowerShell & Batch)
+- 🔄 Database Management Script (Batch)
 - 📊 Real-time Database Status Monitoring
 
 ## Getting Started
@@ -84,13 +83,9 @@ The EMS API includes comprehensive seed data generation for development and test
 
 #### Quick Start
 ```bash
-# Using PowerShell (Recommended)
+# Using Batch File (Recommended)
 cd backend
-.\database-management.ps1 -Action seed
-
-# Using Batch File
-cd backend
-database-management.bat seed
+.\seed-database.bat seed
 
 # Using API directly (requires running API)
 curl -X POST http://localhost:5000/api/seed/seed
@@ -98,52 +93,22 @@ curl -X POST http://localhost:5000/api/seed/seed
 
 #### Available Seeding Commands
 
-**PowerShell Script (`database-management.ps1`):**
-```powershell
-# Show all available commands
-.\database-management.ps1 -Action help
-
-# Apply database migrations
-.\database-management.ps1 -Action migrate
-
-# Seed database with initial data
-.\database-management.ps1 -Action seed
-
-# Reseed database with fresh data (clears existing data)
-.\database-management.ps1 -Action reseed -Force
-
-# Clear all data from database
-.\database-management.ps1 -Action clear
-
-# Show current database status
-.\database-management.ps1 -Action status
-
-# Reset database (drop, recreate, migrate, seed)
-.\database-management.ps1 -Action reset -Force
-```
-
-**Batch File (`database-management.bat`):**
+**Batch File (`seed-database.bat`):**
 ```cmd
 # Show all available commands
-database-management.bat help
+.\seed-database.bat help
 
 # Apply database migrations
-database-management.bat migrate
+.\seed-database.bat migrate
 
 # Seed database with initial data
-database-management.bat seed
+.\seed-database.bat seed
 
 # Reseed database with fresh data
-database-management.bat reseed
-
-# Clear all data from database
-database-management.bat clear
+.\seed-database.bat reseed
 
 # Show current database status
-database-management.bat status
-
-# Reset database (drop, recreate, migrate, seed)
-database-management.bat reset
+.\seed-database.bat status
 ```
 
 #### Seed Data Overview
@@ -275,7 +240,7 @@ npm run dev
 2. **"Database already contains data" Error**
    ```bash
    # Use reseed instead of seed
-   .\database-management.ps1 -Action reseed -Force
+   .\seed-database.bat reseed
    ```
 
 3. **Authentication Required**
