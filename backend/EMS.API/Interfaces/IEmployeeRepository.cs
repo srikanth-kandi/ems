@@ -14,4 +14,7 @@ public interface IEmployeeRepository
     Task<bool> EmailExistsAsync(string email, int? excludeId = null);
     Task<IEnumerable<EmployeeDto>> GetByDepartmentAsync(int departmentId);
     Task<IEnumerable<EmployeeDto>> BulkCreateAsync(IEnumerable<CreateEmployeeDto> employees);
+    Task<bool> BulkDeleteAsync(IEnumerable<int> employeeIds);
+    Task<PagedResult<EmployeeDto>> GetPagedAsync(PaginationRequest request);
+    Task<PagedResult<EmployeeDto>> GetByDepartmentPagedAsync(int departmentId, PaginationRequest request);
 }

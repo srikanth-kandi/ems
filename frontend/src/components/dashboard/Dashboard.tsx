@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api, type Attendance, type Employee } from "../../lib/api";
 import {
   Box,
@@ -40,7 +40,7 @@ const StatCard = ({
 }: {
   title: string;
   value: number;
-  icon: JSX.Element;
+  icon: React.JSX.Element;
   color: string;
 }) => (
   <Card>
@@ -138,7 +138,7 @@ export default function Dashboard() {
         Dashboard
       </Typography>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Total Employees"
             value={stats.totalEmployees}
@@ -146,7 +146,7 @@ export default function Dashboard() {
             color="primary.main"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Active Employees"
             value={stats.activeEmployees}
@@ -154,7 +154,7 @@ export default function Dashboard() {
             color="success.main"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Today's Attendance"
             value={stats.todayAttendance}
@@ -162,7 +162,7 @@ export default function Dashboard() {
             color="info.main"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={3}>
           <StatCard
             title="Departments"
             value={stats.totalDepartments}
@@ -170,7 +170,7 @@ export default function Dashboard() {
             color="secondary.main"
           />
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid xs={12} md={8}>
           <Paper
             className="border-rounded shadow-lg"
             sx={{ p: { xs: 1, sm: 2 }, mb: 2 }}
@@ -205,7 +205,7 @@ export default function Dashboard() {
             </List>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid xs={12} md={4}>
           <Paper
             className="border-rounded shadow-lg"
             sx={{ p: { xs: 1, sm: 2 }, mb: 2 }}

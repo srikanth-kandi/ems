@@ -186,30 +186,144 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task<IEnumerable<EmployeeDto>> BulkCreateAsync(IEnumerable<CreateEmployeeDto> employees)
     {
-        var employeeEntities = employees.Select(dto => new Employee
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            Email = dto.Email,
-            PhoneNumber = dto.PhoneNumber,
-            Address = dto.Address,
-            DateOfBirth = dto.DateOfBirth,
-            DateOfJoining = dto.DateOfJoining,
-            Position = dto.Position,
-            Salary = dto.Salary,
-            DepartmentId = dto.DepartmentId,
-            IsActive = true,
-            CreatedAt = DateTime.UtcNow
-        }).ToList();
+            var employeeEntities = employees.Select(dto => new Employee
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                Address = dto.Address,
+                DateOfBirth = dto.DateOfBirth,
+                DateOfJoining = dto.DateOfJoining,
+                Position = dto.Position,
+                Salary = dto.Salary,
+                DepartmentId = dto.DepartmentId,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            }).ToList();
 
-        _context.Employees.AddRange(employeeEntities);
-        await _context.SaveChangesAsync();
+            // Validate all emails are unique before adding
+            var emails = employeeEntities.Select(e => e.Email).ToList();
+            var existingEmails = await _context.Employees
+                .Where(e => emails.Contains(e.Email))
+                .Select(e => e.Email)
+                .ToListAsync();
 
-        // Return the created employees
-        var createdIds = employeeEntities.Select(e => e.Id).ToList();
-        return await _context.Employees
+            if (existingEmails.Any())
+            {
+                throw new InvalidOperationException($"The following emails already exist: {string.Join(", ", existingEmails)}");
+            }
+
+            _context.Employees.AddRange(employeeEntities);
+            await _context.SaveChangesAsync();
+
+            // Return the created employees
+            var createdIds = employeeEntities.Select(e => e.Id).ToList();
+            var result = await _context.Employees
+                .Include(e => e.Department)
+                .Where(e => createdIds.Contains(e.Id))
+                .Select(e => new EmployeeDto
+                {
+                    Id = e.Id,
+                    FirstName = e.FirstName,
+                    LastName = e.LastName,
+                    Email = e.Email,
+                    PhoneNumber = e.PhoneNumber,
+                    Address = e.Address,
+                    DateOfBirth = e.DateOfBirth,
+                    DateOfJoining = e.DateOfJoining,
+                    Position = e.Position,
+                    Salary = e.Salary,
+                    DepartmentId = e.DepartmentId,
+                    DepartmentName = e.Department.Name,
+                    IsActive = e.IsActive,
+                    CreatedAt = e.CreatedAt,
+                    UpdatedAt = e.UpdatedAt
+                })
+                .ToListAsync();
+
+            await transaction.CommitAsync();
+            return result;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    public async Task<bool> BulkDeleteAsync(IEnumerable<int> employeeIds)
+    {
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            var employees = await _context.Employees
+                .Where(e => employeeIds.Contains(e.Id))
+                .ToListAsync();
+
+            if (!employees.Any())
+            {
+                return false;
+            }
+
+            // Soft delete all employees
+            foreach (var employee in employees)
+            {
+                employee.IsActive = false;
+                employee.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return true;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    public async Task<PagedResult<EmployeeDto>> GetPagedAsync(PaginationRequest request)
+    {
+        var query = _context.Employees
             .Include(e => e.Department)
-            .Where(e => createdIds.Contains(e.Id))
+            .Where(e => e.IsActive)
+            .AsQueryable();
+
+        // Apply search filter
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var searchTerm = request.SearchTerm.ToLower();
+            query = query.Where(e => 
+                e.FirstName.ToLower().Contains(searchTerm) ||
+                e.LastName.ToLower().Contains(searchTerm) ||
+                e.Email.ToLower().Contains(searchTerm) ||
+                e.Position.ToLower().Contains(searchTerm) ||
+                e.Department.Name.ToLower().Contains(searchTerm));
+        }
+
+        // Apply sorting
+        query = request.SortBy?.ToLower() switch
+        {
+            "firstname" => request.SortDescending ? query.OrderByDescending(e => e.FirstName) : query.OrderBy(e => e.FirstName),
+            "lastname" => request.SortDescending ? query.OrderByDescending(e => e.LastName) : query.OrderBy(e => e.LastName),
+            "email" => request.SortDescending ? query.OrderByDescending(e => e.Email) : query.OrderBy(e => e.Email),
+            "position" => request.SortDescending ? query.OrderByDescending(e => e.Position) : query.OrderBy(e => e.Position),
+            "salary" => request.SortDescending ? query.OrderByDescending(e => e.Salary) : query.OrderBy(e => e.Salary),
+            "department" => request.SortDescending ? query.OrderByDescending(e => e.Department.Name) : query.OrderBy(e => e.Department.Name),
+            "dateofjoining" => request.SortDescending ? query.OrderByDescending(e => e.DateOfJoining) : query.OrderBy(e => e.DateOfJoining),
+            _ => query.OrderBy(e => e.FirstName)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var employees = await query
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .Select(e => new EmployeeDto
             {
                 Id = e.Id,
@@ -229,5 +343,77 @@ public class EmployeeRepository : IEmployeeRepository
                 UpdatedAt = e.UpdatedAt
             })
             .ToListAsync();
+
+        return new PagedResult<EmployeeDto>
+        {
+            Data = employees,
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize
+        };
+    }
+
+    public async Task<PagedResult<EmployeeDto>> GetByDepartmentPagedAsync(int departmentId, PaginationRequest request)
+    {
+        var query = _context.Employees
+            .Include(e => e.Department)
+            .Where(e => e.DepartmentId == departmentId && e.IsActive)
+            .AsQueryable();
+
+        // Apply search filter
+        if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+        {
+            var searchTerm = request.SearchTerm.ToLower();
+            query = query.Where(e => 
+                e.FirstName.ToLower().Contains(searchTerm) ||
+                e.LastName.ToLower().Contains(searchTerm) ||
+                e.Email.ToLower().Contains(searchTerm) ||
+                e.Position.ToLower().Contains(searchTerm));
+        }
+
+        // Apply sorting
+        query = request.SortBy?.ToLower() switch
+        {
+            "firstname" => request.SortDescending ? query.OrderByDescending(e => e.FirstName) : query.OrderBy(e => e.FirstName),
+            "lastname" => request.SortDescending ? query.OrderByDescending(e => e.LastName) : query.OrderBy(e => e.LastName),
+            "email" => request.SortDescending ? query.OrderByDescending(e => e.Email) : query.OrderBy(e => e.Email),
+            "position" => request.SortDescending ? query.OrderByDescending(e => e.Position) : query.OrderBy(e => e.Position),
+            "salary" => request.SortDescending ? query.OrderByDescending(e => e.Salary) : query.OrderBy(e => e.Salary),
+            "dateofjoining" => request.SortDescending ? query.OrderByDescending(e => e.DateOfJoining) : query.OrderBy(e => e.DateOfJoining),
+            _ => query.OrderBy(e => e.FirstName)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var employees = await query
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(e => new EmployeeDto
+            {
+                Id = e.Id,
+                FirstName = e.FirstName,
+                LastName = e.LastName,
+                Email = e.Email,
+                PhoneNumber = e.PhoneNumber,
+                Address = e.Address,
+                DateOfBirth = e.DateOfBirth,
+                DateOfJoining = e.DateOfJoining,
+                Position = e.Position,
+                Salary = e.Salary,
+                DepartmentId = e.DepartmentId,
+                DepartmentName = e.Department.Name,
+                IsActive = e.IsActive,
+                CreatedAt = e.CreatedAt,
+                UpdatedAt = e.UpdatedAt
+            })
+            .ToListAsync();
+
+        return new PagedResult<EmployeeDto>
+        {
+            Data = employees,
+            TotalCount = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize
+        };
     }
 }

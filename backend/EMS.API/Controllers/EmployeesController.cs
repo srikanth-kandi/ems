@@ -115,4 +115,86 @@ public class EmployeesController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    [HttpPost("bulk")]
+    public async Task<ActionResult<IEnumerable<EmployeeDto>>> BulkCreateEmployees([FromBody] IEnumerable<CreateEmployeeDto> employees)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var createdEmployees = await _employeeRepository.BulkCreateAsync(employees);
+            return Ok(createdEmployees);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error bulk creating employees");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpDelete("bulk")]
+    public async Task<IActionResult> BulkDeleteEmployees([FromBody] IEnumerable<int> employeeIds)
+    {
+        try
+        {
+            var result = await _employeeRepository.BulkDeleteAsync(employeeIds);
+            if (!result)
+            {
+                return NotFound("No employees found with the provided IDs");
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error bulk deleting employees");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("paged")]
+    public async Task<ActionResult<PagedResult<EmployeeDto>>> GetEmployeesPaged([FromQuery] PaginationRequest request)
+    {
+        try
+        {
+            // Validate pagination parameters
+            if (request.PageNumber < 1) request.PageNumber = 1;
+            if (request.PageSize < 1 || request.PageSize > 100) request.PageSize = 10;
+
+            var result = await _employeeRepository.GetPagedAsync(request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving paged employees");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("department/{departmentId}/paged")]
+    public async Task<ActionResult<PagedResult<EmployeeDto>>> GetEmployeesByDepartmentPaged(int departmentId, [FromQuery] PaginationRequest request)
+    {
+        try
+        {
+            // Validate pagination parameters
+            if (request.PageNumber < 1) request.PageNumber = 1;
+            if (request.PageSize < 1 || request.PageSize > 100) request.PageSize = 10;
+
+            var result = await _employeeRepository.GetByDepartmentPagedAsync(departmentId, request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving paged employees for department {DepartmentId}", departmentId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 }

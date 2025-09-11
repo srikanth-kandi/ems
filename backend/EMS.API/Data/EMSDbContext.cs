@@ -32,6 +32,12 @@ public class EMSDbContext : DbContext
             entity.Property(e => e.Salary).HasColumnType("decimal(18,2)");
             
             entity.HasIndex(e => e.Email).IsUnique();
+            entity.HasIndex(e => e.DepartmentId);
+            entity.HasIndex(e => e.DateOfJoining);
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => new { e.FirstName, e.LastName });
+            entity.HasIndex(e => new { e.DepartmentId, e.IsActive });
+            entity.HasIndex(e => new { e.DateOfJoining, e.IsActive });
             
             entity.HasOne(e => e.Department)
                   .WithMany(d => d.Employees)
@@ -69,6 +75,12 @@ public class EMSDbContext : DbContext
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Notes).HasMaxLength(500);
             
+            entity.HasIndex(a => a.EmployeeId);
+            entity.HasIndex(a => a.Date);
+            entity.HasIndex(a => new { a.EmployeeId, a.Date });
+            entity.HasIndex(a => new { a.Date, a.CheckInTime });
+            entity.HasIndex(a => a.CheckOutTime);
+            
             entity.HasOne(a => a.Employee)
                   .WithMany(e => e.Attendances)
                   .HasForeignKey(a => a.EmployeeId)
@@ -83,6 +95,11 @@ public class EMSDbContext : DbContext
             entity.Property(p => p.Goals).HasMaxLength(100);
             entity.Property(p => p.Achievements).HasMaxLength(100);
             entity.Property(p => p.PerformanceScore).HasColumnType("decimal(5,2)");
+            
+            entity.HasIndex(p => p.EmployeeId);
+            entity.HasIndex(p => new { p.EmployeeId, p.Year, p.Quarter });
+            entity.HasIndex(p => p.PerformanceScore);
+            entity.HasIndex(p => new { p.Year, p.Quarter });
             
             entity.HasOne(p => p.Employee)
                   .WithMany(e => e.PerformanceMetrics)

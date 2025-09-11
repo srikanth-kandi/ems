@@ -69,6 +69,64 @@ public class ReportsController : ControllerBase
         var bytes = await _reportService.GeneratePerformanceMetricsReportAsync(employeeId);
         return File(bytes, "text/csv", "performance-metrics.csv");
     }
+
+    // PDF Report Endpoints
+    [HttpGet("employees/pdf")]
+    public async Task<IActionResult> GetEmployeesPdf()
+    {
+        var bytes = await _reportService.GenerateEmployeeDirectoryReportPdfAsync();
+        return File(bytes, "application/pdf", "employees.pdf");
+    }
+
+    [HttpGet("departments/pdf")]
+    public async Task<IActionResult> GetDepartmentsPdf()
+    {
+        var bytes = await _reportService.GenerateDepartmentReportPdfAsync();
+        return File(bytes, "application/pdf", "departments.pdf");
+    }
+
+    [HttpGet("attendance/pdf")]
+    public async Task<IActionResult> GetAttendancePdf([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        var bytes = await _reportService.GenerateAttendanceReportPdfAsync(startDate, endDate);
+        return File(bytes, "application/pdf", "attendance.pdf");
+    }
+
+    [HttpGet("salaries/pdf")]
+    public async Task<IActionResult> GetSalariesPdf()
+    {
+        var bytes = await _reportService.GenerateSalaryReportPdfAsync();
+        return File(bytes, "application/pdf", "salaries.pdf");
+    }
+
+    // Excel Report Endpoints
+    [HttpGet("employees/excel")]
+    public async Task<IActionResult> GetEmployeesExcel()
+    {
+        var bytes = await _reportService.GenerateEmployeeDirectoryReportExcelAsync();
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "employees.xlsx");
+    }
+
+    [HttpGet("departments/excel")]
+    public async Task<IActionResult> GetDepartmentsExcel()
+    {
+        var bytes = await _reportService.GenerateDepartmentReportExcelAsync();
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "departments.xlsx");
+    }
+
+    [HttpGet("attendance/excel")]
+    public async Task<IActionResult> GetAttendanceExcel([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+    {
+        var bytes = await _reportService.GenerateAttendanceReportExcelAsync(startDate, endDate);
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "attendance.xlsx");
+    }
+
+    [HttpGet("salaries/excel")]
+    public async Task<IActionResult> GetSalariesExcel()
+    {
+        var bytes = await _reportService.GenerateSalaryReportExcelAsync();
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "salaries.xlsx");
+    }
 }
 
 
