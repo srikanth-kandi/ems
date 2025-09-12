@@ -12,6 +12,9 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Set EPPlus license context
+OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+
 // Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -37,12 +40,17 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Register report generators
 builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryCsvGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryPdfGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryExcelGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.AttendanceExcelGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.AttendancePdfGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.HiringTrendCsvGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.DepartmentGrowthCsvGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.SalaryReportCsvGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.SalaryReportPdfGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.SalaryReportExcelGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.DepartmentReportCsvGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.DepartmentReportPdfGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.DepartmentReportExcelGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.AttendanceReportCsvGenerator>();
 
 // Register report service

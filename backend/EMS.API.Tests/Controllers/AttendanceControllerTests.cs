@@ -18,7 +18,6 @@ public class AttendanceControllerTests : TestBase
     public async Task CheckIn_WithValidData_ReturnsAttendance()
     {
         // Arrange
-        await SeedTestDataAsync();
         var checkInDto = new CheckInDto
         {
             EmployeeId = 1,
@@ -68,7 +67,6 @@ public class AttendanceControllerTests : TestBase
     public async Task CheckOut_WithValidData_ReturnsAttendance()
     {
         // Arrange
-        await SeedTestDataAsync();
         var checkOutDto = new CheckOutDto
         {
             EmployeeId = 1,
@@ -98,7 +96,6 @@ public class AttendanceControllerTests : TestBase
     public async Task CheckOut_WithNoCheckIn_ReturnsNotFound()
     {
         // Arrange
-        await SeedTestDataAsync();
         var checkOutDto = new CheckOutDto
         {
             EmployeeId = 3, // Carol has no check-in for today
@@ -136,9 +133,6 @@ public class AttendanceControllerTests : TestBase
     [Fact]
     public async Task GetEmployeeAttendance_WithValidEmployeeId_ReturnsAttendanceRecords()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/attendance/employee/1");
 
@@ -159,7 +153,6 @@ public class AttendanceControllerTests : TestBase
     public async Task GetEmployeeAttendance_WithDateRange_ReturnsFilteredRecords()
     {
         // Arrange
-        await SeedTestDataAsync();
         var startDate = DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd");
         var endDate = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd");
 
@@ -181,9 +174,6 @@ public class AttendanceControllerTests : TestBase
     [Fact]
     public async Task GetTodayAttendance_WithValidEmployeeId_ReturnsTodayAttendance()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/attendance/employee/1/today");
 
@@ -203,9 +193,6 @@ public class AttendanceControllerTests : TestBase
     [Fact]
     public async Task GetTodayAttendance_WithNoAttendance_ReturnsNotFound()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/attendance/employee/3/today");
 
@@ -216,9 +203,6 @@ public class AttendanceControllerTests : TestBase
     [Fact]
     public async Task GetAllAttendance_ReturnsAllAttendanceRecords()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/attendance");
 
@@ -238,7 +222,6 @@ public class AttendanceControllerTests : TestBase
     public async Task GetAllAttendance_WithDateRange_ReturnsFilteredRecords()
     {
         // Arrange
-        await SeedTestDataAsync();
         var startDate = DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd");
         var endDate = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd");
 

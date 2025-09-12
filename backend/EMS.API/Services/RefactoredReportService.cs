@@ -5,42 +5,57 @@ namespace EMS.API.Services;
 
 public class RefactoredReportService : IReportService
 {
-    private readonly EmployeeDirectoryCsvGenerator _csvGenerator;
-    private readonly EmployeeDirectoryPdfGenerator _pdfGenerator;
+    private readonly EmployeeDirectoryCsvGenerator _employeeCsvGenerator;
+    private readonly EmployeeDirectoryPdfGenerator _employeePdfGenerator;
+    private readonly EmployeeDirectoryExcelGenerator _employeeExcelGenerator;
     private readonly AttendanceExcelGenerator _attendanceExcelGenerator;
     private readonly AttendancePdfGenerator _attendancePdfGenerator;
     private readonly HiringTrendCsvGenerator _hiringTrendCsvGenerator;
     private readonly DepartmentGrowthCsvGenerator _departmentGrowthCsvGenerator;
     private readonly SalaryReportCsvGenerator _salaryReportCsvGenerator;
+    private readonly SalaryReportPdfGenerator _salaryReportPdfGenerator;
+    private readonly SalaryReportExcelGenerator _salaryReportExcelGenerator;
     private readonly DepartmentReportCsvGenerator _departmentReportCsvGenerator;
+    private readonly DepartmentReportPdfGenerator _departmentReportPdfGenerator;
+    private readonly DepartmentReportExcelGenerator _departmentReportExcelGenerator;
     private readonly AttendanceReportCsvGenerator _attendanceReportCsvGenerator;
 
     public RefactoredReportService(
-        EmployeeDirectoryCsvGenerator csvGenerator,
-        EmployeeDirectoryPdfGenerator pdfGenerator,
+        EmployeeDirectoryCsvGenerator employeeCsvGenerator,
+        EmployeeDirectoryPdfGenerator employeePdfGenerator,
+        EmployeeDirectoryExcelGenerator employeeExcelGenerator,
         AttendanceExcelGenerator attendanceExcelGenerator,
         AttendancePdfGenerator attendancePdfGenerator,
         HiringTrendCsvGenerator hiringTrendCsvGenerator,
         DepartmentGrowthCsvGenerator departmentGrowthCsvGenerator,
         SalaryReportCsvGenerator salaryReportCsvGenerator,
+        SalaryReportPdfGenerator salaryReportPdfGenerator,
+        SalaryReportExcelGenerator salaryReportExcelGenerator,
         DepartmentReportCsvGenerator departmentReportCsvGenerator,
+        DepartmentReportPdfGenerator departmentReportPdfGenerator,
+        DepartmentReportExcelGenerator departmentReportExcelGenerator,
         AttendanceReportCsvGenerator attendanceReportCsvGenerator)
     {
-        _csvGenerator = csvGenerator;
-        _pdfGenerator = pdfGenerator;
+        _employeeCsvGenerator = employeeCsvGenerator;
+        _employeePdfGenerator = employeePdfGenerator;
+        _employeeExcelGenerator = employeeExcelGenerator;
         _attendanceExcelGenerator = attendanceExcelGenerator;
         _attendancePdfGenerator = attendancePdfGenerator;
         _hiringTrendCsvGenerator = hiringTrendCsvGenerator;
         _departmentGrowthCsvGenerator = departmentGrowthCsvGenerator;
         _salaryReportCsvGenerator = salaryReportCsvGenerator;
+        _salaryReportPdfGenerator = salaryReportPdfGenerator;
+        _salaryReportExcelGenerator = salaryReportExcelGenerator;
         _departmentReportCsvGenerator = departmentReportCsvGenerator;
+        _departmentReportPdfGenerator = departmentReportPdfGenerator;
+        _departmentReportExcelGenerator = departmentReportExcelGenerator;
         _attendanceReportCsvGenerator = attendanceReportCsvGenerator;
     }
 
     // CSV Reports
     public async Task<byte[]> GenerateEmployeeDirectoryReportAsync()
     {
-        return await _csvGenerator.GenerateAsync();
+        return await _employeeCsvGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateDepartmentReportAsync()
@@ -83,13 +98,12 @@ public class RefactoredReportService : IReportService
     // PDF Reports
     public async Task<byte[]> GenerateEmployeeDirectoryReportPdfAsync()
     {
-        return await _pdfGenerator.GenerateAsync();
+        return await _employeePdfGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateDepartmentReportPdfAsync()
     {
-        // TODO: Implement department PDF generator
-        throw new NotImplementedException();
+        return await _departmentReportPdfGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateAttendanceReportPdfAsync(DateTime? startDate = null, DateTime? endDate = null)
@@ -99,21 +113,18 @@ public class RefactoredReportService : IReportService
 
     public async Task<byte[]> GenerateSalaryReportPdfAsync()
     {
-        // TODO: Implement salary PDF generator
-        throw new NotImplementedException();
+        return await _salaryReportPdfGenerator.GenerateAsync();
     }
 
     // Excel Reports
     public async Task<byte[]> GenerateEmployeeDirectoryReportExcelAsync()
     {
-        // TODO: Implement employee directory Excel generator
-        throw new NotImplementedException();
+        return await _employeeExcelGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateDepartmentReportExcelAsync()
     {
-        // TODO: Implement department Excel generator
-        throw new NotImplementedException();
+        return await _departmentReportExcelGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateAttendanceReportExcelAsync(DateTime? startDate = null, DateTime? endDate = null)
@@ -123,7 +134,6 @@ public class RefactoredReportService : IReportService
 
     public async Task<byte[]> GenerateSalaryReportExcelAsync()
     {
-        // TODO: Implement salary Excel generator
-        throw new NotImplementedException();
+        return await _salaryReportExcelGenerator.GenerateAsync();
     }
 }

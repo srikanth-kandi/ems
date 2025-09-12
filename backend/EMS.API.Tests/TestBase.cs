@@ -12,6 +12,8 @@ namespace EMS.API.Tests;
 
 public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private static readonly string _testDatabaseName = $"TestDatabase_{Guid.NewGuid()}";
+    
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
@@ -22,10 +24,12 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             if (descriptor != null)
                 services.Remove(descriptor);
 
-            // Add in-memory database with unique name for each test
+            // Add in-memory database with shared name for all tests in this factory instance
             services.AddDbContext<EMSDbContext>(options =>
             {
-                options.UseInMemoryDatabase($"TestDatabase_{Guid.NewGuid()}");
+                options.UseInMemoryDatabase(_testDatabaseName);
+                options.EnableSensitiveDataLogging();
+                options.EnableServiceProviderCaching();
             });
 
             // Register test services
@@ -34,14 +38,31 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IReportService, RefactoredReportService>();
+            
+            // Register all report generators
+            services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryCsvGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryPdfGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryExcelGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.AttendanceExcelGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.AttendancePdfGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.HiringTrendCsvGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.DepartmentGrowthCsvGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.SalaryReportCsvGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.SalaryReportPdfGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.SalaryReportExcelGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.DepartmentReportCsvGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.DepartmentReportPdfGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.DepartmentReportExcelGenerator>();
+            services.AddScoped<EMS.API.Services.Reports.AttendanceReportCsvGenerator>();
         });
     }
 }
 
-public class TestBase : IClassFixture<TestWebApplicationFactory>
+public class TestBase : IClassFixture<TestWebApplicationFactory>, IAsyncLifetime
 {
     protected readonly TestWebApplicationFactory Factory;
     protected readonly HttpClient Client;
+    private static readonly Dictionary<string, bool> _seededDatabases = new();
 
     public TestBase(TestWebApplicationFactory factory)
     {
@@ -49,13 +70,28 @@ public class TestBase : IClassFixture<TestWebApplicationFactory>
         Client = factory.CreateClient();
     }
 
+    public async Task InitializeAsync()
+    {
+        await SeedTestDataAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
     protected async Task SeedTestDataAsync()
     {
         using var scope = Factory.Services.CreateScope();
+        
+        var databaseName = scope.ServiceProvider.GetRequiredService<DbContextOptions<EMSDbContext>>()
+            .FindExtension<Microsoft.EntityFrameworkCore.InMemory.Infrastructure.Internal.InMemoryOptionsExtension>()?.StoreName ?? "TestDatabase";
+        
+        if (_seededDatabases.ContainsKey(databaseName)) return;
+        
         var context = scope.ServiceProvider.GetRequiredService<EMSDbContext>();
         
-        // Ensure database is created and reset
-        await context.Database.EnsureDeletedAsync();
+        // Ensure database is created
         await context.Database.EnsureCreatedAsync();
 
         // Seed test data
@@ -168,5 +204,7 @@ public class TestBase : IClassFixture<TestWebApplicationFactory>
         context.Attendances.AddRange(attendances);
         context.Users.AddRange(users);
         await context.SaveChangesAsync();
+        
+        _seededDatabases[databaseName] = true;
     }
 }

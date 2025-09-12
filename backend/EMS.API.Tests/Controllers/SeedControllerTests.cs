@@ -32,9 +32,6 @@ public class SeedControllerTests : TestBase
     [Fact]
     public async Task ReseedData_ReturnsSuccess()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.PostAsync("/api/seed/reseed", null);
 
@@ -52,9 +49,6 @@ public class SeedControllerTests : TestBase
     [Fact]
     public async Task ClearData_ReturnsSuccess()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.DeleteAsync("/api/seed/clear");
 
@@ -72,9 +66,6 @@ public class SeedControllerTests : TestBase
     [Fact]
     public async Task GetSeedStatus_ReturnsStatus()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/seed/status");
 

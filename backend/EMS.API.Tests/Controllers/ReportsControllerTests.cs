@@ -14,9 +14,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetEmployeesReport_ReturnsCsvFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/employees");
 
@@ -29,9 +26,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetDepartmentsReport_ReturnsCsvFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/departments");
 
@@ -44,9 +38,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetAttendanceReport_ReturnsCsvFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/attendance");
 
@@ -59,9 +50,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetSalariesReport_ReturnsCsvFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/salaries");
 
@@ -74,9 +62,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetHiringTrendsReport_ReturnsCsvFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/hiring-trends");
 
@@ -89,9 +74,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetDepartmentGrowthReport_ReturnsCsvFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/department-growth");
 
@@ -104,9 +86,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetAttendancePatternsReport_ReturnsNotImplemented()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/attendance-patterns");
 
@@ -117,9 +96,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetPerformanceMetricsReport_ReturnsNotImplemented()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/performance-metrics");
 
@@ -130,9 +106,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetEmployeesPdf_ReturnsPdfFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/employees/pdf");
 
@@ -145,9 +118,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetDepartmentsPdf_ReturnsNotImplemented()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/departments/pdf");
 
@@ -158,9 +128,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetAttendancePdf_ReturnsPdfFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/attendance/pdf");
 
@@ -173,9 +140,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetSalariesPdf_ReturnsNotImplemented()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/salaries/pdf");
 
@@ -186,9 +150,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetEmployeesExcel_ReturnsNotImplemented()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/employees/excel");
 
@@ -199,9 +160,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetDepartmentsExcel_ReturnsNotImplemented()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/departments/excel");
 
@@ -212,9 +170,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetAttendanceExcel_ReturnsExcelFile()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/attendance/excel");
 
@@ -227,9 +182,6 @@ public class ReportsControllerTests : TestBase
     [Fact]
     public async Task GetSalariesExcel_ReturnsNotImplemented()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/reports/salaries/excel");
 

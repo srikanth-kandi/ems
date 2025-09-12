@@ -17,9 +17,6 @@ public class DepartmentsControllerTests : TestBase
     [Fact]
     public async Task GetDepartments_ReturnsAllDepartments()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/departments");
 
@@ -41,9 +38,6 @@ public class DepartmentsControllerTests : TestBase
     [Fact]
     public async Task GetDepartment_WithValidId_ReturnsDepartment()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/departments/1");
 
@@ -64,9 +58,6 @@ public class DepartmentsControllerTests : TestBase
     [Fact]
     public async Task GetDepartment_WithInvalidId_ReturnsNotFound()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/departments/999");
 
@@ -78,7 +69,6 @@ public class DepartmentsControllerTests : TestBase
     public async Task CreateDepartment_WithValidData_ReturnsCreatedDepartment()
     {
         // Arrange
-        await SeedTestDataAsync();
         var createDepartmentDto = new CreateDepartmentDto
         {
             Name = "Marketing",
@@ -109,7 +99,6 @@ public class DepartmentsControllerTests : TestBase
     public async Task CreateDepartment_WithDuplicateName_ReturnsConflict()
     {
         // Arrange
-        await SeedTestDataAsync();
         var createDepartmentDto = new CreateDepartmentDto
         {
             Name = "Engineering", // Already exists
@@ -149,7 +138,6 @@ public class DepartmentsControllerTests : TestBase
     public async Task UpdateDepartment_WithValidData_ReturnsUpdatedDepartment()
     {
         // Arrange
-        await SeedTestDataAsync();
         var updateDepartmentDto = new UpdateDepartmentDto
         {
             Name = "Engineering-Updated",
@@ -180,7 +168,6 @@ public class DepartmentsControllerTests : TestBase
     public async Task UpdateDepartment_WithDuplicateName_ReturnsConflict()
     {
         // Arrange
-        await SeedTestDataAsync();
         var updateDepartmentDto = new UpdateDepartmentDto
         {
             Name = "HR", // Already exists (different department)
@@ -201,7 +188,6 @@ public class DepartmentsControllerTests : TestBase
     public async Task UpdateDepartment_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        await SeedTestDataAsync();
         var updateDepartmentDto = new UpdateDepartmentDto
         {
             Name = "Test Department",
@@ -221,9 +207,6 @@ public class DepartmentsControllerTests : TestBase
     [Fact]
     public async Task DeleteDepartment_WithValidId_ReturnsNoContent()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.DeleteAsync("/api/departments/3"); // Finance department (no employees)
 
@@ -234,9 +217,6 @@ public class DepartmentsControllerTests : TestBase
     [Fact]
     public async Task DeleteDepartment_WithInvalidId_ReturnsNotFound()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.DeleteAsync("/api/departments/999");
 
@@ -247,9 +227,6 @@ public class DepartmentsControllerTests : TestBase
     [Fact]
     public async Task GetDepartmentsWithEmployeeCount_ReturnsDepartmentsWithCounts()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/departments/with-employee-count");
 

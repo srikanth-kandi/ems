@@ -17,9 +17,6 @@ public class EmployeesControllerTests : TestBase
     [Fact]
     public async Task GetEmployees_ReturnsAllEmployees()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/employees");
 
@@ -41,9 +38,6 @@ public class EmployeesControllerTests : TestBase
     [Fact]
     public async Task GetEmployee_WithValidId_ReturnsEmployee()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/employees/1");
 
@@ -64,9 +58,6 @@ public class EmployeesControllerTests : TestBase
     [Fact]
     public async Task GetEmployee_WithInvalidId_ReturnsNotFound()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/employees/999");
 
@@ -78,7 +69,6 @@ public class EmployeesControllerTests : TestBase
     public async Task CreateEmployee_WithValidData_ReturnsCreatedEmployee()
     {
         // Arrange
-        await SeedTestDataAsync();
         var createEmployeeDto = new CreateEmployeeDto
         {
             FirstName = "David",
@@ -140,7 +130,6 @@ public class EmployeesControllerTests : TestBase
     public async Task UpdateEmployee_WithValidData_ReturnsUpdatedEmployee()
     {
         // Arrange
-        await SeedTestDataAsync();
         var updateEmployeeDto = new UpdateEmployeeDto
         {
             FirstName = "Alice",
@@ -179,7 +168,6 @@ public class EmployeesControllerTests : TestBase
     public async Task UpdateEmployee_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        await SeedTestDataAsync();
         var updateEmployeeDto = new UpdateEmployeeDto
         {
             FirstName = "Test",
@@ -204,9 +192,6 @@ public class EmployeesControllerTests : TestBase
     [Fact]
     public async Task DeleteEmployee_WithValidId_ReturnsNoContent()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.DeleteAsync("/api/employees/3");
 
@@ -217,9 +202,6 @@ public class EmployeesControllerTests : TestBase
     [Fact]
     public async Task DeleteEmployee_WithInvalidId_ReturnsNotFound()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.DeleteAsync("/api/employees/999");
 
@@ -230,9 +212,6 @@ public class EmployeesControllerTests : TestBase
     [Fact]
     public async Task GetEmployeesPaged_ReturnsPagedResults()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/employees/paged?pageNumber=1&pageSize=2");
 
@@ -255,9 +234,6 @@ public class EmployeesControllerTests : TestBase
     [Fact]
     public async Task GetEmployeesByDepartmentPaged_ReturnsPagedResults()
     {
-        // Arrange
-        await SeedTestDataAsync();
-
         // Act
         var response = await Client.GetAsync("/api/employees/department/1/paged?pageNumber=1&pageSize=10");
 
@@ -278,7 +254,6 @@ public class EmployeesControllerTests : TestBase
     public async Task BulkCreateEmployees_WithValidData_ReturnsCreatedEmployees()
     {
         // Arrange
-        await SeedTestDataAsync();
         var employees = new List<CreateEmployeeDto>
         {
             new()
@@ -326,7 +301,6 @@ public class EmployeesControllerTests : TestBase
     public async Task BulkDeleteEmployees_WithValidIds_ReturnsNoContent()
     {
         // Arrange
-        await SeedTestDataAsync();
         var employeeIds = new List<int> { 2, 3 };
         var json = JsonSerializer.Serialize(employeeIds);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -346,7 +320,6 @@ public class EmployeesControllerTests : TestBase
     public async Task BulkDeleteEmployees_WithInvalidIds_ReturnsNotFound()
     {
         // Arrange
-        await SeedTestDataAsync();
         var employeeIds = new List<int> { 999, 998 };
         var json = JsonSerializer.Serialize(employeeIds);
         var content = new StringContent(json, Encoding.UTF8, "application/json");

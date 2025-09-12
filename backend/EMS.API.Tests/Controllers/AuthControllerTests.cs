@@ -18,7 +18,6 @@ public class AuthControllerTests : TestBase
     public async Task Login_WithValidCredentials_ReturnsToken()
     {
         // Arrange
-        await SeedTestDataAsync();
         var loginDto = new LoginDto
         {
             Username = "admin",
@@ -48,7 +47,6 @@ public class AuthControllerTests : TestBase
     public async Task Login_WithInvalidCredentials_ReturnsUnauthorized()
     {
         // Arrange
-        await SeedTestDataAsync();
         var loginDto = new LoginDto
         {
             Username = "admin",
@@ -87,7 +85,6 @@ public class AuthControllerTests : TestBase
     public async Task Register_WithValidData_ReturnsToken()
     {
         // Arrange
-        await SeedTestDataAsync();
         var registerDto = new RegisterDto
         {
             Username = "newuser",
@@ -119,7 +116,6 @@ public class AuthControllerTests : TestBase
     public async Task Register_WithExistingUsername_ReturnsConflict()
     {
         // Arrange
-        await SeedTestDataAsync();
         var registerDto = new RegisterDto
         {
             Username = "admin", // Already exists
