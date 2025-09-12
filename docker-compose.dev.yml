@@ -40,8 +40,8 @@ services:
       - Jwt__ExpiryMinutes=60
     ports:
       - "5000:5000"
-    volumes:
-      - ./backend/EMS.API:/app
+    # volumes:
+    #   - ./backend/EMS.API:/app
     depends_on:
       mysql:
         condition: service_healthy

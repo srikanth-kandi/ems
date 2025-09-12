@@ -297,6 +297,9 @@ axe-report.html
 npm-audit-results.json
 yarn-audit-results.json
 
+# Explicitly include lib folder
+!src/lib/
+
 # Dependencies
 node_modules/
 .pnp
@@ -527,3 +530,6 @@ axe-report.html
 # Security
 npm-audit-results.json
 yarn-audit-results.json
+
+# Explicitly include lib folder
+!src/lib/
