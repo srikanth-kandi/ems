@@ -30,7 +30,12 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await api.login({ username, password });
-      setAuth({ token: res.token, username: res.username, role: res.role });
+      setAuth({ 
+        token: res.token, 
+        username: res.username, 
+        role: res.role,
+        expiresAt: res.expiresAt
+      });
       navigate("/");
     } catch {
       setError("Invalid credentials");

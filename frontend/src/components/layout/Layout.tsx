@@ -31,6 +31,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../store/auth";
 import { useThemeStore } from "../../store/theme";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
+import SessionStatus from "../common/SessionStatus";
 
 const drawerWidth = 240;
 
@@ -154,6 +155,7 @@ export default function Layout({ children }: LayoutProps) {
           >
             {getPageTitle()}
           </Typography>
+          <SessionStatus showTimeRemaining={true} />
           <IconButton
             color="inherit"
             onClick={toggleMode}

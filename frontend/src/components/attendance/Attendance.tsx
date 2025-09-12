@@ -15,7 +15,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { convertUtcToLocalTime, convertUtcToLocalDate } from "../../utils/timezone";
+import { convertUtcToLocalTime, convertUtcToLocalDate, formatDuration } from "../../utils/timezone";
 
 type Employee = {
   id: number;
@@ -257,20 +257,26 @@ export default function Attendance() {
                   {a.checkOutTime
                     ? convertUtcToLocalTime(a.checkOutTime)
                     : "-"}{" "}
-                  | Hours: {a.totalHours ?? "-"}
+                  | Hours: {formatDuration(a.totalHours)}
                 </Typography>
               </Stack>
               {a.notes && (
                 <Typography 
                   variant="body2" 
-                  color="text.secondary"
                   sx={{ 
                     mt: 1,
-                    p: 1,
-                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'grey.50',
-                    borderRadius: 1,
+                    p: 1.5,
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                    color: (theme) => theme.palette.mode === 'dark' ? 'grey.50' : 'grey.800',
+                    borderRadius: 2,
                     fontSize: { xs: "0.8rem", sm: "0.875rem" },
-                    border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'grey.700' : 'grey.200'}`,
+                    border: (theme) => theme.palette.mode === 'dark' 
+                      ? '1px solid rgba(255, 255, 255, 0.12)' 
+                      : '1px solid rgba(0, 0, 0, 0.12)',
+                    '& strong': {
+                      color: (theme) => theme.palette.mode === 'dark' ? 'primary.light' : 'primary.main',
+                      fontWeight: 600,
+                    },
                   }}
                 >
                   <strong>Notes:</strong> {a.notes}

@@ -693,7 +693,7 @@ export default function EmployeeList() {
           }}
         >
           <Box sx={{ 
-            height: Math.max(400, Math.min(700, (filteredRows.length + 1) * 52 + 100)),
+            height: Math.min(700, Math.max(300, (filteredRows.length + 1) * 52 + 100)),
             width: '100%',
             overflow: 'auto',
           }}>

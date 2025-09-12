@@ -148,6 +148,7 @@ class ApiClient {
       withCredentials: true,
     });
 
+    // Request interceptor to add auth token
     this.client.interceptors.request.use((config) => {
       const token = localStorage.getItem('token');
       if (token) {
@@ -156,6 +157,34 @@ class ApiClient {
       }
       return config;
     });
+
+    // Response interceptor to handle token expiration
+    this.client.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          // Token is invalid or expired
+          this.handleTokenExpiry();
+        }
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  private handleTokenExpiry() {
+    // Clear auth data
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    localStorage.removeItem('tokenExpiresAt');
+    
+    // Trigger a custom event that the auth store can listen to
+    window.dispatchEvent(new CustomEvent('tokenExpired'));
+    
+    // Redirect to login if not already there
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
   }
 
   // Auth

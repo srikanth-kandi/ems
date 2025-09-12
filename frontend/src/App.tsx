@@ -13,10 +13,19 @@ import Layout from './components/layout/Layout';
 import { useAuthStore } from './store/auth';
 import { useThemeStore } from './store/theme';
 import { ToastProvider } from './contexts/ToastContext';
+import { useAutoLogout } from './hooks/useAutoLogout';
 
 function PrivateRoute({ children }: { children: React.ReactElement }) {
-  const token = useAuthStore((s) => s.token);
-  if (!token) {
+  const { token, isTokenExpired } = useAuthStore();
+  
+  // Use auto logout hook for authenticated routes
+  useAutoLogout({
+    warningTimeMs: 5 * 60 * 1000, // 5 minutes warning
+    checkIntervalMs: 30 * 1000,   // Check every 30 seconds
+    enabled: !!token,
+  });
+  
+  if (!token || isTokenExpired()) {
     return <Navigate to="/login" replace />;
   }
   return children;
