@@ -48,7 +48,7 @@ The easiest way to deploy the EMS is using Docker Compose. This method handles a
 #### Production Deployment
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/srikanth-kandi/ems
 cd ems
 
 # Start all services

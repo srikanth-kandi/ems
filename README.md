@@ -361,7 +361,7 @@ ems/
 ### Option 1: Docker Compose (Recommended)
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/srikanth-kandi/ems
 cd ems
 
 # Start with comprehensive database seeding
@@ -856,9 +856,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For support, questions, or feature requests:
-- 📧 Email: [your-email@example.com]
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/ems/issues)
-- 📖 Documentation: [Project Wiki](https://github.com/your-username/ems/wiki)
+- 📧 Email: hello@srikanthkandi.tech
+- 🐛 Issues: [GitHub Issues](https://github.com/srikanth-kandi/ems/issues)
+- 📖 Documentation: [Project Wiki](https://github.com/srikanth-kandi/ems/wiki)
 
 ---
 

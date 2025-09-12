@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
 import {
   Box,
@@ -14,6 +15,17 @@ import {
   Fade,
   LinearProgress,
   Collapse,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import { convertUtcToLocalDate } from "../../utils/timezone";
 import {
@@ -25,6 +37,7 @@ import {
   Add as AddIcon,
   Assessment as ReportIcon,
   Visibility as ViewIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
 
 type DashboardStats = {
@@ -39,6 +52,24 @@ type RecentActivity = {
   type: string;
   message: string;
   timestamp: string;
+};
+
+type Department = {
+  id: number;
+  name: string;
+};
+
+type NewEmployee = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  dateOfBirth: string;
+  dateOfJoining: string;
+  position: string;
+  salary: number;
+  departmentId: number;
 };
 
 const StatCard = ({
@@ -122,6 +153,7 @@ const StatCard = ({
 );
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState<DashboardStats>({
     totalEmployees: 0,
     activeEmployees: 0,
@@ -131,6 +163,27 @@ export default function Dashboard() {
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  
+  // Quick action states
+  const [addEmployeeOpen, setAddEmployeeOpen] = useState(false);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [newEmployee, setNewEmployee] = useState<NewEmployee>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    dateOfBirth: '',
+    dateOfJoining: '',
+    position: '',
+    salary: 0,
+    departmentId: 0,
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error' | 'warning' | 'info',
+  });
 
   useEffect(() => {
     // Set mounted to true after component mounts
@@ -141,12 +194,13 @@ export default function Dashboard() {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const [employees, departments, attendance] = await Promise.all([
+      const [employees, departmentsData, attendance] = await Promise.all([
         api.getEmployees(),
         api.getDepartments(),
         api.getAllAttendance() // Get all attendance data
       ]);
 
+      setDepartments(departmentsData);
       setStats({
         totalEmployees: employees.length,
         activeEmployees: employees.filter((emp) => emp.isActive).length,
@@ -154,7 +208,7 @@ export default function Dashboard() {
           (att) =>
             convertUtcToLocalDate(att.date) === convertUtcToLocalDate(new Date().toISOString())
         ).length,
-        totalDepartments: departments.length,
+        totalDepartments: departmentsData.length,
       });
 
       // Mock recent activity
@@ -189,6 +243,64 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'addEmployee':
+        setAddEmployeeOpen(true);
+        break;
+      case 'reports':
+        navigate('/reports');
+        break;
+      case 'attendance':
+        navigate('/attendance');
+        break;
+      case 'departments':
+        navigate('/departments');
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAddEmployee = async () => {
+    try {
+      await api.createEmployee(newEmployee);
+      setSnackbar({
+        open: true,
+        message: 'Employee added successfully!',
+        severity: 'success',
+      });
+      setAddEmployeeOpen(false);
+      setNewEmployee({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        address: '',
+        dateOfBirth: '',
+        dateOfJoining: '',
+        position: '',
+        salary: 0,
+        departmentId: 0,
+      });
+      // Refresh dashboard data
+      loadDashboardData();
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: 'Failed to add employee. Please try again.',
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleInputChange = (field: keyof NewEmployee, value: string | number) => {
+    setNewEmployee(prev => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   return (
@@ -415,6 +527,7 @@ export default function Dashboard() {
                   variant="contained"
                   startIcon={<AddIcon />}
                   fullWidth
+                  onClick={() => handleQuickAction('addEmployee')}
                   sx={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     '&:hover': {
@@ -433,6 +546,7 @@ export default function Dashboard() {
                   variant="outlined"
                   startIcon={<ReportIcon />}
                   fullWidth
+                  onClick={() => handleQuickAction('reports')}
                   sx={{ 
                     borderRadius: 2,
                     py: 1.5,
@@ -449,6 +563,7 @@ export default function Dashboard() {
                   variant="outlined"
                   startIcon={<ViewIcon />}
                   fullWidth
+                  onClick={() => handleQuickAction('attendance')}
                   sx={{ 
                     borderRadius: 2,
                     py: 1.5,
@@ -465,6 +580,7 @@ export default function Dashboard() {
                   variant="outlined"
                   startIcon={<BusinessIcon />}
                   fullWidth
+                  onClick={() => handleQuickAction('departments')}
                   sx={{ 
                     borderRadius: 2,
                     py: 1.5,
@@ -482,6 +598,178 @@ export default function Dashboard() {
           </Card>
         </Collapse>
       </Box>
+
+      {/* Add Employee Modal */}
+      <Dialog 
+        open={addEmployeeOpen} 
+        onClose={() => setAddEmployeeOpen(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 3 }
+        }}
+      >
+        <DialogTitle sx={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          Add New Employee
+          <Button
+            onClick={() => setAddEmployeeOpen(false)}
+            sx={{ color: 'white', minWidth: 'auto', p: 0.5 }}
+          >
+            <CloseIcon />
+          </Button>
+        </DialogTitle>
+        <DialogContent sx={{ p: 3 }}>
+          <Stack spacing={3} sx={{ mt: 1 }}>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="First Name"
+                value={newEmployee.firstName}
+                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                fullWidth
+                required
+                variant="outlined"
+              />
+              <TextField
+                label="Last Name"
+                value={newEmployee.lastName}
+                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                fullWidth
+                required
+                variant="outlined"
+              />
+            </Stack>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="Email"
+                type="email"
+                value={newEmployee.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                fullWidth
+                required
+                variant="outlined"
+              />
+              <TextField
+                label="Phone Number"
+                value={newEmployee.phoneNumber}
+                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                fullWidth
+                variant="outlined"
+              />
+            </Stack>
+            <TextField
+              label="Address"
+              value={newEmployee.address}
+              onChange={(e) => handleInputChange('address', e.target.value)}
+              fullWidth
+              multiline
+              rows={2}
+              variant="outlined"
+            />
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="Date of Birth"
+                type="date"
+                value={newEmployee.dateOfBirth}
+                onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+                variant="outlined"
+              />
+              <TextField
+                label="Date of Joining"
+                type="date"
+                value={newEmployee.dateOfJoining}
+                onChange={(e) => handleInputChange('dateOfJoining', e.target.value)}
+                fullWidth
+                required
+                InputLabelProps={{ shrink: true }}
+                variant="outlined"
+              />
+            </Stack>
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="Position"
+                value={newEmployee.position}
+                onChange={(e) => handleInputChange('position', e.target.value)}
+                fullWidth
+                required
+                variant="outlined"
+              />
+              <TextField
+                label="Salary"
+                type="number"
+                value={newEmployee.salary}
+                onChange={(e) => handleInputChange('salary', parseFloat(e.target.value) || 0)}
+                fullWidth
+                required
+                variant="outlined"
+                inputProps={{ min: 0, step: 0.01 }}
+              />
+            </Stack>
+            <FormControl fullWidth required>
+              <InputLabel>Department</InputLabel>
+              <Select
+                value={newEmployee.departmentId}
+                onChange={(e) => handleInputChange('departmentId', e.target.value as number)}
+                label="Department"
+                variant="outlined"
+              >
+                {departments.map((dept) => (
+                  <MenuItem key={dept.id} value={dept.id}>
+                    {dept.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, pt: 0 }}>
+          <Button 
+            onClick={() => setAddEmployeeOpen(false)}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleAddEmployee}
+            variant="contained"
+            sx={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: 2,
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              },
+            }}
+            disabled={!newEmployee.firstName || !newEmployee.lastName || !newEmployee.email || !newEmployee.dateOfJoining || !newEmployee.position || !newEmployee.departmentId}
+          >
+            Add Employee
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
