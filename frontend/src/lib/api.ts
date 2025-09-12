@@ -7,15 +7,45 @@ export interface Employee {
   id: number;
   firstName: string;
   lastName: string;
-  name: string;
   email: string;
-  department: string;
+  phoneNumber?: string;
+  address?: string;
+  dateOfBirth: string;
+  dateOfJoining: string;
+  position?: string;
+  salary: number;
   departmentId: number;
   departmentName: string;
-  position: string;
-  salary: number;
   isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CreateEmployee {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  address?: string;
+  dateOfBirth: string;
   dateOfJoining: string;
+  position?: string;
+  salary: number;
+  departmentId: number;
+}
+
+export interface UpdateEmployee {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  address?: string;
+  dateOfBirth: string;
+  dateOfJoining: string;
+  position?: string;
+  salary: number;
+  departmentId: number;
+  isActive: boolean;
 }
 
 export interface Attendance {
@@ -30,12 +60,83 @@ export interface Attendance {
   createdAt: string;
 }
 
+export interface CheckIn {
+  employeeId: number;
+  notes?: string;
+}
+
+export interface CheckOut {
+  employeeId: number;
+  notes?: string;
+}
+
 export interface Department {
   id: number;
   name: string;
   description?: string;
   managerName?: string;
-  employeeCount?: number;
+  employeeCount: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CreateDepartment {
+  name: string;
+  description?: string;
+  managerName?: string;
+}
+
+export interface UpdateDepartment {
+  name: string;
+  description?: string;
+  managerName?: string;
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  role?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  username: string;
+  email: string;
+  role: string;
+  expiresAt: string;
+}
+
+export interface PaginationRequest {
+  pageNumber: number;
+  pageSize: number;
+  searchTerm?: string;
+  sortBy?: string;
+  sortDescending?: boolean;
+}
+
+export interface PagedResult<T> {
+  data: T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+export interface SeedStatus {
+  departments: number;
+  employees: number;
+  attendances: number;
+  performanceMetrics: number;
+  users: number;
+  timestamp: string;
 }
 
 class ApiClient {
@@ -58,13 +159,13 @@ class ApiClient {
   }
 
   // Auth
-  async login(username: string, password: string) {
-    const { data } = await this.client.post('/auth/login', { username, password });
-    return data as { token: string; username: string; email: string; role: string; expiresAt: string };
+  async login(loginData: LoginRequest): Promise<AuthResponse> {
+    const { data } = await this.client.post('/auth/login', loginData);
+    return data;
   }
 
-  async register(username: string, email: string, password: string) {
-    const { data } = await this.client.post('/auth/register', { username, email, password });
+  async register(registerData: RegisterRequest): Promise<AuthResponse> {
+    const { data } = await this.client.post('/auth/register', registerData);
     return data;
   }
 
@@ -74,23 +175,42 @@ class ApiClient {
     return data;
   }
 
-  async getEmployee(id: number) {
+  async getEmployee(id: number): Promise<Employee> {
     const { data } = await this.client.get(`/employees/${id}`);
     return data;
   }
 
-  async createEmployee(payload: Omit<Employee, 'id'>) {
+  async createEmployee(payload: CreateEmployee): Promise<Employee> {
     const { data } = await this.client.post('/employees', payload);
     return data;
   }
 
-  async updateEmployee(id: number, payload: Partial<Employee>) {
+  async updateEmployee(id: number, payload: UpdateEmployee): Promise<Employee> {
     const { data } = await this.client.put(`/employees/${id}`, payload);
     return data;
   }
 
-  async deleteEmployee(id: number) {
+  async deleteEmployee(id: number): Promise<void> {
     await this.client.delete(`/employees/${id}`);
+  }
+
+  async bulkCreateEmployees(employees: CreateEmployee[]): Promise<Employee[]> {
+    const { data } = await this.client.post('/employees/bulk', employees);
+    return data;
+  }
+
+  async bulkDeleteEmployees(employeeIds: number[]): Promise<void> {
+    await this.client.delete('/employees/bulk', { data: employeeIds });
+  }
+
+  async getEmployeesPaged(request: PaginationRequest): Promise<PagedResult<Employee>> {
+    const { data } = await this.client.get('/employees/paged', { params: request });
+    return data;
+  }
+
+  async getEmployeesByDepartmentPaged(departmentId: number, request: PaginationRequest): Promise<PagedResult<Employee>> {
+    const { data } = await this.client.get(`/employees/department/${departmentId}/paged`, { params: request });
+    return data;
   }
 
   // Departments
@@ -99,37 +219,42 @@ class ApiClient {
     return data;
   }
 
-  async getDepartment(id: number) {
+  async getDepartment(id: number): Promise<Department> {
     const { data } = await this.client.get(`/departments/${id}`);
     return data;
   }
 
-  async createDepartment(payload: Omit<Department, 'id'>) {
+  async createDepartment(payload: CreateDepartment): Promise<Department> {
     const { data } = await this.client.post('/departments', payload);
     return data;
   }
 
-  async updateDepartment(id: number, payload: Partial<Department>) {
+  async updateDepartment(id: number, payload: UpdateDepartment): Promise<Department> {
     const { data } = await this.client.put(`/departments/${id}`, payload);
     return data;
   }
 
-  async deleteDepartment(id: number) {
+  async deleteDepartment(id: number): Promise<void> {
     await this.client.delete(`/departments/${id}`);
   }
 
+  async getDepartmentsWithEmployeeCount(): Promise<Department[]> {
+    const { data } = await this.client.get('/departments/with-employee-count');
+    return data;
+  }
+
   // Attendance
-  async checkIn(employeeId: number, notes?: string) {
-    const { data } = await this.client.post('/attendance/check-in', { employeeId, notes });
+  async checkIn(checkInData: CheckIn): Promise<Attendance> {
+    const { data } = await this.client.post('/attendance/check-in', checkInData);
     return data;
   }
 
-  async checkOut(employeeId: number, notes?: string) {
-    const { data } = await this.client.post('/attendance/check-out', { employeeId, notes });
+  async checkOut(checkOutData: CheckOut): Promise<Attendance> {
+    const { data } = await this.client.post('/attendance/check-out', checkOutData);
     return data;
   }
 
-  async getAttendance(employeeId: number, startDate?: string, endDate?: string): Promise<Attendance[]> {
+  async getEmployeeAttendance(employeeId: number, startDate?: string, endDate?: string): Promise<Attendance[]> {
     const params: Record<string, string> = {};
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
@@ -137,9 +262,136 @@ class ApiClient {
     return data;
   }
 
-  // Reports
-  async downloadReport(path: string, filename: string) {
-    const { data } = await this.client.get(`/reports/${path}`, { responseType: 'blob' });
+  async getTodayAttendance(employeeId: number): Promise<Attendance | null> {
+    const { data } = await this.client.get(`/attendance/employee/${employeeId}/today`);
+    return data;
+  }
+
+  async getAllAttendance(startDate?: string, endDate?: string): Promise<Attendance[]> {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    const { data } = await this.client.get('/attendance', { params });
+    return data;
+  }
+
+  // Reports - CSV
+  async downloadEmployeeReportCsv(): Promise<void> {
+    const { data } = await this.client.get('/reports/employees', { responseType: 'blob' });
+    this.downloadBlob(data, 'employees.csv');
+  }
+
+  async downloadDepartmentReportCsv(): Promise<void> {
+    const { data } = await this.client.get('/reports/departments', { responseType: 'blob' });
+    this.downloadBlob(data, 'departments.csv');
+  }
+
+  async downloadAttendanceReportCsv(startDate?: string, endDate?: string): Promise<void> {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    const { data } = await this.client.get('/reports/attendance', { responseType: 'blob', params });
+    this.downloadBlob(data, 'attendance.csv');
+  }
+
+  async downloadSalaryReportCsv(): Promise<void> {
+    const { data } = await this.client.get('/reports/salaries', { responseType: 'blob' });
+    this.downloadBlob(data, 'salaries.csv');
+  }
+
+  async downloadHiringTrendsReportCsv(): Promise<void> {
+    const { data } = await this.client.get('/reports/hiring-trends', { responseType: 'blob' });
+    this.downloadBlob(data, 'hiring-trends.csv');
+  }
+
+  async downloadDepartmentGrowthReportCsv(): Promise<void> {
+    const { data } = await this.client.get('/reports/department-growth', { responseType: 'blob' });
+    this.downloadBlob(data, 'department-growth.csv');
+  }
+
+  async downloadAttendancePatternsReportCsv(): Promise<void> {
+    const { data } = await this.client.get('/reports/attendance-patterns', { responseType: 'blob' });
+    this.downloadBlob(data, 'attendance-patterns.csv');
+  }
+
+  async downloadPerformanceMetricsReportCsv(employeeId?: number): Promise<void> {
+    const params: Record<string, string> = {};
+    if (employeeId) params.employeeId = employeeId.toString();
+    const { data } = await this.client.get('/reports/performance-metrics', { responseType: 'blob', params });
+    this.downloadBlob(data, 'performance-metrics.csv');
+  }
+
+  // Reports - PDF
+  async downloadEmployeeReportPdf(): Promise<void> {
+    const { data } = await this.client.get('/reports/employees/pdf', { responseType: 'blob' });
+    this.downloadBlob(data, 'employees.pdf');
+  }
+
+  async downloadDepartmentReportPdf(): Promise<void> {
+    const { data } = await this.client.get('/reports/departments/pdf', { responseType: 'blob' });
+    this.downloadBlob(data, 'departments.pdf');
+  }
+
+  async downloadAttendanceReportPdf(startDate?: string, endDate?: string): Promise<void> {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    const { data } = await this.client.get('/reports/attendance/pdf', { responseType: 'blob', params });
+    this.downloadBlob(data, 'attendance.pdf');
+  }
+
+  async downloadSalaryReportPdf(): Promise<void> {
+    const { data } = await this.client.get('/reports/salaries/pdf', { responseType: 'blob' });
+    this.downloadBlob(data, 'salaries.pdf');
+  }
+
+  // Reports - Excel
+  async downloadEmployeeReportExcel(): Promise<void> {
+    const { data } = await this.client.get('/reports/employees/excel', { responseType: 'blob' });
+    this.downloadBlob(data, 'employees.xlsx');
+  }
+
+  async downloadDepartmentReportExcel(): Promise<void> {
+    const { data } = await this.client.get('/reports/departments/excel', { responseType: 'blob' });
+    this.downloadBlob(data, 'departments.xlsx');
+  }
+
+  async downloadAttendanceReportExcel(startDate?: string, endDate?: string): Promise<void> {
+    const params: Record<string, string> = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    const { data } = await this.client.get('/reports/attendance/excel', { responseType: 'blob', params });
+    this.downloadBlob(data, 'attendance.xlsx');
+  }
+
+  async downloadSalaryReportExcel(): Promise<void> {
+    const { data } = await this.client.get('/reports/salaries/excel', { responseType: 'blob' });
+    this.downloadBlob(data, 'salaries.xlsx');
+  }
+
+  // Seed Management
+  async seedData(): Promise<{ message: string; timestamp: string }> {
+    const { data } = await this.client.post('/seed/seed');
+    return data;
+  }
+
+  async reseedData(): Promise<{ message: string; timestamp: string }> {
+    const { data } = await this.client.post('/seed/reseed');
+    return data;
+  }
+
+  async clearData(): Promise<{ message: string; timestamp: string }> {
+    const { data } = await this.client.delete('/seed/clear');
+    return data;
+  }
+
+  async getSeedStatus(): Promise<SeedStatus> {
+    const { data } = await this.client.get('/seed/status');
+    return data;
+  }
+
+  // Helper method for downloading blobs
+  private downloadBlob(data: Blob, filename: string): void {
     const url = window.URL.createObjectURL(new Blob([data]));
     const link = document.createElement('a');
     link.href = url;

@@ -54,7 +54,7 @@ export default function Attendance() {
   const load = async () => {
     try {
       if (employeeId) {
-        const data = await api.getAttendance(employeeId);
+        const data = await api.getEmployeeAttendance(employeeId);
         setItems(data);
       }
     } catch (error) {
@@ -73,7 +73,7 @@ export default function Attendance() {
 
   const onCheckIn = async () => {
     try {
-      await api.checkIn(employeeId, notes);
+      await api.checkIn({ employeeId, notes });
       setNotes("");
       showSnackbar('Check-in successful!');
       await load();
@@ -84,7 +84,7 @@ export default function Attendance() {
 
   const onCheckOut = async () => {
     try {
-      await api.checkOut(employeeId, notes);
+      await api.checkOut({ employeeId, notes });
       setNotes("");
       showSnackbar('Check-out successful!');
       await load();

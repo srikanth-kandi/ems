@@ -1,5 +1,5 @@
 import { api } from '../lib/api';
-import type { Department } from '../lib/api';
+import type { Department, CreateDepartment, UpdateDepartment } from '../lib/api';
 
 export class DepartmentService {
   async getDepartments(): Promise<Department[]> {
@@ -10,16 +10,20 @@ export class DepartmentService {
     return await api.getDepartment(id);
   }
 
-  async createDepartment(department: Omit<Department, 'id'>): Promise<Department> {
+  async createDepartment(department: CreateDepartment): Promise<Department> {
     return await api.createDepartment(department);
   }
 
-  async updateDepartment(id: number, department: Partial<Department>): Promise<Department> {
+  async updateDepartment(id: number, department: UpdateDepartment): Promise<Department> {
     return await api.updateDepartment(id, department);
   }
 
   async deleteDepartment(id: number): Promise<void> {
     return await api.deleteDepartment(id);
+  }
+
+  async getDepartmentsWithEmployeeCount(): Promise<Department[]> {
+    return await api.getDepartmentsWithEmployeeCount();
   }
 }
 

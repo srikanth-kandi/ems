@@ -48,12 +48,17 @@ type Employee = {
   firstName: string;
   lastName: string;
   email: string;
-  departmentId: number;
-  departmentName: string;
+  phoneNumber?: string;
+  address?: string;
+  dateOfBirth: string;
+  dateOfJoining: string;
   position?: string;
   salary: number;
+  departmentId: number;
+  departmentName: string;
   isActive: boolean;
-  dateOfJoining?: string;
+  createdAt: string;
+  updatedAt?: string;
 };
 
 type Department = {
@@ -70,10 +75,13 @@ export default function EmployeeList() {
     firstName: '', 
     lastName: '', 
     email: '', 
-    departmentId: 1, 
-    salary: 0,
+    phoneNumber: '',
+    address: '',
+    dateOfBirth: new Date().toISOString().split('T')[0],
+    dateOfJoining: new Date().toISOString().split('T')[0],
     position: '',
-    dateOfJoining: new Date().toISOString().split('T')[0]
+    salary: 0,
+    departmentId: 1
   });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -112,10 +120,14 @@ export default function EmployeeList() {
 
   const handleDownload = async (format: 'pdf' | 'excel' | 'csv') => {
     try {
-      const filename = `employees.${format === 'csv' ? 'csv' : format === 'pdf' ? 'pdf' : 'xlsx'}`;
-      const endpoint = format === 'csv' ? 'employees' : `employees/${format}`;
-      await api.downloadReport(endpoint, filename);
-      showSnackbar(`${filename} downloaded successfully`);
+      if (format === 'csv') {
+        await api.downloadEmployeeReportCsv();
+      } else if (format === 'pdf') {
+        await api.downloadEmployeeReportPdf();
+      } else if (format === 'excel') {
+        await api.downloadEmployeeReportExcel();
+      }
+      showSnackbar(`Employee report downloaded successfully`);
     } catch (error) {
       showSnackbar('Error downloading report', 'error');
     }
@@ -334,6 +346,7 @@ export default function EmployeeList() {
     setEditingId(row.id);
     setForm({ 
       ...row, 
+      dateOfBirth: formatDateForInput(row.dateOfBirth) || new Date().toISOString().split('T')[0],
       dateOfJoining: formatDateForInput(row.dateOfJoining) || new Date().toISOString().split('T')[0]
     });
     setOpen(true);
@@ -345,10 +358,13 @@ export default function EmployeeList() {
       firstName: '', 
       lastName: '', 
       email: '', 
-      departmentId: departments[0]?.id || 1, 
-      salary: 0,
+      phoneNumber: '',
+      address: '',
+      dateOfBirth: new Date().toISOString().split('T')[0],
+      dateOfJoining: new Date().toISOString().split('T')[0],
       position: '',
-      dateOfJoining: new Date().toISOString().split('T')[0]
+      salary: 0,
+      departmentId: departments[0]?.id || 1
     });
     setOpen(true);
   };
@@ -710,6 +726,20 @@ export default function EmployeeList() {
               fullWidth
               required
             />
+            <Stack direction="row" spacing={2}>
+              <TextField 
+                label="Phone Number" 
+                value={form.phoneNumber || ''} 
+                onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
+                fullWidth
+              />
+              <TextField 
+                label="Address" 
+                value={form.address || ''} 
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                fullWidth
+              />
+            </Stack>
             <FormControl fullWidth required>
               <InputLabel>Department</InputLabel>
               <Select
@@ -743,14 +773,22 @@ export default function EmployeeList() {
                 }}
               />
               <TextField 
-                label="Date of Joining" 
+                label="Date of Birth" 
                 type="date"
-                value={form.dateOfJoining} 
-                onChange={(e) => setForm({ ...form, dateOfJoining: e.target.value })}
+                value={form.dateOfBirth} 
+                onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
                 fullWidth
                 InputLabelProps={{ shrink: true }}
               />
             </Stack>
+            <TextField 
+              label="Date of Joining" 
+              type="date"
+              value={form.dateOfJoining} 
+              onChange={(e) => setForm({ ...form, dateOfJoining: e.target.value })}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 3, pt: 0 }}>
