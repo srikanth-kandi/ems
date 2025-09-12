@@ -14,6 +14,14 @@ public class RefactoredReportService : IReportService
     private readonly HiringTrendPdfGenerator _hiringTrendPdfGenerator;
     private readonly HiringTrendExcelGenerator _hiringTrendExcelGenerator;
     private readonly DepartmentGrowthCsvGenerator _departmentGrowthCsvGenerator;
+    private readonly DepartmentGrowthPdfGenerator _departmentGrowthPdfGenerator;
+    private readonly DepartmentGrowthExcelGenerator _departmentGrowthExcelGenerator;
+    private readonly AttendancePatternCsvGenerator _attendancePatternCsvGenerator;
+    private readonly AttendancePatternPdfGenerator _attendancePatternPdfGenerator;
+    private readonly AttendancePatternExcelGenerator _attendancePatternExcelGenerator;
+    private readonly PerformanceMetricsCsvGenerator _performanceMetricsCsvGenerator;
+    private readonly PerformanceMetricsPdfGenerator _performanceMetricsPdfGenerator;
+    private readonly PerformanceMetricsExcelGenerator _performanceMetricsExcelGenerator;
     private readonly SalaryReportCsvGenerator _salaryReportCsvGenerator;
     private readonly SalaryReportPdfGenerator _salaryReportPdfGenerator;
     private readonly SalaryReportExcelGenerator _salaryReportExcelGenerator;
@@ -32,6 +40,14 @@ public class RefactoredReportService : IReportService
         HiringTrendPdfGenerator hiringTrendPdfGenerator,
         HiringTrendExcelGenerator hiringTrendExcelGenerator,
         DepartmentGrowthCsvGenerator departmentGrowthCsvGenerator,
+        DepartmentGrowthPdfGenerator departmentGrowthPdfGenerator,
+        DepartmentGrowthExcelGenerator departmentGrowthExcelGenerator,
+        AttendancePatternCsvGenerator attendancePatternCsvGenerator,
+        AttendancePatternPdfGenerator attendancePatternPdfGenerator,
+        AttendancePatternExcelGenerator attendancePatternExcelGenerator,
+        PerformanceMetricsCsvGenerator performanceMetricsCsvGenerator,
+        PerformanceMetricsPdfGenerator performanceMetricsPdfGenerator,
+        PerformanceMetricsExcelGenerator performanceMetricsExcelGenerator,
         SalaryReportCsvGenerator salaryReportCsvGenerator,
         SalaryReportPdfGenerator salaryReportPdfGenerator,
         SalaryReportExcelGenerator salaryReportExcelGenerator,
@@ -49,6 +65,14 @@ public class RefactoredReportService : IReportService
         _hiringTrendPdfGenerator = hiringTrendPdfGenerator;
         _hiringTrendExcelGenerator = hiringTrendExcelGenerator;
         _departmentGrowthCsvGenerator = departmentGrowthCsvGenerator;
+        _departmentGrowthPdfGenerator = departmentGrowthPdfGenerator;
+        _departmentGrowthExcelGenerator = departmentGrowthExcelGenerator;
+        _attendancePatternCsvGenerator = attendancePatternCsvGenerator;
+        _attendancePatternPdfGenerator = attendancePatternPdfGenerator;
+        _attendancePatternExcelGenerator = attendancePatternExcelGenerator;
+        _performanceMetricsCsvGenerator = performanceMetricsCsvGenerator;
+        _performanceMetricsPdfGenerator = performanceMetricsPdfGenerator;
+        _performanceMetricsExcelGenerator = performanceMetricsExcelGenerator;
         _salaryReportCsvGenerator = salaryReportCsvGenerator;
         _salaryReportPdfGenerator = salaryReportPdfGenerator;
         _salaryReportExcelGenerator = salaryReportExcelGenerator;
@@ -91,14 +115,12 @@ public class RefactoredReportService : IReportService
 
     public async Task<byte[]> GenerateAttendancePatternReportAsync()
     {
-        // TODO: Implement attendance pattern CSV generator
-        throw new NotImplementedException();
+        return await _attendancePatternCsvGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GeneratePerformanceMetricsReportAsync(int? employeeId = null)
     {
-        // TODO: Implement performance metrics CSV generator
-        throw new NotImplementedException();
+        return await _performanceMetricsCsvGenerator.GenerateAsync();
     }
 
     // PDF Reports
@@ -129,20 +151,17 @@ public class RefactoredReportService : IReportService
 
     public async Task<byte[]> GenerateDepartmentGrowthReportPdfAsync()
     {
-        // TODO: Implement department growth PDF generator
-        throw new NotImplementedException();
+        return await _departmentGrowthPdfGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateAttendancePatternReportPdfAsync()
     {
-        // TODO: Implement attendance pattern PDF generator
-        throw new NotImplementedException();
+        return await _attendancePatternPdfGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GeneratePerformanceMetricsReportPdfAsync(int? employeeId = null)
     {
-        // TODO: Implement performance metrics PDF generator
-        throw new NotImplementedException();
+        return await _performanceMetricsPdfGenerator.GenerateAsync();
     }
 
     // Excel Reports
@@ -173,19 +192,16 @@ public class RefactoredReportService : IReportService
 
     public async Task<byte[]> GenerateDepartmentGrowthReportExcelAsync()
     {
-        // TODO: Implement department growth Excel generator
-        throw new NotImplementedException();
+        return await _departmentGrowthExcelGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateAttendancePatternReportExcelAsync()
     {
-        // TODO: Implement attendance pattern Excel generator
-        throw new NotImplementedException();
+        return await _attendancePatternExcelGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GeneratePerformanceMetricsReportExcelAsync(int? employeeId = null)
     {
-        // TODO: Implement performance metrics Excel generator
-        throw new NotImplementedException();
+        return await _performanceMetricsExcelGenerator.GenerateAsync();
     }
 }
