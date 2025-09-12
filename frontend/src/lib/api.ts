@@ -345,6 +345,28 @@ class ApiClient {
     this.downloadBlob(data, 'salaries.pdf');
   }
 
+  async downloadHiringTrendsReportPdf(): Promise<void> {
+    const { data } = await this.client.get('/reports/hiring-trends/pdf', { responseType: 'blob' });
+    this.downloadBlob(data, 'hiring-trends.pdf');
+  }
+
+  async downloadDepartmentGrowthReportPdf(): Promise<void> {
+    const { data } = await this.client.get('/reports/department-growth/pdf', { responseType: 'blob' });
+    this.downloadBlob(data, 'department-growth.pdf');
+  }
+
+  async downloadAttendancePatternsReportPdf(): Promise<void> {
+    const { data } = await this.client.get('/reports/attendance-patterns/pdf', { responseType: 'blob' });
+    this.downloadBlob(data, 'attendance-patterns.pdf');
+  }
+
+  async downloadPerformanceMetricsReportPdf(employeeId?: number): Promise<void> {
+    const params: Record<string, string> = {};
+    if (employeeId) params.employeeId = employeeId.toString();
+    const { data } = await this.client.get('/reports/performance-metrics/pdf', { responseType: 'blob', params });
+    this.downloadBlob(data, 'performance-metrics.pdf');
+  }
+
   // Reports - Excel
   async downloadEmployeeReportExcel(): Promise<void> {
     const { data } = await this.client.get('/reports/employees/excel', { responseType: 'blob' });
@@ -367,6 +389,28 @@ class ApiClient {
   async downloadSalaryReportExcel(): Promise<void> {
     const { data } = await this.client.get('/reports/salaries/excel', { responseType: 'blob' });
     this.downloadBlob(data, 'salaries.xlsx');
+  }
+
+  async downloadHiringTrendsReportExcel(): Promise<void> {
+    const { data } = await this.client.get('/reports/hiring-trends/excel', { responseType: 'blob' });
+    this.downloadBlob(data, 'hiring-trends.xlsx');
+  }
+
+  async downloadDepartmentGrowthReportExcel(): Promise<void> {
+    const { data } = await this.client.get('/reports/department-growth/excel', { responseType: 'blob' });
+    this.downloadBlob(data, 'department-growth.xlsx');
+  }
+
+  async downloadAttendancePatternsReportExcel(): Promise<void> {
+    const { data } = await this.client.get('/reports/attendance-patterns/excel', { responseType: 'blob' });
+    this.downloadBlob(data, 'attendance-patterns.xlsx');
+  }
+
+  async downloadPerformanceMetricsReportExcel(employeeId?: number): Promise<void> {
+    const params: Record<string, string> = {};
+    if (employeeId) params.employeeId = employeeId.toString();
+    const { data } = await this.client.get('/reports/performance-metrics/excel', { responseType: 'blob', params });
+    this.downloadBlob(data, 'performance-metrics.xlsx');
   }
 
   // Seed Management

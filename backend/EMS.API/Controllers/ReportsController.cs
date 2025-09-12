@@ -99,6 +99,34 @@ public class ReportsController : ControllerBase
         return File(bytes, "application/pdf", "salaries.pdf");
     }
 
+    [HttpGet("hiring-trends/pdf")]
+    public async Task<IActionResult> GetHiringTrendsPdf()
+    {
+        var bytes = await _reportService.GenerateHiringTrendReportPdfAsync();
+        return File(bytes, "application/pdf", "hiring-trends.pdf");
+    }
+
+    [HttpGet("department-growth/pdf")]
+    public async Task<IActionResult> GetDepartmentGrowthPdf()
+    {
+        var bytes = await _reportService.GenerateDepartmentGrowthReportPdfAsync();
+        return File(bytes, "application/pdf", "department-growth.pdf");
+    }
+
+    [HttpGet("attendance-patterns/pdf")]
+    public async Task<IActionResult> GetAttendancePatternsPdf()
+    {
+        var bytes = await _reportService.GenerateAttendancePatternReportPdfAsync();
+        return File(bytes, "application/pdf", "attendance-patterns.pdf");
+    }
+
+    [HttpGet("performance-metrics/pdf")]
+    public async Task<IActionResult> GetPerformanceMetricsPdf([FromQuery] int? employeeId = null)
+    {
+        var bytes = await _reportService.GeneratePerformanceMetricsReportPdfAsync(employeeId);
+        return File(bytes, "application/pdf", "performance-metrics.pdf");
+    }
+
     // Excel Report Endpoints
     [HttpGet("employees/excel")]
     public async Task<IActionResult> GetEmployeesExcel()
@@ -126,6 +154,34 @@ public class ReportsController : ControllerBase
     {
         var bytes = await _reportService.GenerateSalaryReportExcelAsync();
         return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "salaries.xlsx");
+    }
+
+    [HttpGet("hiring-trends/excel")]
+    public async Task<IActionResult> GetHiringTrendsExcel()
+    {
+        var bytes = await _reportService.GenerateHiringTrendReportExcelAsync();
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "hiring-trends.xlsx");
+    }
+
+    [HttpGet("department-growth/excel")]
+    public async Task<IActionResult> GetDepartmentGrowthExcel()
+    {
+        var bytes = await _reportService.GenerateDepartmentGrowthReportExcelAsync();
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "department-growth.xlsx");
+    }
+
+    [HttpGet("attendance-patterns/excel")]
+    public async Task<IActionResult> GetAttendancePatternsExcel()
+    {
+        var bytes = await _reportService.GenerateAttendancePatternReportExcelAsync();
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "attendance-patterns.xlsx");
+    }
+
+    [HttpGet("performance-metrics/excel")]
+    public async Task<IActionResult> GetPerformanceMetricsExcel([FromQuery] int? employeeId = null)
+    {
+        var bytes = await _reportService.GeneratePerformanceMetricsReportExcelAsync(employeeId);
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "performance-metrics.xlsx");
     }
 }
 

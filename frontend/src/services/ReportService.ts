@@ -69,6 +69,40 @@ export class ReportService {
   async downloadPerformanceMetricsReportCsv(employeeId?: number): Promise<void> {
     return await api.downloadPerformanceMetricsReportCsv(employeeId);
   }
+
+  // Additional PDF Reports
+  async downloadHiringTrendsReportPdf(): Promise<void> {
+    return await api.downloadHiringTrendsReportPdf();
+  }
+
+  async downloadDepartmentGrowthReportPdf(): Promise<void> {
+    return await api.downloadDepartmentGrowthReportPdf();
+  }
+
+  async downloadAttendancePatternsReportPdf(): Promise<void> {
+    return await api.downloadAttendancePatternsReportPdf();
+  }
+
+  async downloadPerformanceMetricsReportPdf(employeeId?: number): Promise<void> {
+    return await api.downloadPerformanceMetricsReportPdf(employeeId);
+  }
+
+  // Additional Excel Reports
+  async downloadHiringTrendsReportExcel(): Promise<void> {
+    return await api.downloadHiringTrendsReportExcel();
+  }
+
+  async downloadDepartmentGrowthReportExcel(): Promise<void> {
+    return await api.downloadDepartmentGrowthReportExcel();
+  }
+
+  async downloadAttendancePatternsReportExcel(): Promise<void> {
+    return await api.downloadAttendancePatternsReportExcel();
+  }
+
+  async downloadPerformanceMetricsReportExcel(employeeId?: number): Promise<void> {
+    return await api.downloadPerformanceMetricsReportExcel(employeeId);
+  }
 }
 
 export const reportService = new ReportService();

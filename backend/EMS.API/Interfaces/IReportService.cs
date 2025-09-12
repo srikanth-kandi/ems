@@ -17,10 +17,18 @@ public interface IReportService
     Task<byte[]> GenerateDepartmentReportPdfAsync();
     Task<byte[]> GenerateAttendanceReportPdfAsync(DateTime? startDate = null, DateTime? endDate = null);
     Task<byte[]> GenerateSalaryReportPdfAsync();
+    Task<byte[]> GenerateHiringTrendReportPdfAsync();
+    Task<byte[]> GenerateDepartmentGrowthReportPdfAsync();
+    Task<byte[]> GenerateAttendancePatternReportPdfAsync();
+    Task<byte[]> GeneratePerformanceMetricsReportPdfAsync(int? employeeId = null);
     
     // Excel Reports
     Task<byte[]> GenerateEmployeeDirectoryReportExcelAsync();
     Task<byte[]> GenerateDepartmentReportExcelAsync();
     Task<byte[]> GenerateAttendanceReportExcelAsync(DateTime? startDate = null, DateTime? endDate = null);
     Task<byte[]> GenerateSalaryReportExcelAsync();
+    Task<byte[]> GenerateHiringTrendReportExcelAsync();
+    Task<byte[]> GenerateDepartmentGrowthReportExcelAsync();
+    Task<byte[]> GenerateAttendancePatternReportExcelAsync();
+    Task<byte[]> GeneratePerformanceMetricsReportExcelAsync(int? employeeId = null);
 }

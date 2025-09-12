@@ -44,6 +44,8 @@ builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryExcelGenera
 builder.Services.AddScoped<EMS.API.Services.Reports.AttendanceExcelGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.AttendancePdfGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.HiringTrendCsvGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.HiringTrendPdfGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.HiringTrendExcelGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.DepartmentGrowthCsvGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.SalaryReportCsvGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.SalaryReportPdfGenerator>();
