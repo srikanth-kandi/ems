@@ -192,32 +192,56 @@ export default function Dashboard() {
   };
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 } }}>
+    <Box 
+      sx={{ 
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        p: { xs: 0, sm: 1, md: 2, lg: 3, xl: 4 },
+        mx: "auto",
+      }}
+    >
       {/* Header Section */}
       <Fade in timeout={600}>
         <Card 
           sx={{ 
-            mb: 4, 
+            mb: { xs: 3, sm: 4, md: 5, lg: 6 },
+            width: "100%",
+            maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             color: 'white',
             boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+            borderRadius: { xs: 2, sm: 3, md: 4 },
+            mx: "auto",
           }}
         >
-          <CardContent sx={{ p: 4 }}>
-            <Typography 
-              variant="h3" 
-              fontWeight="700" 
-              sx={{ 
-                mb: 2,
-                fontFamily: 'Montserrat, Roboto, Arial',
-                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              }}
-            >
-              📊 Welcome to EMS Dashboard
-            </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
-              Monitor your workforce and track key performance indicators
-            </Typography>
+          <CardContent sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
+            <Box sx={{ textAlign: { xs: "center", md: "left" } }}>
+              <Typography 
+                variant="h3" 
+                fontWeight="700" 
+                sx={{ 
+                  mb: 2,
+                  fontFamily: 'Montserrat, Roboto, Arial',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  fontSize: { xs: "1.8rem", sm: "2.2rem", md: "2.5rem", lg: "3rem" },
+                }}
+              >
+                📊 Welcome to EMS Dashboard
+              </Typography>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  opacity: 0.9, 
+                  fontWeight: 400,
+                  fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" },
+                }}
+              >
+                Monitor your workforce and track key performance indicators
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
       </Fade>
@@ -226,8 +250,11 @@ export default function Dashboard() {
       <Box sx={{ 
         display: 'grid', 
         gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-        gap: 3, 
-        mb: 4 
+        gap: { xs: 2, sm: 3, md: 4, lg: 5 },
+        mb: { xs: 3, sm: 4, md: 5, lg: 6 },
+        width: "100%",
+        maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
+        mx: "auto",
       }}>
         <Collapse in={mounted} timeout={800}>
           <StatCard
@@ -271,7 +298,10 @@ export default function Dashboard() {
       <Box sx={{ 
         display: 'grid', 
         gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' },
-        gap: 3 
+        gap: { xs: 2, sm: 3, md: 4, lg: 5 },
+        width: "100%",
+        maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
+        mx: "auto",
       }}>
         <Collapse in={mounted} timeout={1600}>
           <Card 

@@ -45,32 +45,35 @@ export default function Login() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        minHeight: "80vh",
+        minHeight: "100vh",
         bgcolor: "background.default",
+        p: { xs: 2, sm: 3, md: 4, lg: 5 },
+        mx: "auto",
       }}
     >
       <Card
         className="border-rounded shadow-lg font-montserrat"
         sx={{
-          width: { xs: "95vw", sm: 360 },
+          width: { xs: "100%", sm: 400, md: 420 },
+          maxWidth: 420,
           mx: "auto",
           bgcolor: "background.paper",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
           borderRadius: 3,
         }}
       >
-        <CardContent>
+        <CardContent sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
           <Typography
-            variant="h5"
+            variant="h4"
             sx={{
-              mb: 2,
+              mb: 3,
               fontWeight: 700,
               color: "primary.main",
               textAlign: "center",
               fontFamily: "Montserrat, Roboto, Arial",
             }}
           >
-            Login
+            🔐 Login
           </Typography>
           <form onSubmit={onSubmit}>
             <TextField
@@ -79,6 +82,7 @@ export default function Login() {
               margin="normal"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              sx={{ mb: 2 }}
             />
             <TextField
               fullWidth
@@ -87,9 +91,20 @@ export default function Login() {
               margin="normal"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              sx={{ mb: 2 }}
             />
             {error && (
-              <Typography color="error" variant="body2">
+              <Typography 
+                color="error" 
+                variant="body2" 
+                sx={{ 
+                  textAlign: "center", 
+                  mb: 2,
+                  p: 1,
+                  bgcolor: "error.50",
+                  borderRadius: 1,
+                }}
+              >
                 {error}
               </Typography>
             )}
@@ -98,7 +113,20 @@ export default function Login() {
               variant="contained"
               fullWidth
               disabled={loading}
-              sx={{ mt: 2, fontWeight: 600 }}
+              sx={{ 
+                mt: 2, 
+                fontWeight: 600,
+                py: 1.5,
+                fontSize: "1.1rem",
+                borderRadius: 2,
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+                },
+                transition: "all 0.3s ease",
+              }}
             >
               {loading ? "Signing in..." : "Sign In"}
             </Button>

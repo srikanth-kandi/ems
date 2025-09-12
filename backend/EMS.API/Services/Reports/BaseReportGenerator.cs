@@ -18,6 +18,10 @@ public abstract class BaseReportGenerator : IReportGenerator
     }
 
     public abstract Task<byte[]> GenerateAsync();
+    public virtual Task<byte[]> GenerateAsync(DateTime? startDate = null, DateTime? endDate = null)
+    {
+        return GenerateAsync();
+    }
     public abstract string GetContentType();
     public abstract string GetFileExtension();
 

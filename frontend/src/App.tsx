@@ -12,6 +12,7 @@ import Reports from './components/reports/Reports';
 import Layout from './components/layout/Layout';
 import { useAuthStore } from './store/auth';
 import { useThemeStore } from './store/theme';
+import { ToastProvider } from './contexts/ToastContext';
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const token = useAuthStore((s) => s.token);
@@ -43,24 +44,26 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/*" element={
-            <PrivateRoute>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/employees" element={<EmployeeList />} />
-                  <Route path="/departments" element={<DepartmentList />} />
-                  <Route path="/attendance" element={<Attendance />} />
-                  <Route path="/reports" element={<Reports />} />
-                </Routes>
-              </Layout>
-            </PrivateRoute>
-          } />
-        </Routes>
-      </Router>
+      <ToastProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/*" element={
+              <PrivateRoute>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/employees" element={<EmployeeList />} />
+                    <Route path="/departments" element={<DepartmentList />} />
+                    <Route path="/attendance" element={<Attendance />} />
+                    <Route path="/reports" element={<Reports />} />
+                  </Routes>
+                </Layout>
+              </PrivateRoute>
+            } />
+          </Routes>
+        </Router>
+      </ToastProvider>
     </ThemeProvider>
   );
 }

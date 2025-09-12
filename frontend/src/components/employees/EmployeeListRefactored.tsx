@@ -263,6 +263,22 @@ export default function EmployeeListRefactored() {
                 },
                 '& .MuiDataGrid-cell': {
                   borderBottom: '1px solid rgba(224, 224, 224, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '8px 16px',
+                },
+                '& .MuiDataGrid-cellContent': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%',
+                },
+                '& .MuiDataGrid-cellCheckbox': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 },
               }}
             />

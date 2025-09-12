@@ -13,7 +13,6 @@ import {
   Paper,
   Tabs,
   Tab,
-  Grid,
   Divider,
 } from "@mui/material";
 import {
@@ -159,40 +158,66 @@ export default function Reports() {
   ];
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 } }}>
+    <Box 
+      sx={{ 
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        p: { xs: 0, sm: 1, md: 2, lg: 3, xl: 4 },
+        mx: "auto",
+      }}
+    >
       {/* Header Section */}
       <Card 
         sx={{ 
-          mb: 4, 
+          mb: { xs: 3, sm: 4, md: 5, lg: 6 },
+          width: "100%",
+          maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: 'white',
           boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          borderRadius: { xs: 2, sm: 3, md: 4 },
+          mx: "auto",
         }}
       >
-        <CardContent sx={{ p: 4 }}>
-          <Typography 
-            variant="h3" 
-            fontWeight="700" 
-            sx={{ 
-              mb: 2,
-              fontFamily: 'Montserrat, Roboto, Arial',
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            }}
-          >
-            📈 Reports & Analytics
-          </Typography>
-          <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
-            Generate comprehensive reports and gain insights into your workforce
-          </Typography>
+        <CardContent sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
+          <Box sx={{ textAlign: { xs: "center", md: "left" } }}>
+            <Typography 
+              variant="h3" 
+              fontWeight="700" 
+              sx={{ 
+                mb: 2,
+                fontFamily: 'Montserrat, Roboto, Arial',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                fontSize: { xs: "1.8rem", sm: "2.2rem", md: "2.5rem", lg: "3rem" },
+              }}
+            >
+              📈 Reports & Analytics
+            </Typography>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                opacity: 0.9, 
+                fontWeight: 400,
+                fontSize: { xs: "1rem", sm: "1.1rem", md: "1.25rem" },
+              }}
+            >
+              Generate comprehensive reports and gain insights into your workforce
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
 
       <Paper 
         sx={{ 
           width: "100%",
-          borderRadius: 3,
+          maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
+          borderRadius: { xs: 2, sm: 3, md: 4 },
           boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
           overflow: 'hidden',
+          mx: "auto",
         }}
       >
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -217,22 +242,31 @@ export default function Reports() {
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
-          <Box sx={{ p: 3 }}>
+          <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
             <Typography
               variant="h5"
               gutterBottom
               sx={{ 
                 fontWeight: 600, 
                 color: "primary.main",
-                mb: 3,
+                mb: { xs: 2, sm: 3, md: 4 },
                 fontFamily: 'Montserrat, Roboto, Arial',
+                textAlign: "center",
+                fontSize: { xs: "1.3rem", sm: "1.5rem", md: "1.75rem" },
               }}
             >
               Standard Reports
             </Typography>
-            <Grid container spacing={3}>
+            <Box 
+              sx={{ 
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+                gap: { xs: 2, sm: 3, md: 4 },
+                width: '100%',
+              }}
+            >
               {basicReports.map((report) => (
-                <Grid item xs={12} sm={6} md={3} key={report.type}>
+                <Box key={report.type}>
                   <Card 
                     sx={{ 
                       height: '100%',
@@ -325,28 +359,37 @@ export default function Reports() {
                       </Stack>
                     </CardContent>
                   </Card>
-                </Grid>
+                </Box>
               ))}
-            </Grid>
+            </Box>
           </Box>
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
-          <Box sx={{ p: 3 }}>
+          <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
             <Typography
               variant="h5"
               gutterBottom
               sx={{ 
                 fontWeight: 600, 
                 color: "primary.main",
-                mb: 3,
+                mb: { xs: 2, sm: 3, md: 4 },
                 fontFamily: 'Montserrat, Roboto, Arial',
+                textAlign: "center",
+                fontSize: { xs: "1.3rem", sm: "1.5rem", md: "1.75rem" },
               }}
             >
               Advanced Analytics & Insights
             </Typography>
-            <Grid container spacing={3}>
+            <Box 
+              sx={{ 
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+                gap: { xs: 2, sm: 3, md: 4 },
+                width: '100%',
+              }}
+            >
               {advancedReports.map((report) => (
-                <Grid item xs={12} sm={6} md={3} key={report.type}>
+                <Box key={report.type}>
                   <Card 
                     sx={{ 
                       height: '100%',
@@ -439,21 +482,23 @@ export default function Reports() {
                       </Stack>
                     </CardContent>
                   </Card>
-                </Grid>
+                </Box>
               ))}
-            </Grid>
+            </Box>
           </Box>
         </TabPanel>
         <TabPanel value={tabValue} index={2}>
-          <Box sx={{ p: 3 }}>
+          <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
             <Typography
               variant="h5"
               gutterBottom
               sx={{ 
                 fontWeight: 600, 
                 color: "primary.main",
-                mb: 3,
+                mb: { xs: 2, sm: 3, md: 4 },
                 fontFamily: 'Montserrat, Roboto, Arial',
+                textAlign: "center",
+                fontSize: { xs: "1.3rem", sm: "1.5rem", md: "1.75rem" },
               }}
             >
               Custom Date Range Reports
@@ -465,8 +510,16 @@ export default function Reports() {
                 <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
                   Select Date Range
                 </Typography>
-                <Grid container spacing={3} alignItems="center">
-                  <Grid item xs={12} sm={4}>
+                <Box 
+                  sx={{ 
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
+                    gap: { xs: 2, sm: 3 },
+                    alignItems: 'center',
+                    width: '100%',
+                  }}
+                >
+                  <Box>
                     <TextField
                       label="Start Date"
                       type="date"
@@ -478,8 +531,8 @@ export default function Reports() {
                       fullWidth
                       sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
+                  </Box>
+                  <Box>
                     <TextField
                       label="End Date"
                       type="date"
@@ -491,8 +544,8 @@ export default function Reports() {
                       fullWidth
                       sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                     />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
+                  </Box>
+                  <Box>
                     <Stack direction="row" spacing={1}>
                       <Button
                         variant="contained"
@@ -542,8 +595,8 @@ export default function Reports() {
                         Excel
                       </Button>
                     </Stack>
-                  </Grid>
-                </Grid>
+                  </Box>
+                </Box>
               </CardContent>
             </Card>
 
@@ -559,8 +612,15 @@ export default function Reports() {
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                 Report Features
               </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+              <Box 
+                sx={{ 
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+                  gap: { xs: 2, sm: 3 },
+                  width: '100%',
+                }}
+              >
+                <Box>
                   <Typography variant="body2" component="div">
                     <strong>Basic Reports:</strong>
                     <ul style={{ marginTop: 8, marginBottom: 0 }}>
@@ -570,8 +630,8 @@ export default function Reports() {
                       <li>Salary analysis and reporting</li>
                     </ul>
                   </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
+                </Box>
+                <Box>
                   <Typography variant="body2" component="div">
                     <strong>Advanced Analytics:</strong>
                     <ul style={{ marginTop: 8, marginBottom: 0 }}>
@@ -581,13 +641,13 @@ export default function Reports() {
                       <li>Performance metrics with PDF export</li>
                     </ul>
                   </Typography>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Alert>
 
             {/* Quick Actions */}
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3 }}>
+              <Box>
                 <Card sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography
@@ -655,8 +715,8 @@ export default function Reports() {
                     </Stack>
                   </CardContent>
                 </Card>
-              </Grid>
-              <Grid item xs={12} md={6}>
+              </Box>
+              <Box>
                 <Card sx={{ borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography
@@ -714,8 +774,8 @@ export default function Reports() {
                     </Stack>
                   </CardContent>
                 </Card>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           </Box>
         </TabPanel>
       </Paper>
@@ -723,10 +783,23 @@ export default function Reports() {
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        sx={{
+          '& .MuiSnackbar-root': {
+            position: 'fixed',
+            bottom: 16,
+            right: 16,
+          }
+        }}
       >
         <Alert
           onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
+          sx={{ 
+            borderRadius: 2,
+            minWidth: 300,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          }}
         >
           {snackbar.message}
         </Alert>

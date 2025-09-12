@@ -9,17 +9,32 @@ public class RefactoredReportService : IReportService
     private readonly EmployeeDirectoryPdfGenerator _pdfGenerator;
     private readonly AttendanceExcelGenerator _attendanceExcelGenerator;
     private readonly AttendancePdfGenerator _attendancePdfGenerator;
+    private readonly HiringTrendCsvGenerator _hiringTrendCsvGenerator;
+    private readonly DepartmentGrowthCsvGenerator _departmentGrowthCsvGenerator;
+    private readonly SalaryReportCsvGenerator _salaryReportCsvGenerator;
+    private readonly DepartmentReportCsvGenerator _departmentReportCsvGenerator;
+    private readonly AttendanceReportCsvGenerator _attendanceReportCsvGenerator;
 
     public RefactoredReportService(
         EmployeeDirectoryCsvGenerator csvGenerator,
         EmployeeDirectoryPdfGenerator pdfGenerator,
         AttendanceExcelGenerator attendanceExcelGenerator,
-        AttendancePdfGenerator attendancePdfGenerator)
+        AttendancePdfGenerator attendancePdfGenerator,
+        HiringTrendCsvGenerator hiringTrendCsvGenerator,
+        DepartmentGrowthCsvGenerator departmentGrowthCsvGenerator,
+        SalaryReportCsvGenerator salaryReportCsvGenerator,
+        DepartmentReportCsvGenerator departmentReportCsvGenerator,
+        AttendanceReportCsvGenerator attendanceReportCsvGenerator)
     {
         _csvGenerator = csvGenerator;
         _pdfGenerator = pdfGenerator;
         _attendanceExcelGenerator = attendanceExcelGenerator;
         _attendancePdfGenerator = attendancePdfGenerator;
+        _hiringTrendCsvGenerator = hiringTrendCsvGenerator;
+        _departmentGrowthCsvGenerator = departmentGrowthCsvGenerator;
+        _salaryReportCsvGenerator = salaryReportCsvGenerator;
+        _departmentReportCsvGenerator = departmentReportCsvGenerator;
+        _attendanceReportCsvGenerator = attendanceReportCsvGenerator;
     }
 
     // CSV Reports
@@ -30,32 +45,27 @@ public class RefactoredReportService : IReportService
 
     public async Task<byte[]> GenerateDepartmentReportAsync()
     {
-        // TODO: Implement department CSV generator
-        throw new NotImplementedException();
+        return await _departmentReportCsvGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateAttendanceReportAsync(DateTime? startDate = null, DateTime? endDate = null)
     {
-        // TODO: Implement attendance CSV generator
-        throw new NotImplementedException();
+        return await _attendanceReportCsvGenerator.GenerateAsync(startDate, endDate);
     }
 
     public async Task<byte[]> GenerateSalaryReportAsync()
     {
-        // TODO: Implement salary CSV generator
-        throw new NotImplementedException();
+        return await _salaryReportCsvGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateHiringTrendReportAsync()
     {
-        // TODO: Implement hiring trend CSV generator
-        throw new NotImplementedException();
+        return await _hiringTrendCsvGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateDepartmentGrowthReportAsync()
     {
-        // TODO: Implement department growth CSV generator
-        throw new NotImplementedException();
+        return await _departmentGrowthCsvGenerator.GenerateAsync();
     }
 
     public async Task<byte[]> GenerateAttendancePatternReportAsync()

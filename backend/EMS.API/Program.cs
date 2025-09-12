@@ -39,6 +39,11 @@ builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryCsvGenerato
 builder.Services.AddScoped<EMS.API.Services.Reports.EmployeeDirectoryPdfGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.AttendanceExcelGenerator>();
 builder.Services.AddScoped<EMS.API.Services.Reports.AttendancePdfGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.HiringTrendCsvGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.DepartmentGrowthCsvGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.SalaryReportCsvGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.DepartmentReportCsvGenerator>();
+builder.Services.AddScoped<EMS.API.Services.Reports.AttendanceReportCsvGenerator>();
 
 // Register report service
 builder.Services.AddScoped<IReportService, RefactoredReportService>();
@@ -130,3 +135,6 @@ app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Timestamp = Dat
    .WithOpenApi();
 
 app.Run();
+
+// Make Program class accessible for testing
+public partial class Program { }

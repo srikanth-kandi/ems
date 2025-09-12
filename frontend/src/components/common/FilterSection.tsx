@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Card,
   CardContent,
@@ -33,11 +32,19 @@ export default function FilterSection({
 }: FilterSectionProps) {
   return (
     <Collapse in timeout={800}>
-      <Card sx={{ mb: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-        <CardContent sx={{ p: 2 }}>
+      <Card 
+        sx={{ 
+          mb: { xs: 3, sm: 4, md: 5 },
+          width: "100%",
+          maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px" },
+          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+          borderRadius: { xs: 2, sm: 3 },
+        }}
+      >
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
           <Stack 
             direction={{ xs: 'column', sm: 'row' }} 
-            spacing={2} 
+            spacing={{ xs: 2, sm: 3 }} 
             alignItems="center"
           >
             <TextField
@@ -51,10 +58,20 @@ export default function FilterSection({
                   </InputAdornment>
                 ),
               }}
-              sx={{ flexGrow: 1, minWidth: 200 }}
+              sx={{ 
+                flexGrow: 1, 
+                minWidth: { xs: "100%", sm: 200 },
+                width: { xs: "100%", sm: "auto" },
+              }}
               size="small"
             />
-            <FormControl size="small" sx={{ minWidth: 150 }}>
+            <FormControl 
+              size="small" 
+              sx={{ 
+                minWidth: { xs: "100%", sm: 150 },
+                width: { xs: "100%", sm: "auto" },
+              }}
+            >
               <InputLabel>Department</InputLabel>
               <Select
                 value={selectedDepartment}
@@ -73,7 +90,8 @@ export default function FilterSection({
               onClick={onRefresh}
               sx={{ 
                 bgcolor: 'primary.50',
-                '&:hover': { bgcolor: 'primary.100' }
+                '&:hover': { bgcolor: 'primary.100' },
+                alignSelf: { xs: "center", sm: "stretch" },
               }}
             >
               <RefreshIcon />

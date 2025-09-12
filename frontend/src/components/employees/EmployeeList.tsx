@@ -147,31 +147,82 @@ export default function EmployeeList() {
       headerName: 'First Name', 
       flex: 1,
       minWidth: 120,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Typography variant="body2" fontWeight="medium">
+            {params.value}
+          </Typography>
+        </Box>
+      )
     },
     { 
       field: 'lastName', 
       headerName: 'Last Name', 
       flex: 1,
       minWidth: 120,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Typography variant="body2" fontWeight="medium">
+            {params.value}
+          </Typography>
+        </Box>
+      )
     },
     { 
       field: 'email', 
       headerName: 'Email', 
       flex: 1.5,
       minWidth: 200,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Typography variant="body2" color="text.secondary">
+            {params.value}
+          </Typography>
+        </Box>
+      )
     },
     { 
       field: 'departmentName', 
       headerName: 'Department', 
       flex: 1,
       minWidth: 120,
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
-        <Chip 
-          label={params.value} 
-          color="primary" 
-          variant="outlined"
-          size="small"
-        />
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Chip 
+            label={params.value} 
+            color="primary" 
+            variant="outlined"
+            size="small"
+          />
+        </Box>
       )
     },
     { 
@@ -179,17 +230,38 @@ export default function EmployeeList() {
       headerName: 'Position', 
       flex: 1,
       minWidth: 120,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Typography variant="body2" color="text.secondary">
+            {params.value || 'Not specified'}
+          </Typography>
+        </Box>
+      )
     },
     { 
       field: 'salary', 
       headerName: 'Salary', 
       width: 120,
-      headerAlign: 'right',
-      align: 'right',
+      headerAlign: 'center',
+      align: 'center',
       renderCell: (params) => (
-        <Typography variant="body2" fontWeight="medium">
-          ${params.value.toLocaleString()}
-        </Typography>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Typography variant="body2" fontWeight="medium">
+            ${params.value.toLocaleString()}
+          </Typography>
+        </Box>
       )
     },
     { 
@@ -199,9 +271,16 @@ export default function EmployeeList() {
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <Typography variant="body2">
-          {convertUtcToLocalDate(params.value)}
-        </Typography>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Typography variant="body2">
+            {convertUtcToLocalDate(params.value)}
+          </Typography>
+        </Box>
       )
     },
     {
@@ -212,34 +291,41 @@ export default function EmployeeList() {
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <Stack direction="row" spacing={0.5}>
-          <Tooltip title="Edit">
-            <IconButton 
-              size="small" 
-              color="primary"
-              onClick={() => onEdit(params.row)}
-              sx={{ 
-                bgcolor: 'primary.50',
-                '&:hover': { bgcolor: 'primary.100' }
-              }}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton 
-              size="small" 
-              color="error"
-              onClick={() => onDelete(params.row.id)}
-              sx={{ 
-                bgcolor: 'error.50',
-                '&:hover': { bgcolor: 'error.100' }
-              }}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Stack>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Stack direction="row" spacing={0.5}>
+            <Tooltip title="Edit">
+              <IconButton 
+                size="small" 
+                color="primary"
+                onClick={() => onEdit(params.row)}
+                sx={{ 
+                  bgcolor: 'primary.50',
+                  '&:hover': { bgcolor: 'primary.100' }
+                }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete">
+              <IconButton 
+                size="small" 
+                color="error"
+                onClick={() => onDelete(params.row.id)}
+                sx={{ 
+                  bgcolor: 'error.50',
+                  '&:hover': { bgcolor: 'error.100' }
+                }}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </Box>
       )
     }
   ];
@@ -305,25 +391,39 @@ export default function EmployeeList() {
   });
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 } }}>
+    <Box 
+      sx={{ 
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        p: { xs: 0, sm: 1, md: 2, lg: 3, xl: 4 },
+        mx: "auto",
+      }}
+    >
       {/* Header Section */}
       <Fade in timeout={600}>
         <Card 
           sx={{ 
-            mb: 3, 
+            mb: { xs: 3, sm: 4, md: 5, lg: 6 },
+            width: "100%",
+            maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             color: 'white',
             boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+            borderRadius: { xs: 2, sm: 3, md: 4 },
+            mx: "auto",
           }}
         >
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: { xs: 3, sm: 4, md: 5 } }}>
             <Stack 
               direction={{ xs: 'column', md: 'row' }} 
               justifyContent="space-between" 
               alignItems={{ xs: 'stretch', md: 'center' }}
-              spacing={2}
+              spacing={{ xs: 2, sm: 3 }}
             >
-              <Box>
+              <Box sx={{ textAlign: { xs: "center", md: "left" } }}>
                 <Typography 
                   variant="h4" 
                   fontWeight="700" 
@@ -331,15 +431,26 @@ export default function EmployeeList() {
                     mb: 1,
                     fontFamily: 'Montserrat, Roboto, Arial',
                     textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2.125rem", lg: "2.5rem" },
                   }}
                 >
                   👥 Employee Management
                 </Typography>
-                <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    opacity: 0.9,
+                    fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                  }}
+                >
                   Manage your workforce efficiently with comprehensive employee data
                 </Typography>
               </Box>
-              <Stack direction="row" spacing={2}>
+              <Stack 
+                direction={{ xs: 'column', sm: 'row' }} 
+                spacing={{ xs: 1, sm: 2 }}
+                sx={{ width: { xs: "100%", md: "auto" } }}
+              >
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
@@ -355,6 +466,8 @@ export default function EmployeeList() {
                       boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                     },
                     transition: 'all 0.3s ease',
+                    width: { xs: "100%", sm: "auto" },
+                    py: { xs: 1.5, sm: 1 },
                   }}
                 >
                   Add Employee
@@ -371,6 +484,7 @@ export default function EmployeeList() {
                       transform: 'translateY(-2px)',
                     },
                     transition: 'all 0.3s ease',
+                    alignSelf: { xs: "center", sm: "stretch" },
                   }}
                 >
                   <MoreVertIcon />
@@ -383,11 +497,20 @@ export default function EmployeeList() {
 
       {/* Filters Section */}
       <Zoom in timeout={800}>
-        <Card sx={{ mb: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-          <CardContent sx={{ p: 2 }}>
+        <Card 
+          sx={{ 
+            mb: { xs: 3, sm: 4, md: 5, lg: 6 },
+            width: "100%",
+            maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+            borderRadius: { xs: 2, sm: 3 },
+            mx: "auto",
+          }}
+        >
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
             <Stack 
               direction={{ xs: 'column', sm: 'row' }} 
-              spacing={2} 
+              spacing={{ xs: 2, sm: 3 }} 
               alignItems="center"
             >
               <TextField
@@ -401,10 +524,20 @@ export default function EmployeeList() {
                     </InputAdornment>
                   ),
                 }}
-                sx={{ flexGrow: 1, minWidth: 200 }}
+                sx={{ 
+                  flexGrow: 1, 
+                  minWidth: { xs: "100%", sm: 200 },
+                  width: { xs: "100%", sm: "auto" },
+                }}
                 size="small"
               />
-              <FormControl size="small" sx={{ minWidth: 150 }}>
+              <FormControl 
+                size="small" 
+                sx={{ 
+                  minWidth: { xs: "100%", sm: 150 },
+                  width: { xs: "100%", sm: "auto" },
+                }}
+              >
                 <InputLabel>Department</InputLabel>
                 <Select
                   value={selectedDepartment}
@@ -423,12 +556,13 @@ export default function EmployeeList() {
                 onClick={load}
                 sx={{ 
                   bgcolor: 'primary.50',
-                  '&:hover': { bgcolor: 'primary.100' }
+                  '&:hover': { bgcolor: 'primary.100' },
+                  alignSelf: { xs: "center", sm: "stretch" },
                 }}
               >
                 <RefreshIcon />
               </IconButton>
-      </Stack>
+            </Stack>
           </CardContent>
         </Card>
       </Zoom>
@@ -438,11 +572,18 @@ export default function EmployeeList() {
         <Paper 
           sx={{ 
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            borderRadius: 2,
+            borderRadius: { xs: 2, sm: 3 },
             overflow: 'hidden',
+            width: "100%",
+            maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
+            mx: "auto",
           }}
         >
-          <Box sx={{ height: 600, width: '100%' }}>
+          <Box sx={{ 
+            height: { xs: 500, sm: 600, md: 700 },
+            width: '100%',
+            overflow: 'auto',
+          }}>
             <DataGrid 
               rows={filteredRows} 
               columns={columns} 
@@ -472,6 +613,22 @@ export default function EmployeeList() {
                 },
                 '& .MuiDataGrid-cell': {
                   borderBottom: '1px solid rgba(224, 224, 224, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '8px 16px',
+                },
+                '& .MuiDataGrid-cellContent': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%',
+                },
+                '& .MuiDataGrid-cellCheckbox': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 },
               }}
             />

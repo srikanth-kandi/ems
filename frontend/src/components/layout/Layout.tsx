@@ -238,7 +238,7 @@ export default function Layout({ children }: LayoutProps) {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 1, sm: 2, md: 3 },
+          p: { xs: 1, sm: 2, md: 3, lg: 4, xl: 5 },
           width: { md: `calc(100% - ${drawerWidth}px)` },
           mt: 8,
           background: mode === "dark" 
@@ -248,6 +248,10 @@ export default function Layout({ children }: LayoutProps) {
           boxShadow: { xs: "none", md: "0 8px 32px rgba(0,0,0,0.12)" },
           minHeight: "calc(100vh - 64px)",
           position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
           "&::before": {
             content: '""',
             position: "absolute",
@@ -263,7 +267,19 @@ export default function Layout({ children }: LayoutProps) {
           },
         }}
       >
-        <Box sx={{ position: "relative", zIndex: 1 }}>
+        <Box 
+          sx={{ 
+            position: "relative", 
+            zIndex: 1,
+            width: "100%",
+            maxWidth: { xs: "100%", sm: "100%", md: "1200px", lg: "1400px", xl: "1600px" },
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            mx: "auto",
+          }}
+        >
           {children}
         </Box>
       </Box>

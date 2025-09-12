@@ -414,6 +414,43 @@ export default function EmployeeListEnhanced() {
               initialState={{
                 pagination: { paginationModel: { pageSize: 10 } },
               }}
+              sx={{
+                '& .MuiDataGrid-root': {
+                  border: 'none',
+                },
+                '& .MuiDataGrid-columnHeaders': {
+                  background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                  color: '#2c3e50',
+                  fontWeight: 600,
+                },
+                '& .MuiDataGrid-row': {
+                  '&:nth-of-type(even)': {
+                    bgcolor: 'rgba(0,0,0,0.02)',
+                  },
+                  '&:hover': {
+                    bgcolor: 'rgba(102, 126, 234, 0.08)',
+                  },
+                },
+                '& .MuiDataGrid-cell': {
+                  borderBottom: '1px solid rgba(224, 224, 224, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '8px 16px',
+                },
+                '& .MuiDataGrid-cellContent': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                  height: '100%',
+                },
+                '& .MuiDataGrid-cellCheckbox': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+              }}
             />
           </div>
         </TabPanel>
@@ -597,10 +634,23 @@ export default function EmployeeListEnhanced() {
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        sx={{
+          '& .MuiSnackbar-root': {
+            position: 'fixed',
+            bottom: 16,
+            right: 16,
+          }
+        }}
       >
         <Alert
           onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
+          sx={{ 
+            borderRadius: 2,
+            minWidth: 300,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          }}
         >
           {snackbar.message}
         </Alert>
