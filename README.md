@@ -69,21 +69,55 @@ ems/
 - Node.js 18+
 - MySQL Server
 - Visual Studio Code or Visual Studio
+- Docker & Docker Compose (for containerized setup)
 
-### Backend Setup
+### Option 1: Docker Compose (Recommended)
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd ems
+
+# Start with comprehensive database seeding
+docker-compose -f docker-compose.yml -f docker-compose.seed.yml up
+
+# Or for development with hot reload
+docker-compose -f docker-compose.dev.yml -f docker-compose.dev-seed.yml up
+```
+
+### Option 2: Manual Setup
+```bash
+# Backend Setup
 cd backend/EMS.API
 dotnet restore
 dotnet ef database update
 dotnet run
+
+# Frontend Setup (in another terminal)
+cd frontend
+npm install
+npm run dev
 ```
 
 ### Database Seeding
 The EMS API includes comprehensive seed data generation for development and testing:
 
 #### Quick Start
+
+**Docker Compose (Recommended):**
 ```bash
-# Using Batch File (Recommended)
+# Production with comprehensive seeding
+docker-compose -f docker-compose.yml -f docker-compose.seed.yml up
+
+# Development with hot reload and seeding
+docker-compose -f docker-compose.dev.yml -f docker-compose.dev-seed.yml up
+
+# Custom seeding type
+SEED_TYPE=reseed docker-compose -f docker-compose.yml -f docker-compose.seed.yml up
+```
+
+**Manual Setup:**
+```bash
+# Using Batch File (Windows)
 cd backend
 .\seed-database.bat seed
 

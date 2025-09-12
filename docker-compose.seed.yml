@@ -1,0 +1,60 @@
+version: '3.8'
+
+# Docker Compose override for comprehensive database seeding
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.seed.yml up
+
+services:
+  # Enhanced Database Seeding Service
+  seeder:
+    image: curlimages/curl:latest
+    container_name: ems-seeder-comprehensive
+    restart: "no"
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      - API_URL=http://backend:5000
+      - SEED_TYPE=${SEED_TYPE:-reseed}  # Options: seed, reseed, clear
+    command: >
+      sh -c "
+        echo '=== EMS Database Seeding Service ===' &&
+        echo 'Waiting for backend API to be ready...' &&
+        sleep 20 &&
+        echo 'Getting authentication token...' &&
+        TOKEN=$$(curl -s -X POST http://backend:5000/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"admin\",\"password\":\"admin123\"}' | grep -o '\"token\":\"[^\"]*\"' | cut -d'\"' -f4) &&
+        echo 'Getting initial database status...' &&
+        curl -s -X GET http://backend:5000/api/seed/status -H 'Content-Type: application/json' -H \"Authorization: Bearer $$TOKEN\" | jq '.' &&
+        echo 'Seeding database with comprehensive data...' &&
+        if [ -n \"$$TOKEN\" ]; then
+          curl -X POST http://backend:5000/api/seed/reseed -H 'Content-Type: application/json' -H \"Authorization: Bearer $$TOKEN\"
+        else
+          curl -X POST http://backend:5000/api/seed/reseed -H 'Content-Type: application/json'
+        fi &&
+        echo 'Getting final database status...' &&
+        curl -s -X GET http://backend:5000/api/seed/status -H 'Content-Type: application/json' -H \"Authorization: Bearer $$TOKEN\" | jq '.' &&
+        echo '=== Database Seeding Completed Successfully! ==='
+      "
+    networks:
+      - ems-network
+
+  # Database Status Monitor (optional)
+  status-monitor:
+    image: curlimages/curl:latest
+    container_name: ems-status-monitor
+    restart: "no"
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
+    environment:
+      - API_URL=http://backend:5000
+    command: >
+      sh -c "
+        echo '=== Database Status Monitor ===' &&
+        sleep 5 &&
+        echo 'Getting final database status...' &&
+        TOKEN=$$(curl -s -X POST http://backend:5000/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"admin\",\"password\":\"admin123\"}' | grep -o '\"token\":\"[^\"]*\"' | cut -d'\"' -f4) &&
+        curl -s -X GET http://backend:5000/api/seed/status -H 'Content-Type: application/json' -H \"Authorization: Bearer $$TOKEN\" | jq '.' &&
+        echo '=== Status Monitor Completed ==='
+      "
+    networks:
+      - ems-network
