@@ -14,7 +14,7 @@ import { useAuthStore } from './store/auth';
 import { useThemeStore } from './store/theme';
 import { ToastProvider } from './contexts/ToastContext';
 
-function PrivateRoute({ children }: { children: JSX.Element }) {
+function PrivateRoute({ children }: { children: React.ReactElement }) {
   const token = useAuthStore((s) => s.token);
   if (!token) {
     return <Navigate to="/login" replace />;

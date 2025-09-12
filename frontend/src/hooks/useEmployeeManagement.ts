@@ -16,7 +16,9 @@ interface EmployeeForm {
   departmentId: number;
   salary: number;
   position: string;
+  dateOfBirth: string;
   dateOfJoining: string;
+  isActive: boolean;
 }
 
 interface NotificationState {
@@ -37,7 +39,9 @@ export function useEmployeeManagement() {
     departmentId: 1,
     salary: 0,
     position: '',
-    dateOfJoining: new Date().toISOString().split('T')[0]
+    dateOfBirth: '',
+    dateOfJoining: new Date().toISOString().split('T')[0],
+    isActive: true
   });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,7 +90,9 @@ export function useEmployeeManagement() {
       departmentId: departments[0]?.id || 1,
       salary: 0,
       position: '',
-      dateOfJoining: new Date().toISOString().split('T')[0]
+      dateOfBirth: '',
+      dateOfJoining: new Date().toISOString().split('T')[0],
+      isActive: true
     });
     setOpen(true);
   }, [departments]);
@@ -100,7 +106,9 @@ export function useEmployeeManagement() {
       departmentId: employee.departmentId,
       salary: employee.salary,
       position: employee.position || '',
-      dateOfJoining: employee.dateOfJoining || new Date().toISOString().split('T')[0]
+      dateOfBirth: employee.dateOfBirth || '',
+      dateOfJoining: employee.dateOfJoining || new Date().toISOString().split('T')[0],
+      isActive: employee.isActive
     });
     setOpen(true);
   }, []);

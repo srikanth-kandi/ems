@@ -144,7 +144,7 @@ export default function Dashboard() {
       const [employees, departments, attendance] = await Promise.all([
         api.getEmployees(),
         api.getDepartments(),
-        api.getAttendance(1) // Get attendance for first employee as sample
+        api.getAllAttendance() // Get all attendance data
       ]);
 
       setStats({

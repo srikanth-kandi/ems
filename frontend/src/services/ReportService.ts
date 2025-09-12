@@ -2,6 +2,19 @@ import { api } from '../lib/api';
 
 export class ReportService {
   // Employee Reports
+  async downloadEmployeeReport(format: 'csv' | 'pdf' | 'excel'): Promise<void> {
+    switch (format) {
+      case 'csv':
+        return await api.downloadEmployeeReportCsv();
+      case 'pdf':
+        return await api.downloadEmployeeReportPdf();
+      case 'excel':
+        return await api.downloadEmployeeReportExcel();
+      default:
+        throw new Error(`Unsupported format: ${format}`);
+    }
+  }
+
   async downloadEmployeeReportCsv(): Promise<void> {
     return await api.downloadEmployeeReportCsv();
   }

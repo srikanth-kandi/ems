@@ -434,6 +434,12 @@ class ApiClient {
     return data;
   }
 
+  // Generic download method for reports
+  async downloadReport(endpoint: string, filename: string): Promise<void> {
+    const { data } = await this.client.get(`/reports/${endpoint}`, { responseType: 'blob' });
+    this.downloadBlob(data, filename);
+  }
+
   // Helper method for downloading blobs
   private downloadBlob(data: Blob, filename: string): void {
     const url = window.URL.createObjectURL(new Blob([data]));

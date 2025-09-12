@@ -17,11 +17,10 @@ import {
   Snackbar,
   Chip,
   Paper,
-  Grid,
   Card,
   CardContent,
 } from "@mui/material";
-import { convertUtcToLocalDate, formatDateForInput } from "../../utils/timezone";
+import { formatDateForInput } from "../../utils/timezone";
 import {
   Add as AddIcon,
   Upload as UploadIcon,
@@ -37,6 +36,7 @@ type EmployeeForm = {
   position: string;
   dateOfBirth: string;
   dateOfJoining: string;
+  isActive: boolean;
 };
 
 type TabPanelProps = {
@@ -65,7 +65,7 @@ export default function EmployeeListEnhanced() {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
   const [form, setForm] = useState<EmployeeForm>({
@@ -77,6 +77,7 @@ export default function EmployeeListEnhanced() {
     position: "",
     dateOfBirth: "",
     dateOfJoining: new Date().toISOString().split("T")[0],
+    isActive: true,
   });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [bulkData, setBulkData] = useState<string>("");
@@ -168,6 +169,7 @@ export default function EmployeeListEnhanced() {
       position: row.position || "",
       dateOfBirth: "",
       dateOfJoining: formatDateForInput(row.dateOfJoining) || "",
+      isActive: row.isActive,
     });
     setOpen(true);
   };
@@ -183,6 +185,7 @@ export default function EmployeeListEnhanced() {
       position: "",
       dateOfBirth: "",
       dateOfJoining: new Date().toISOString().split("T")[0],
+      isActive: true,
     });
     setOpen(true);
   };
@@ -349,50 +352,47 @@ export default function EmployeeListEnhanced() {
           </Button>
         </Stack>
       </Stack>
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3} component="div">
-          <Card className="border-rounded shadow-lg">
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Employees
-              </Typography>
-              <Typography variant="h4">{stats.total}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card className="border-rounded shadow-lg">
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Active Employees
-              </Typography>
-              <Typography variant="h4">{stats.active}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card className="border-rounded shadow-lg">
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Avg Salary
-              </Typography>
-              <Typography variant="h4">
-                ${stats.avgSalary.toLocaleString()}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card className="border-rounded shadow-lg">
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Departments
-              </Typography>
-              <Typography variant="h4">{stats.departments}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+        gap: 3, 
+        mb: 3 
+      }}>
+        <Card className="border-rounded shadow-lg">
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Total Employees
+            </Typography>
+            <Typography variant="h4">{stats.total}</Typography>
+          </CardContent>
+        </Card>
+        <Card className="border-rounded shadow-lg">
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Active Employees
+            </Typography>
+            <Typography variant="h4">{stats.active}</Typography>
+          </CardContent>
+        </Card>
+        <Card className="border-rounded shadow-lg">
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Avg Salary
+            </Typography>
+            <Typography variant="h4">
+              ${stats.avgSalary.toLocaleString()}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card className="border-rounded shadow-lg">
+          <CardContent>
+            <Typography color="textSecondary" gutterBottom>
+              Departments
+            </Typography>
+            <Typography variant="h4">{stats.departments}</Typography>
+          </CardContent>
+        </Card>
+      </Box>
       <Paper className="border-rounded shadow-lg" sx={{ width: "100%" }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
@@ -494,13 +494,16 @@ export default function EmployeeListEnhanced() {
             >
               Employee Analytics
             </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Card className="border-rounded shadow-lg">
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Department Distribution
-                    </Typography>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+              gap: 3 
+            }}>
+              <Card className="border-rounded shadow-lg">
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Department Distribution
+                  </Typography>
                     {Object.entries(
                       rows.reduce((acc, emp) => {
                         acc[emp.departmentName] =
@@ -520,13 +523,11 @@ export default function EmployeeListEnhanced() {
                     ))}
                   </CardContent>
                 </Card>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Card className="border-rounded shadow-lg">
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Salary Ranges
-                    </Typography>
+              <Card className="border-rounded shadow-lg">
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Salary Ranges
+                  </Typography>
                     <Typography>
                       Min: $
                       {Math.min(
@@ -544,8 +545,7 @@ export default function EmployeeListEnhanced() {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid>
-            </Grid>
+            </Box>
           </Box>
         </TabPanel>
       </Paper>

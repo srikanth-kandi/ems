@@ -29,7 +29,7 @@ export default function Login() {
     setError(null);
     setLoading(true);
     try {
-      const res = await api.login(username, password);
+      const res = await api.login({ username, password });
       setAuth({ token: res.token, username: res.username, role: res.role });
       navigate("/");
     } catch {
