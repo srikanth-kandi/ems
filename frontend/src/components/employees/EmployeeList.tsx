@@ -71,6 +71,7 @@ export default function EmployeeList() {
   const [rows, setRows] = useState<Employee[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<any>({ 
     firstName: '', 
@@ -87,7 +88,7 @@ export default function EmployeeList() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState<number | ''>('');
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -98,13 +99,31 @@ export default function EmployeeList() {
 
   const load = async () => {
     setLoading(true);
+    setError(null);
     try {
-    const data = await api.getEmployees();
-    setRows(data);
-    } catch (error) {
+      const data = await api.getEmployees();
+      setRows(Array.isArray(data) ? data : []);
+    } catch (error: any) {
+      console.error('Error loading employees:', error);
+      
+      // Check if it's an authentication error
+      if (error?.response?.status === 401) {
+        // Clear any invalid auth data
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+        localStorage.removeItem('tokenExpiresAt');
+        
+        // Redirect to login
+        window.location.href = '/login';
+        return;
+      }
+      
+      setError('Failed to load employees. Please try again.');
       showSnackbar('Error loading employees', 'error');
+      setRows([]); // Ensure rows is always an array
     } finally {
-    setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -456,7 +475,7 @@ export default function EmployeeList() {
     }
     
     try {
-      await api.bulkDeleteEmployees(selectedRows as number[]);
+      await api.bulkDeleteEmployees(selectedRows);
       showSnackbar(`${selectedRows.length} employees deleted successfully`);
       setSelectedRows([]);
       await load();
@@ -465,16 +484,18 @@ export default function EmployeeList() {
     }
   };
 
-  const filteredRows = rows.filter(row => {
+  const filteredRows = Array.isArray(rows) ? rows.filter(row => {
+    if (!row || typeof row !== 'object') return false;
+    
     const matchesSearch = !searchTerm || 
-      row.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.email.toLowerCase().includes(searchTerm.toLowerCase());
+      (row.firstName && row.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (row.lastName && row.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (row.email && row.email.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesDepartment = !selectedDepartment || row.departmentId === selectedDepartment;
     
     return matchesSearch && matchesDepartment;
-  });
+  }) : [];
 
   return (
     <Box 
@@ -692,27 +713,50 @@ export default function EmployeeList() {
             mx: "auto",
           }}
         >
-          <Box sx={{ 
-            height: Math.min(700, Math.max(300, (filteredRows.length + 1) * 52 + 100)),
-            width: '100%',
-            overflow: 'auto',
-          }}>
-            <DataGrid 
-              rows={filteredRows} 
-              columns={columns} 
-              loading={loading}
-              pageSizeOptions={[10, 25, 50]}
-              initialState={{ 
-                pagination: { 
-                  paginationModel: { pageSize: 10 } 
-                } 
-              }}
-              checkboxSelection
-              onRowSelectionModelChange={(newSelection) => {
-                setSelectedRows(newSelection as unknown as any[]);
-              }}
-              rowSelectionModel={selectedRows as unknown as any}
-              disableRowSelectionOnClick
+          {error ? (
+            <Box sx={{ 
+              height: 400,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              gap: 2
+            }}>
+              <Typography variant="h6" color="error">
+                {error}
+              </Typography>
+              <Button 
+                variant="contained" 
+                onClick={load}
+                startIcon={<RefreshIcon />}
+              >
+                Retry
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ 
+              height: Math.min(700, Math.max(300, (filteredRows.length + 1) * 52 + 100)),
+              width: '100%',
+              overflow: 'auto',
+            }}>
+              <DataGrid 
+                rows={filteredRows} 
+                columns={columns} 
+                loading={loading}
+                pageSizeOptions={[10, 25, 50]}
+                initialState={{ 
+                  pagination: { 
+                    paginationModel: { pageSize: 10 } 
+                  } 
+                }}
+                // checkboxSelection
+                // onRowSelectionModelChange={(newSelection) => {
+                //   setSelectedRows(newSelection);
+                // }}
+                // rowSelectionModel={selectedRows}
+                disableRowSelectionOnClick
+                getRowId={(row) => row.id}
               sx={{
                 '& .MuiDataGrid-root': {
                   border: 'none',
@@ -752,6 +796,7 @@ export default function EmployeeList() {
               }}
             />
           </Box>
+          )}
         </Paper>
       </Zoom>
 

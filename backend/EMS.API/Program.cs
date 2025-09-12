@@ -75,7 +75,11 @@ builder.Services.AddScoped<SeedDataService>();
 builder.Services.AddDbContext<EMSDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 21))
+        new MySqlServerVersion(new Version(8, 0, 21)),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null)
     ));
 
 // JWT Authentication
@@ -113,24 +117,46 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Setup database on startup
+// Setup database on startup (with retry logic)
 using (var scope = app.Services.CreateScope())
 {
     var migrationService = scope.ServiceProvider.GetRequiredService<DatabaseMigrationService>();
     var seedingService = scope.ServiceProvider.GetRequiredService<DatabaseSeedingService>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     
-    try
+    // Retry database setup with exponential backoff
+    var maxRetries = 10;
+    var retryDelay = TimeSpan.FromSeconds(5);
+    
+    for (int attempt = 1; attempt <= maxRetries; attempt++)
     {
-        // Apply migrations
-        await migrationService.MigrateDatabaseAsync();
-        
-        // Seed database if empty
-        await seedingService.SeedDatabaseAsync();
-    }
-    catch (Exception ex)
-    {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while setting up the database.");
+        try
+        {
+            logger.LogInformation("Attempting database setup (attempt {Attempt}/{MaxRetries})", attempt, maxRetries);
+            
+            // Apply migrations
+            await migrationService.MigrateDatabaseAsync();
+            
+            // Seed database if empty
+            await seedingService.SeedDatabaseAsync();
+            
+            logger.LogInformation("Database setup completed successfully.");
+            break;
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Database setup failed on attempt {Attempt}/{MaxRetries}. Retrying in {Delay} seconds...", 
+                attempt, maxRetries, retryDelay.TotalSeconds);
+            
+            if (attempt == maxRetries)
+            {
+                logger.LogError(ex, "Database setup failed after {MaxRetries} attempts. Application will continue but database operations may fail.", maxRetries);
+                break;
+            }
+            
+            await Task.Delay(retryDelay);
+            retryDelay = TimeSpan.FromSeconds(Math.Min(retryDelay.TotalSeconds * 1.5, 30)); // Exponential backoff, max 30 seconds
+        }
     }
 }
 
@@ -148,7 +174,19 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Health check endpoint
-app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Timestamp = DateTime.UtcNow }))
+app.MapGet("/health", async (EMSDbContext context) =>
+{
+    try
+    {
+        // Check if database is accessible
+        await context.Database.CanConnectAsync();
+        return Results.Ok(new { Status = "Healthy", Database = "Connected", Timestamp = DateTime.UtcNow });
+    }
+    catch (Exception ex)
+    {
+        return Results.Ok(new { Status = "Degraded", Database = "Disconnected", Error = ex.Message, Timestamp = DateTime.UtcNow });
+    }
+})
    .WithName("HealthCheck")
    .WithOpenApi();
 
