@@ -28,13 +28,15 @@ public class AttendancePatternExcelGenerator : BaseReportGenerator
         var startDate = DateTime.UtcNow.AddDays(-30);
         var endDate = DateTime.UtcNow;
 
-        var attendancePatterns = await _context.Attendances
+        var attendancePatterns = _context.Attendances
             .Include(a => a.Employee)
             .ThenInclude(e => e.Department)
             .Where(a => a.Date >= startDate && a.Date <= endDate)
+            .AsEnumerable()
             .GroupBy(a => new { 
                 a.EmployeeId, 
-                EmployeeName = $"{a.Employee.FirstName} {a.Employee.LastName}",
+                FirstName = a.Employee.FirstName,
+                LastName = a.Employee.LastName,
                 Department = a.Employee.Department.Name,
                 DayOfWeek = a.Date.DayOfWeek,
                 Hour = a.CheckInTime.Hour
@@ -42,9 +44,9 @@ public class AttendancePatternExcelGenerator : BaseReportGenerator
             .Select(g => new
             {
                 EmployeeId = g.Key.EmployeeId,
-                EmployeeName = g.Key.EmployeeName,
+                EmployeeName = g.Key.FirstName + " " + g.Key.LastName,
                 Department = g.Key.Department,
-                DayOfWeek = g.Key.DayOfWeek.ToString(),
+                DayOfWeek = g.Key.DayOfWeek,
                 Hour = g.Key.Hour,
                 AttendanceCount = g.Count(),
                 AvgCheckInTime = g.Average(a => a.CheckInTime.Hour * 60 + a.CheckInTime.Minute),
@@ -53,7 +55,20 @@ public class AttendancePatternExcelGenerator : BaseReportGenerator
             .OrderBy(x => x.Department)
             .ThenBy(x => x.EmployeeName)
             .ThenBy(x => x.DayOfWeek)
-            .ToListAsync();
+            .ToList();
+
+        // Convert DayOfWeek to string on the client side
+        var attendancePatternsWithStringDayOfWeek = attendancePatterns.Select(p => new
+        {
+            p.EmployeeId,
+            p.EmployeeName,
+            p.Department,
+            DayOfWeek = p.DayOfWeek.ToString(),
+            p.Hour,
+            p.AttendanceCount,
+            p.AvgCheckInTime,
+            p.AvgTotalHours
+        }).ToList();
 
         using var package = new ExcelPackage();
         var worksheet = package.Workbook.Worksheets.Add("Attendance Patterns");
@@ -95,9 +110,9 @@ public class AttendancePatternExcelGenerator : BaseReportGenerator
         }
         
         // Add data starting from row 7
-        for (int i = 0; i < attendancePatterns.Count; i++)
+        for (int i = 0; i < attendancePatternsWithStringDayOfWeek.Count; i++)
         {
-            var pattern = attendancePatterns[i];
+            var pattern = attendancePatternsWithStringDayOfWeek[i];
             var row = i + 7;
             var avgCheckInTime = TimeSpan.FromMinutes((double)pattern.AvgCheckInTime).ToString(@"hh\:mm");
             var avgTotalHours = pattern.AvgTotalHours;

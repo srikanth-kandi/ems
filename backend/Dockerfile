@@ -22,6 +22,9 @@ RUN dotnet publish "EMS.API.csproj" -c Release -o /app/publish /p:UseAppHost=fal
 # Use the official .NET 8 runtime image for the final stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # Set the working directory
 WORKDIR /app
 

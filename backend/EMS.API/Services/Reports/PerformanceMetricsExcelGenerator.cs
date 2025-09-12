@@ -186,7 +186,7 @@ public class PerformanceMetricsExcelGenerator : BaseReportGenerator
             .Select(g => new
             {
                 EmployeeId = g.Key.EmployeeId,
-                EmployeeName = $"{g.Key.FirstName} {g.Key.LastName}",
+                EmployeeName = g.Key.FirstName + " " + g.Key.LastName,
                 Department = g.Key.Name,
                 Records = g.Count(),
                 AvgScore = g.Average(pm => pm.PerformanceScore),

@@ -48,7 +48,7 @@ public class AttendanceReportCsvGenerator : BaseReportGenerator
             {
                 a.Id,
                 EmployeeId = a.EmployeeId,
-                EmployeeName = $"{a.Employee.FirstName} {a.Employee.LastName}",
+                EmployeeName = a.Employee.FirstName + " " + a.Employee.LastName,
                 Department = a.Employee.Department.Name,
                 a.Date,
                 a.CheckInTime,

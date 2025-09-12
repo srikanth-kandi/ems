@@ -27,13 +27,15 @@ public class AttendancePatternCsvGenerator : BaseReportGenerator
         var startDate = DateTime.UtcNow.AddDays(-30);
         var endDate = DateTime.UtcNow;
 
-        var attendancePatterns = await _context.Attendances
+        var attendancePatterns = _context.Attendances
             .Include(a => a.Employee)
             .ThenInclude(e => e.Department)
             .Where(a => a.Date >= startDate && a.Date <= endDate)
+            .AsEnumerable()
             .GroupBy(a => new { 
                 a.EmployeeId, 
-                EmployeeName = $"{a.Employee.FirstName} {a.Employee.LastName}",
+                FirstName = a.Employee.FirstName,
+                LastName = a.Employee.LastName,
                 Department = a.Employee.Department.Name,
                 DayOfWeek = a.Date.DayOfWeek,
                 Hour = a.CheckInTime.Hour
@@ -41,9 +43,9 @@ public class AttendancePatternCsvGenerator : BaseReportGenerator
             .Select(g => new
             {
                 EmployeeId = g.Key.EmployeeId,
-                EmployeeName = g.Key.EmployeeName,
+                EmployeeName = g.Key.FirstName + " " + g.Key.LastName,
                 Department = g.Key.Department,
-                DayOfWeek = g.Key.DayOfWeek.ToString(),
+                DayOfWeek = g.Key.DayOfWeek,
                 Hour = g.Key.Hour,
                 AttendanceCount = g.Count(),
                 AvgCheckInTime = g.Average(a => a.CheckInTime.Hour * 60 + a.CheckInTime.Minute),
@@ -52,12 +54,25 @@ public class AttendancePatternCsvGenerator : BaseReportGenerator
             .OrderBy(x => x.Department)
             .ThenBy(x => x.EmployeeName)
             .ThenBy(x => x.DayOfWeek)
-            .ToListAsync();
+            .ToList();
+
+        // Convert DayOfWeek to string on the client side
+        var attendancePatternsWithStringDayOfWeek = attendancePatterns.Select(p => new
+        {
+            p.EmployeeId,
+            p.EmployeeName,
+            p.Department,
+            DayOfWeek = p.DayOfWeek.ToString(),
+            p.Hour,
+            p.AttendanceCount,
+            p.AvgCheckInTime,
+            p.AvgTotalHours
+        }).ToList();
 
         var sb = new StringBuilder();
         sb.AppendLine("EmployeeId,EmployeeName,Department,DayOfWeek,Hour,AttendanceCount,AvgCheckInTime,AvgTotalHours");
         
-        foreach (var pattern in attendancePatterns)
+        foreach (var pattern in attendancePatternsWithStringDayOfWeek)
         {
             var avgCheckInTime = TimeSpan.FromMinutes((double)pattern.AvgCheckInTime).ToString(@"hh\:mm");
             var avgTotalHours = pattern.AvgTotalHours.ToString("F2");

@@ -28,13 +28,15 @@ public class AttendancePatternPdfGenerator : BaseReportGenerator
         var startDate = DateTime.UtcNow.AddDays(-30);
         var endDate = DateTime.UtcNow;
 
-        var attendancePatterns = await _context.Attendances
+        var attendancePatterns = _context.Attendances
             .Include(a => a.Employee)
             .ThenInclude(e => e.Department)
             .Where(a => a.Date >= startDate && a.Date <= endDate)
+            .AsEnumerable()
             .GroupBy(a => new { 
                 a.EmployeeId, 
-                EmployeeName = $"{a.Employee.FirstName} {a.Employee.LastName}",
+                FirstName = a.Employee.FirstName,
+                LastName = a.Employee.LastName,
                 Department = a.Employee.Department.Name,
                 DayOfWeek = a.Date.DayOfWeek,
                 Hour = a.CheckInTime.Hour
@@ -42,9 +44,9 @@ public class AttendancePatternPdfGenerator : BaseReportGenerator
             .Select(g => new
             {
                 EmployeeId = g.Key.EmployeeId,
-                EmployeeName = g.Key.EmployeeName,
+                EmployeeName = g.Key.FirstName + " " + g.Key.LastName,
                 Department = g.Key.Department,
-                DayOfWeek = g.Key.DayOfWeek.ToString(),
+                DayOfWeek = g.Key.DayOfWeek,
                 Hour = g.Key.Hour,
                 AttendanceCount = g.Count(),
                 AvgCheckInTime = g.Average(a => a.CheckInTime.Hour * 60 + a.CheckInTime.Minute),
@@ -53,7 +55,20 @@ public class AttendancePatternPdfGenerator : BaseReportGenerator
             .OrderBy(x => x.Department)
             .ThenBy(x => x.EmployeeName)
             .ThenBy(x => x.DayOfWeek)
-            .ToListAsync();
+            .ToList();
+
+        // Convert DayOfWeek to string on the client side
+        var attendancePatternsWithStringDayOfWeek = attendancePatterns.Select(p => new
+        {
+            p.EmployeeId,
+            p.EmployeeName,
+            p.Department,
+            DayOfWeek = p.DayOfWeek.ToString(),
+            p.Hour,
+            p.AttendanceCount,
+            p.AvgCheckInTime,
+            p.AvgTotalHours
+        }).ToList();
 
         using var memoryStream = new MemoryStream();
         var document = new Document(PageSize.A4, 25, 25, 30, 30);
@@ -76,7 +91,7 @@ public class AttendancePatternPdfGenerator : BaseReportGenerator
         document.Add(new Paragraph(" ")); // Spacing
         
         // Add summary statistics
-        AddSummaryStats(document, attendancePatterns.Cast<object>().ToList());
+        AddSummaryStats(document, attendancePatternsWithStringDayOfWeek.Cast<object>().ToList());
         
         // Add table
         var table = new PdfPTable(8);
@@ -87,12 +102,12 @@ public class AttendancePatternPdfGenerator : BaseReportGenerator
         AddTableHeaders(table);
         
         // Add data rows
-        AddTableData(table, attendancePatterns.Cast<object>().ToList());
+        AddTableData(table, attendancePatternsWithStringDayOfWeek.Cast<object>().ToList());
         
         document.Add(table);
         
         // Add patterns analysis
-        AddPatternsAnalysis(document, attendancePatterns.Cast<object>().ToList());
+        AddPatternsAnalysis(document, attendancePatternsWithStringDayOfWeek.Cast<object>().ToList());
         
         // Add footer
         AddFooter(document);
@@ -110,7 +125,7 @@ public class AttendancePatternPdfGenerator : BaseReportGenerator
         var totalRecords = data.Sum(x => (int)x.AttendanceCount);
         var uniqueEmployees = data.Select(x => (int)x.EmployeeId).Distinct().Count();
         var departments = data.Select(x => (string)x.Department).Distinct().Count();
-        var avgHoursPerRecord = data.Where(x => x.AvgTotalHours.HasValue).Average(x => (double)x.AvgTotalHours);
+        var avgHoursPerRecord = data.Where(x => x.AvgTotalHours > 0).Average(x => (double)x.AvgTotalHours);
         
         var summaryData = new[]
         {
@@ -150,7 +165,7 @@ public class AttendancePatternPdfGenerator : BaseReportGenerator
         foreach (var item in data)
         {
             var avgCheckInTime = TimeSpan.FromMinutes((double)item.AvgCheckInTime).ToString(@"hh\:mm");
-            var avgTotalHours = item.AvgTotalHours.HasValue ? item.AvgTotalHours.Value.ToString("F1") : "0.0";
+            var avgTotalHours = item.AvgTotalHours > 0 ? item.AvgTotalHours.ToString("F1") : "0.0";
             
             table.AddCell(new PdfPCell(new Phrase(item.EmployeeId.ToString(), dataFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
             table.AddCell(new PdfPCell(new Phrase((string)item.EmployeeName, dataFont)));
@@ -195,7 +210,7 @@ public class AttendancePatternPdfGenerator : BaseReportGenerator
         foreach (var dept in deptPatterns)
         {
             var totalCount = dept.Sum(x => (int)x.AttendanceCount);
-            var avgHours = dept.Where(x => x.AvgTotalHours.HasValue).Average(x => (double)x.AvgTotalHours);
+            var avgHours = dept.Where(x => x.AvgTotalHours > 0).Average(x => (double)x.AvgTotalHours);
             document.Add(new Paragraph($"• {dept.Key}: {totalCount} records, {avgHours:F1} avg hours", dataFont));
         }
     }
