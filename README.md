@@ -1,106 +1,255 @@
 # Employee Management System (EMS)
 
-A comprehensive, full-stack Employee Management System built with modern technologies, featuring a robust ASP.NET Web API backend and a responsive React.js frontend. This system provides complete HR management capabilities including employee tracking, attendance management, department organization, and comprehensive reporting.
+A comprehensive, full-stack Employee Management System built with modern technologies, featuring a robust ASP.NET Web API backend and a responsive React.js frontend. This system provides complete HR management capabilities including employee tracking, attendance management, department organization, and comprehensive reporting with PDF/Excel generation.
+
+## 🌟 Key Highlights
+
+- **Production-Ready**: Deployed on Oracle Cloud Infrastructure with SSL encryption
+- **Modern Tech Stack**: ASP.NET 8, React 18, TypeScript, MySQL 8.0
+- **Comprehensive Features**: 200+ employees, 10 departments, 90 days attendance data
+- **Advanced Reporting**: PDF/Excel generation with 8 different report types
+- **Secure Authentication**: JWT-based authentication with role-based access control
+- **Docker Support**: Complete containerization for easy deployment
+- **Real-time Data**: Live dashboard with statistics and recent activity
+- **Responsive Design**: Mobile-first approach with Material-UI components
 
 ## 🏗️ System Architecture
 
-The EMS follows a clean, layered architecture pattern with clear separation of concerns:
+The EMS follows a clean, layered architecture pattern with clear separation of concerns, implementing SOLID principles and modern design patterns:
 
+### High-Level Architecture
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (React.js)                     │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────┐ │
-│  │   Auth      │ │  Employee   │ │ Attendance  │ │Reports│ │
-│  │ Components  │ │ Management  │ │  Tracking   │ │ &Analytics│ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └───────┘ │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              │ HTTP/REST API
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                 Backend (ASP.NET Web API)                  │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────┐ │
-│  │ Controllers │ │  Services   │ │ Repositories│ │  DTOs │ │
-│  │   Layer     │ │   Layer     │ │   Layer     │ │ Layer │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └───────┘ │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              │ Entity Framework Core
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                    Database (MySQL)                        │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────┐ │
-│  │  Employees  │ │ Departments │ │ Attendance  │ │ Users │ │
-│  │    Table    │ │   Table     │ │   Table     │ │ Table │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └───────┘ │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              Frontend Layer (React.js)                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────────┐ │
+│  │   Auth      │ │  Employee   │ │ Attendance  │ │  Reports    │ │ Dashboard │ │
+│  │ Components  │ │ Management  │ │  Tracking   │ │ & Analytics │ │ & Stats   │ │
+│  │             │ │             │ │             │ │             │ │           │ │
+│  │ • Login     │ │ • CRUD Ops  │ │ • Check-in  │ │ • PDF/Excel │ │ • Overview│ │
+│  │ • Register  │ │ • Search    │ │ • Check-out │ │ • Reports   │ │ • Metrics │ │
+│  │ • Protected │ │ • Filter    │ │ • History   │ │ • Analytics │ │ • Charts  │ │
+│  │   Routes    │ │ • Bulk Import│ │ • Patterns  │ │ • Trends    │ │ • Activity│ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └───────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        │ HTTP/REST API + JWT Authentication
+                                        │
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            Backend Layer (ASP.NET Web API)                     │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────────┐ │
+│  │ Controllers │ │  Services   │ │ Repositories│ │    DTOs     │ │  Common   │ │
+│  │   Layer     │ │   Layer     │ │   Layer     │ │   Layer     │ │  Utilities│ │
+│  │             │ │             │ │             │ │             │ │           │ │
+│  │ • Auth      │ │ • Auth      │ │ • Employee  │ │ • Request   │ │ • Mappers │ │
+│  │ • Employee  │ │ • Employee  │ │ • Department│ │ • Response  │ │ • Validators│ │
+│  │ • Department│ │ • Attendance│ │ • Attendance│ │ • Pagination│ │ • Helpers │ │
+│  │ • Attendance│ │ • Reports   │ │ • User      │ │ • Error     │ │ • Extensions│ │
+│  │ • Reports   │ │ • Seed      │ │ • Base Repo │ │ • Models    │ │ • Converters│ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └───────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        │ Entity Framework Core + LINQ
+                                        │
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            Data Layer (MySQL Database)                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────────┐ │
+│  │  Employees  │ │ Departments │ │ Attendance  │ │    Users    │ │Performance│ │
+│  │    Table    │ │   Table     │ │   Table     │ │   Table     │ │  Metrics  │ │
+│  │             │ │             │ │             │ │             │ │   Table   │ │
+│  │ • Personal  │ │ • Basic     │ │ • Time      │ │ • Auth      │ │ • Reviews │ │
+│  │   Info      │ │   Info      │ │   Tracking  │ │   Data      │ │ • Ratings │ │
+│  │ • Contact   │ │ • Manager   │ │ • Hours     │ │ • Roles     │ │ • Goals   │ │
+│  │ • Employment│ │ • Employee  │ │ • Patterns  │ │ • Permissions│ │ • KPIs    │ │
+│  │   Details   │ │   Count     │ │ • Analytics │ │ • Sessions  │ │ • History │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └───────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Technology Stack Architecture
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              Frontend Technologies                             │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────────┐ │
+│  │   React 18  │ │ TypeScript  │ │    Vite     │ │ Material-UI │ │  Zustand  │ │
+│  │             │ │             │ │             │ │             │ │           │ │
+│  │ • Hooks     │ │ • Type      │ │ • Fast      │ │ • Components│ │ • State   │ │
+│  │ • Components│ │   Safety    │ │   Build     │ │ • Theming   │ │   Mgmt    │ │
+│  │ • Context   │ │ • Interfaces│ │ • HMR       │ │ • Icons     │ │ • Persist │ │
+│  │ • Router    │ │ • Generics  │ │ • Dev Server│ │ • Layout    │ │ • Actions │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └───────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        │ Axios + React Query
+                                        │
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              Backend Technologies                              │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────────┐ │
+│  │ ASP.NET 8   │ │ Entity      │ │     JWT     │ │   Reports   │ │  Security │ │
+│  │ Web API     │ │ Framework   │ │    Auth     │ │ Generation  │ │           │ │
+│  │             │ │   Core      │ │             │ │             │ │           │ │
+│  │ • Controllers│ │ • Code First│ │ • Bearer    │ │ • iTextSharp│ │ • BCrypt  │ │
+│  │ • Services  │ │ • Migrations│ │ • Tokens    │ │ • EPPlus    │ │ • CORS    │ │
+│  │ • Middleware│ │ • LINQ      │ │ • Roles     │ │ • PDF/Excel │ │ • HTTPS   │ │
+│  │ • DI        │ │ • MySQL     │ │ • Claims    │ │ • Templates │ │ • Validation│ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └───────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        │ MySQL 8.0 + Docker
+                                        │
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              Infrastructure Layer                              │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌───────────┐ │
+│  │    Docker   │ │   Nginx     │ │   Oracle    │ │     SSL     │ │ Monitoring│ │
+│  │             │ │             │ │    Cloud    │ │             │ │           │ │
+│  │ • Containers│ │ • Reverse   │ │             │ │ • Let's     │ │ • Health  │ │
+│  │ • Compose   │ │   Proxy     │ │ • Always    │ │   Encrypt   │ │   Checks  │ │
+│  │ • Volumes   │ │ • Load      │ │   Free      │ │ • Auto      │ │ • Logging │ │
+│  │ • Networks  │ │   Balance   │ │   Tier      │ │   Renewal   │ │ • Metrics │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └───────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## 📁 Project Structure
 
 ```
 ems/
-├── backend/                          # ASP.NET Web API Backend
+├── backend/                          # ASP.NET Web API Backend (.NET 8)
 │   ├── EMS.API/                     # Main API project
-│   │   ├── Controllers/             # API Controllers
-│   │   │   ├── AuthController.cs    # Authentication endpoints
-│   │   │   ├── EmployeesController.cs # Employee management
+│   │   ├── Controllers/             # API Controllers (6 controllers)
+│   │   │   ├── AuthController.cs    # JWT authentication (login, register)
+│   │   │   ├── EmployeesController.cs # Employee CRUD operations
 │   │   │   ├── DepartmentsController.cs # Department management
-│   │   │   ├── AttendanceController.cs # Attendance tracking
-│   │   │   ├── ReportsController.cs # Report generation
-│   │   │   └── SeedController.cs    # Database seeding
+│   │   │   ├── AttendanceController.cs # Check-in/out, attendance tracking
+│   │   │   ├── ReportsController.cs # PDF/Excel report generation (8 types)
+│   │   │   └── SeedController.cs    # Database seeding endpoints
 │   │   ├── Services/                # Business logic services
-│   │   │   ├── AuthService.cs       # Authentication service
-│   │   │   ├── SeedDataService.cs   # Database seeding
-│   │   │   ├── RefactoredReportService.cs # Report generation
-│   │   │   └── Reports/             # Report generators
-│   │   ├── Repositories/            # Data access layer
-│   │   │   ├── EmployeeRepository.cs
-│   │   │   ├── DepartmentRepository.cs
-│   │   │   └── AttendanceRepository.cs
-│   │   ├── Models/                  # Entity models
-│   │   │   ├── Employee.cs
-│   │   │   ├── Department.cs
-│   │   │   ├── Attendance.cs
-│   │   │   ├── User.cs
-│   │   │   └── PerformanceMetric.cs
+│   │   │   ├── AuthService.cs       # JWT token generation & validation
+│   │   │   ├── SeedDataService.cs   # Comprehensive data seeding
+│   │   │   ├── RefactoredReportService.cs # Report orchestration
+│   │   │   ├── DatabaseSeedingService.cs # 200+ employees, 90 days data
+│   │   │   ├── DatabaseMigrationService.cs # Auto migration on startup
+│   │   │   └── Reports/             # 26 report generators (PDF/Excel/CSV)
+│   │   │       ├── EmployeeDirectory[Pdf|Excel|Csv]Generator.cs
+│   │   │       ├── AttendanceReport[Pdf|Excel|Csv]Generator.cs
+│   │   │       ├── SalaryReport[Pdf|Excel|Csv]Generator.cs
+│   │   │       ├── HiringTrend[Pdf|Excel|Csv]Generator.cs
+│   │   │       ├── DepartmentGrowth[Pdf|Excel|Csv]Generator.cs
+│   │   │       ├── AttendancePattern[Pdf|Excel|Csv]Generator.cs
+│   │   │       └── PerformanceMetrics[Pdf|Excel|Csv]Generator.cs
+│   │   ├── Repositories/            # Data access layer with Repository pattern
+│   │   │   ├── EmployeeRepository.cs # Employee data operations
+│   │   │   ├── DepartmentRepository.cs # Department data operations
+│   │   │   └── AttendanceRepository.cs # Attendance data operations
+│   │   ├── Models/                  # Entity Framework models
+│   │   │   ├── Employee.cs          # Employee entity (personal info, salary)
+│   │   │   ├── Department.cs        # Department entity (name, manager)
+│   │   │   ├── Attendance.cs        # Attendance entity (check-in/out times)
+│   │   │   ├── User.cs              # User entity (authentication)
+│   │   │   └── PerformanceMetric.cs # Performance tracking entity
 │   │   ├── DTOs/                    # Data Transfer Objects
+│   │   │   ├── EmployeeDto.cs       # Employee request/response DTOs
+│   │   │   ├── AuthDto.cs           # Authentication DTOs
+│   │   │   ├── AttendanceDto.cs     # Attendance DTOs
+│   │   │   ├── DepartmentDto.cs     # Department DTOs
+│   │   │   └── PaginationDto.cs     # Pagination response DTO
+│   │   ├── Interfaces/              # Service interfaces
+│   │   │   ├── IEmployeeRepository.cs
+│   │   │   ├── IAuthService.cs
+│   │   │   ├── IAttendanceRepository.cs
+│   │   │   ├── IDepartmentRepository.cs
+│   │   │   └── IReportService.cs
 │   │   ├── Common/                  # Shared utilities
+│   │   │   ├── BaseRepository.cs    # Generic repository base
+│   │   │   ├── EmployeeMapper.cs    # Entity-DTO mapping
+│   │   │   └── UtcDateTimeConverters.cs # DateTime handling
 │   │   ├── Data/                    # Database context
-│   │   └── Migrations/              # Entity Framework migrations
+│   │   │   └── EMSDbContext.cs      # Entity Framework context
+│   │   ├── Migrations/              # Entity Framework migrations
+│   │   │   ├── 20250910163739_InitialCreate.cs
+│   │   │   └── 20250911174002_EnhancedSeedData.cs
+│   │   └── Program.cs               # Application entry point & DI setup
 │   ├── EMS.API.Tests/              # Unit and integration tests
-│   ├── seed-database.bat           # Database management script
-│   └── DATABASE_SEEDING.md         # Seeding documentation
-├── frontend/                        # React.js Frontend
+│   │   ├── Controllers/            # Controller tests (6 test files)
+│   │   ├── HealthCheckTests.cs     # Health check endpoint tests
+│   │   └── TestBase.cs             # Test infrastructure
+│   ├── seed-database.bat           # Windows database management script
+│   ├── db-commands/                # Database initialization scripts
+│   └── DATABASE_SEEDING.md         # Comprehensive seeding documentation
+├── frontend/                        # React.js Frontend (TypeScript + Vite)
 │   ├── src/
-│   │   ├── components/              # React components
+│   │   ├── components/              # React components (20+ components)
 │   │   │   ├── auth/               # Authentication components
-│   │   │   ├── employees/          # Employee management
+│   │   │   │   └── Login.tsx       # Login form with validation
+│   │   │   ├── employees/          # Employee management (3 components)
+│   │   │   │   ├── EmployeeList.tsx # DataGrid with search/filter/pagination
+│   │   │   │   ├── EmployeeForm.tsx # Add/Edit employee form
+│   │   │   │   └── EmployeeDetail.tsx # Employee details view
 │   │   │   ├── departments/        # Department management
+│   │   │   │   └── DepartmentList.tsx # Department CRUD interface
 │   │   │   ├── attendance/         # Attendance tracking
+│   │   │   │   └── Attendance.tsx  # Check-in/out + history view
 │   │   │   ├── reports/            # Reports and analytics
+│   │   │   │   └── Reports.tsx     # Report generation interface
 │   │   │   ├── dashboard/          # Dashboard components
-│   │   │   ├── layout/             # Layout components
-│   │   │   └── common/             # Shared components
-│   │   ├── services/               # API service layer
-│   │   ├── store/                  # State management (Zustand)
-│   │   ├── hooks/                  # Custom React hooks
+│   │   │   │   └── Dashboard.tsx   # Main dashboard with stats/charts
+│   │   │   ├── layout/             # Layout components (2 versions)
+│   │   │   │   ├── Layout.tsx      # Main layout with navigation
+│   │   │   │   └── LayoutRefactored.tsx # Enhanced layout
+│   │   │   └── common/             # Shared components (5 components)
+│   │   │       ├── ConfirmDialog.tsx
+│   │   │       ├── DataTable.tsx
+│   │   │       ├── LoadingSpinner.tsx
+│   │   │       ├── PageHeader.tsx
+│   │   │       └── SearchBar.tsx
+│   │   ├── services/               # API service layer (5 services)
+│   │   │   ├── AttendanceService.ts
+│   │   │   ├── DepartmentService.ts
+│   │   │   ├── EmployeeService.ts
+│   │   │   ├── ReportService.ts
+│   │   │   └── SeedService.ts
+│   │   ├── store/                  # Zustand state management
+│   │   │   ├── auth.ts             # Authentication state
+│   │   │   └── theme.ts            # Theme state (dark/light mode)
+│   │   ├── hooks/                  # Custom React hooks (3 hooks)
+│   │   │   ├── useDocumentTitle.ts # Dynamic page titles
+│   │   │   ├── useEmployeeManagement.ts # Employee operations
+│   │   │   └── useTheme.ts         # Theme management
 │   │   ├── contexts/               # React contexts
+│   │   │   └── ToastContext.tsx    # Toast notifications
 │   │   ├── utils/                  # Utility functions
+│   │   │   └── timezone.ts         # UTC timezone handling
 │   │   └── lib/                    # API client and utilities
+│   │       └── api.ts              # Axios configuration with interceptors
 │   ├── public/                     # Static assets
-│   └── package.json
-├── docs/                           # Comprehensive documentation
-│   ├── API_DOCUMENTATION.md        # API reference
-│   ├── DEPLOYMENT_GUIDE.md         # Deployment instructions
-│   ├── DEVELOPMENT_FLOW.md         # Development workflow
-│   └── Assignment.md               # Project requirements
-├── docker-compose.yml              # Production Docker setup
-├── docker-compose.dev.yml          # Development Docker setup
-├── docker-compose.seed.yml         # Database seeding setup
+│   ├── dist/                       # Production build output
+│   ├── package.json                # Dependencies & scripts
+│   ├── Dockerfile                  # Multi-stage production build
+│   └── nginx.conf                  # Nginx configuration for serving
+├── docs/                           # Comprehensive documentation (4 files)
+│   ├── API_DOCUMENTATION.md        # Complete API reference (722 lines)
+│   ├── DEPLOYMENT_GUIDE.md         # Oracle Cloud deployment (937 lines)
+│   ├── DEVELOPMENT_FLOW.md         # Development workflow (356 lines)
+│   └── Assignment.md               # Original project requirements
+├── docker-compose.yml              # Production Docker setup (4 services)
+├── docker-compose.dev.yml          # Development with hot reload
+├── docker-compose.seed.yml         # Database seeding configuration
+├── docker-compose.dev-seed.yml     # Development + seeding
 ├── DOCKER_SETUP.md                 # Docker documentation
-└── README.md                       # This file
+├── PROJECT_SUMMARY.md              # Project overview and progress
+├── REFACTORING_SUMMARY.md          # Code refactoring details
+├── Makefile                        # Build automation commands
+└── README.md                       # This comprehensive guide
 ```
+
+### 📊 Project Statistics
+- **Backend**: 15+ API endpoints across 6 controllers
+- **Frontend**: 20+ React components with TypeScript
+- **Database**: 5 entities with comprehensive relationships
+- **Reports**: 26 report generators (PDF/Excel/CSV formats)
+- **Tests**: 6 controller test suites + integration tests
+- **Documentation**: 4 comprehensive documentation files (2000+ lines)
+- **Docker**: 4 service containerization with health checks
+- **Seeding**: 200+ employees, 10 departments, 90 days attendance data
 
 ## 🛠️ Technology Stack
 
@@ -345,63 +494,104 @@ npm run dev
 ## 🔌 API Endpoints
 
 ### 🔐 Authentication Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/api/auth/login` | User authentication and JWT token generation | No |
-| `POST` | `/api/auth/register` | User registration with role assignment | No |
+| Method | Endpoint | Description | Features | Auth Required |
+|--------|----------|-------------|----------|---------------|
+| `POST` | `/api/auth/login` | User authentication and JWT token generation | BCrypt password verification, Last login tracking | No |
+| `POST` | `/api/auth/register` | User registration with role assignment | Password hashing, Email validation, Role assignment | No |
+
+**Default Admin Credentials:**
+- Username: `admin` | Password: `admin123` | Role: `Admin`
+- Username: `hr` | Password: `hr123` | Role: `HR`
 
 ### 👥 Employee Management Endpoints
-| Method | Endpoint | Description | Auth Required | Roles |
-|--------|----------|-------------|---------------|-------|
-| `GET` | `/api/employees` | Get paginated employee list with search/filter | Yes | All |
-| `GET` | `/api/employees/{id}` | Get specific employee details | Yes | All |
-| `POST` | `/api/employees` | Create new employee | Yes | Admin, HR |
-| `PUT` | `/api/employees/{id}` | Update employee information | Yes | Admin, HR |
-| `DELETE` | `/api/employees/{id}` | Delete employee | Yes | Admin |
-| `POST` | `/api/employees/bulk` | Bulk import employees from CSV/Excel | Yes | Admin, HR |
+| Method | Endpoint | Description | Features | Auth Required | Roles |
+|--------|----------|-------------|----------|---------------|-------|
+| `GET` | `/api/employees` | Get paginated employee list | Search by name/email, Filter by department/status, Sort by multiple fields, Pagination (max 100) | Yes | All |
+| `GET` | `/api/employees/{id}` | Get specific employee details | Complete employee profile with department info | Yes | All |
+| `POST` | `/api/employees` | Create new employee | Email uniqueness validation, Department validation, Salary validation | Yes | Admin, HR |
+| `PUT` | `/api/employees/{id}` | Update employee information | Partial updates supported, Timestamp tracking | Yes | Admin, HR |
+| `DELETE` | `/api/employees/{id}` | Delete employee (soft delete) | Maintains data integrity, Cascade handling | Yes | Admin |
+| `POST` | `/api/employees/bulk` | Bulk import employees from CSV/Excel | Validation per row, Error reporting, Transaction safety | Yes | Admin, HR |
 
 ### 🏢 Department Management Endpoints
-| Method | Endpoint | Description | Auth Required | Roles |
-|--------|----------|-------------|---------------|-------|
-| `GET` | `/api/departments` | Get all departments | Yes | All |
-| `GET` | `/api/departments/{id}` | Get specific department details | Yes | All |
-| `POST` | `/api/departments` | Create new department | Yes | Admin, HR |
-| `PUT` | `/api/departments/{id}` | Update department information | Yes | Admin, HR |
-| `DELETE` | `/api/departments/{id}` | Delete department | Yes | Admin |
+| Method | Endpoint | Description | Features | Auth Required | Roles |
+|--------|----------|-------------|----------|---------------|-------|
+| `GET` | `/api/departments` | Get all departments | Employee count per department, Manager information | Yes | All |
+| `GET` | `/api/departments/{id}` | Get specific department details | Department employees list, Statistics | Yes | All |
+| `POST` | `/api/departments` | Create new department | Name uniqueness validation, Manager assignment | Yes | Admin, HR |
+| `PUT` | `/api/departments/{id}` | Update department information | Manager reassignment, Description updates | Yes | Admin, HR |
+| `DELETE` | `/api/departments/{id}` | Delete department | Employee reassignment validation, Safe deletion | Yes | Admin |
 
 ### ⏰ Attendance Tracking Endpoints
-| Method | Endpoint | Description | Auth Required | Roles |
-|--------|----------|-------------|---------------|-------|
-| `POST` | `/api/attendance/check-in` | Employee check-in with timestamp | Yes | All |
-| `POST` | `/api/attendance/check-out` | Employee check-out with timestamp | Yes | All |
-| `GET` | `/api/attendance/{employeeId}` | Get employee attendance history | Yes | All |
-| `GET` | `/api/attendance/today/{employeeId}` | Get today's attendance for employee | Yes | All |
+| Method | Endpoint | Description | Features | Auth Required | Roles |
+|--------|----------|-------------|----------|---------------|-------|
+| `POST` | `/api/attendance/check-in` | Employee check-in with timestamp | UTC time handling, Duplicate check-in prevention | Yes | All |
+| `POST` | `/api/attendance/check-out` | Employee check-out with timestamp | Automatic hours calculation, Overtime detection | Yes | All |
+| `GET` | `/api/attendance/{employeeId}` | Get employee attendance history | Date range filtering, Work hours summary, Attendance patterns | Yes | All |
+| `GET` | `/api/attendance/today/{employeeId}` | Get today's attendance for employee | Current day status, Hours worked | Yes | All |
 
 ### 📊 Report Generation Endpoints
-| Method | Endpoint | Description | Auth Required | Roles | Format |
-|--------|----------|-------------|---------------|-------|--------|
-| `GET` | `/api/reports/directory` | Employee directory report | Yes | All | PDF/Excel |
-| `GET` | `/api/reports/departments` | Department analytics report | Yes | All | PDF/Excel |
-| `GET` | `/api/reports/attendance` | Attendance analysis report | Yes | All | PDF/Excel |
-| `GET` | `/api/reports/salary` | Salary and compensation report | Yes | Admin, HR | PDF/Excel |
-| `GET` | `/api/reports/hiring-trends` | Hiring trend analysis | Yes | Admin, HR | PDF/Excel |
-| `GET` | `/api/reports/department-growth` | Department growth tracking | Yes | Admin, HR | PDF/Excel |
-| `GET` | `/api/reports/attendance-patterns` | Attendance pattern analysis | Yes | Admin, HR | PDF/Excel |
-| `GET` | `/api/reports/performance-metrics` | Performance metrics report | Yes | Admin, HR | PDF/Excel |
+| Method | Endpoint | Description | Features | Formats | Auth Required | Roles |
+|--------|----------|-------------|----------|---------|---------------|-------|
+| `GET` | `/api/reports/employees` | Employee directory report | Complete employee listings with contact info | CSV/PDF/Excel | Yes | Admin, HR, Manager |
+| `GET` | `/api/reports/departments` | Department analytics report | Department breakdown, employee distribution | CSV/PDF/Excel | Yes | All |
+| `GET` | `/api/reports/attendance` | Attendance analysis report | Date range filtering, attendance statistics | CSV/PDF/Excel | Yes | All |
+| `GET` | `/api/reports/salaries` | Salary and compensation report | Salary ranges, department averages, confidential data | CSV/PDF/Excel | Yes | Admin, HR |
+| `GET` | `/api/reports/hiring-trends` | Hiring trend analysis | Monthly/yearly hiring patterns, growth metrics | CSV/PDF/Excel | Yes | All |
+| `GET` | `/api/reports/department-growth` | Department growth tracking | Department expansion over time, headcount trends | CSV/PDF/Excel | Yes | All |
+| `GET` | `/api/reports/attendance-patterns` | Attendance pattern analysis | Work behavior analysis, attendance insights | CSV/PDF/Excel | Yes | All |
+| `GET` | `/api/reports/performance-metrics` | Performance metrics report | Employee performance data, quarterly reviews | CSV/PDF/Excel | Yes | Admin, HR |
+
+**Report Features:**
+- **PDF Reports**: Professional formatting with iTextSharp, company branding, charts
+- **Excel Reports**: Advanced formatting with EPPlus, formulas, conditional formatting
+- **CSV Reports**: Data export for external analysis, raw data format
 
 ### 🌱 Database Seeding Endpoints (Admin Only)
-| Method | Endpoint | Description | Auth Required | Roles |
-|--------|----------|-------------|---------------|-------|
-| `POST` | `/api/seed/seed` | Seed database with initial test data | Yes | Admin |
-| `POST` | `/api/seed/reseed` | Clear and reseed with fresh data | Yes | Admin |
-| `DELETE` | `/api/seed/clear` | Clear all data from database | Yes | Admin |
-| `GET` | `/api/seed/status` | Get current database record counts | Yes | Admin |
+| Method | Endpoint | Description | Features | Auth Required | Roles |
+|--------|----------|-------------|----------|---------------|-------|
+| `POST` | `/api/seed/seed` | Seed database with initial test data | 200+ employees, 10 departments, 90 days attendance, 2 years performance data | Yes | Admin |
+| `POST` | `/api/seed/reseed` | Clear and reseed with fresh data | Complete data reset, fresh realistic data generation | Yes | Admin |
+| `DELETE` | `/api/seed/clear` | Clear all data from database | Safe cascading deletion, foreign key handling | Yes | Admin |
+| `GET` | `/api/seed/status` | Get current database record counts | Table statistics, data verification | Yes | Admin |
 
-### 📋 System Health Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/health` | System health check | No |
-| `GET` | `/swagger` | API documentation (Swagger UI) | No |
+**Seeding Features:**
+- **Realistic Data**: Names, emails, addresses, phone numbers
+- **Consistent Relationships**: Proper department assignments, manager hierarchies
+- **Time-based Data**: Realistic hire dates, attendance patterns, performance cycles
+- **Configurable**: Environment-based seeding options
+
+### 📋 System Health & Monitoring Endpoints
+| Method | Endpoint | Description | Features | Auth Required |
+|--------|----------|-------------|----------|---------------|
+| `GET` | `/health` | System health check | Database connectivity, service status, timestamp | No |
+| `GET` | `/swagger` | API documentation (Swagger UI) | Interactive API testing, endpoint documentation | No |
+
+### 🔧 Technical Implementation Details
+
+**Authentication & Security:**
+- **JWT Tokens**: HS256 algorithm, 60-minute expiration, role-based claims
+- **Password Security**: BCrypt hashing with salt, minimum 6 characters
+- **CORS**: Configured for localhost and production domains
+- **Rate Limiting**: Built-in ASP.NET rate limiting (future enhancement)
+
+**Data Validation:**
+- **Model Validation**: DataAnnotations with custom validators
+- **Business Rules**: Service-level validation logic
+- **Database Constraints**: Entity Framework constraints and indexes
+- **Input Sanitization**: XSS protection, SQL injection prevention
+
+**Performance Optimizations:**
+- **Pagination**: Efficient large dataset handling
+- **Lazy Loading**: Related entity loading optimization
+- **Caching**: Memory caching for frequently accessed data
+- **Query Optimization**: LINQ query optimization, indexing strategy
+
+**Error Handling:**
+- **Global Exception Handling**: Centralized error processing
+- **Structured Logging**: Serilog integration with request tracking
+- **User-Friendly Messages**: Abstracted technical errors
+- **Development vs Production**: Different error detail levels
 
 ## 🚀 Deployment
 

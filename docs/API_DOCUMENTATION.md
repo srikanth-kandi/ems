@@ -4,6 +4,14 @@
 
 The Employee Management System (EMS) API provides a comprehensive RESTful interface for managing employees, departments, attendance, and generating reports. Built with ASP.NET Web API (.NET 8), it offers secure, scalable, and well-documented endpoints for all HR management operations.
 
+### 🚀 API Highlights
+- **15+ Endpoints**: Comprehensive coverage of HR operations
+- **JWT Authentication**: Secure token-based authentication with role-based access
+- **Advanced Reporting**: PDF/Excel generation with 8 different report types
+- **Data Seeding**: 200+ employees with 90 days of attendance data
+- **Production Ready**: Deployed on Oracle Cloud with SSL encryption
+- **Interactive Documentation**: Swagger UI for API testing and exploration
+
 ## 🌐 Base URLs
 - **Development**: `http://localhost:5000/api`
 - **Production**: `https://api.ems.srikanthkandi.tech/api`
@@ -574,23 +582,85 @@ Generate salary report.
 **Query Parameters:**
 - `format` (optional): "pdf" or "excel" (default: "pdf")
 
-### Bonus Features
+### 🌟 Advanced Analytics Reports
 
 #### GET /reports/hiring-trends
-Generate hiring trend analysis report.
+Generate comprehensive hiring trend analysis report.
+
+**Description:** Analyzes hiring patterns over time, providing insights into recruitment trends, seasonal variations, and growth metrics.
+
+**Query Parameters:**
+- `format` (optional): "pdf", "excel", or "csv" (default: "csv")
+- `startDate` (optional): Start date for analysis
+- `endDate` (optional): End date for analysis
+
+**Features:**
+- Monthly and yearly hiring trends
+- Department-wise hiring patterns
+- Growth rate calculations
+- Visual charts in PDF format
+- Raw data export in CSV/Excel
+
+**Response:** File download with hiring trend analysis
 
 #### GET /reports/department-growth
 Generate department growth tracking report.
 
+**Description:** Tracks department expansion over time, showing headcount changes, growth rates, and organizational development.
+
+**Query Parameters:**
+- `format` (optional): "pdf", "excel", or "csv" (default: "csv")
+- `departmentId` (optional): Specific department analysis
+
+**Features:**
+- Department size evolution
+- Growth percentage calculations
+- Comparative analysis between departments
+- Timeline visualization
+- Headcount predictions
+
+**Response:** File download with department growth metrics
+
 #### GET /reports/attendance-patterns
-Generate attendance pattern analysis report.
+Generate comprehensive attendance pattern analysis report.
+
+**Description:** Analyzes employee work behavior patterns, identifying trends in check-in times, work hours, and attendance regularity.
+
+**Query Parameters:**
+- `format` (optional): "pdf", "excel", or "csv" (default: "csv")
+- `employeeId` (optional): Specific employee analysis
+- `startDate` (optional): Analysis start date
+- `endDate` (optional): Analysis end date
+
+**Features:**
+- Average work hours analysis
+- Check-in/check-out time patterns
+- Attendance regularity scoring
+- Overtime trend analysis
+- Department-wise comparisons
+
+**Response:** File download with attendance behavior insights
 
 #### GET /reports/performance-metrics
-Generate performance metrics report.
+Generate detailed performance metrics report.
+
+**Description:** Comprehensive employee performance evaluation report with quarterly reviews, performance scores, and goal tracking.
 
 **Query Parameters:**
 - `employeeId` (optional): Specific employee ID
-- `format` (optional): "pdf" or "excel" (default: "pdf")
+- `format` (optional): "pdf", "excel", or "csv" (default: "csv")
+- `year` (optional): Performance year
+- `quarter` (optional): Specific quarter (1-4)
+
+**Features:**
+- Performance score tracking
+- Goal achievement analysis
+- Quarterly review summaries
+- Performance trend visualization
+- Department performance comparisons
+- Individual vs team performance metrics
+
+**Response:** File download with performance evaluation data
 
 ## Error Responses
 

@@ -7,12 +7,14 @@ This comprehensive deployment guide covers multiple deployment options for the E
 ## 🏗️ Architecture Overview
 
 ### Production Environment
-- **Frontend**: `https://ems.srikanthkandi.tech` (React.js SPA)
-- **Backend API**: `https://api.ems.srikanthkandi.tech` (ASP.NET Web API)
-- **Database**: Oracle Cloud MySQL Database Service (Always Free)
-- **Server**: Ubuntu 22.04 LTS (VM.Standard.E2.1.Micro - Always Free)
-- **Load Balancer**: Nginx with SSL termination
-- **SSL**: Let's Encrypt certificates with auto-renewal
+- **Frontend**: `https://ems.srikanthkandi.tech` (React.js SPA with Nginx)
+- **Backend API**: `https://api.ems.srikanthkandi.tech` (ASP.NET Web API .NET 8)
+- **Database**: Oracle Cloud MySQL Database Service (Always Free - 25GB)
+- **Server**: Ubuntu 22.04 LTS (VM.Standard.E2.1.Micro - Always Free - 1GB RAM)
+- **Load Balancer**: Nginx reverse proxy with SSL termination and gzip compression
+- **SSL**: Let's Encrypt certificates with automatic renewal via cron
+- **Container Management**: Docker Compose with health checks and auto-restart
+- **Monitoring**: Built-in health endpoints and Oracle Cloud monitoring
 
 ### Development Environment
 - **Frontend**: `http://localhost:3000` (Vite dev server)
