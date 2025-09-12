@@ -87,7 +87,7 @@ export default function EmployeeList() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState<number | ''>('');
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [selectedRows, setSelectedRows] = useState<any>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -450,14 +450,15 @@ export default function EmployeeList() {
   };
 
   const onBulkDelete = async () => {
-    if (selectedRows.length === 0) {
+    const selectedIds = Array.isArray(selectedRows) ? selectedRows : [];
+    if (selectedIds.length === 0) {
       showSnackbar('Please select employees to delete', 'error');
       return;
     }
     
     try {
-      await api.bulkDeleteEmployees(selectedRows);
-      showSnackbar(`${selectedRows.length} employees deleted successfully`);
+      await api.bulkDeleteEmployees(selectedIds);
+      showSnackbar(`${selectedIds.length} employees deleted successfully`);
       setSelectedRows([]);
       await load();
     } catch (error) {
@@ -561,7 +562,7 @@ export default function EmployeeList() {
                   </Button>
                 </RoleGuard>
                 <RoleGuard allowedRoles={['Admin']}>
-                  {selectedRows.length > 0 && (
+                  {Array.isArray(selectedRows) && selectedRows.length > 0 && (
                     <Button
                       variant="contained"
                       startIcon={<DeleteIcon />}
@@ -709,9 +710,10 @@ export default function EmployeeList() {
               }}
               checkboxSelection
               onRowSelectionModelChange={(newSelection) => {
-                setSelectedRows(newSelection as unknown as number[]);
+                setSelectedRows(newSelection);
               }}
-              rowSelectionModel={selectedRows as any}
+              rowSelectionModel={selectedRows}
+              disableRowSelectionOnClick
               sx={{
                 '& .MuiDataGrid-root': {
                   border: 'none',
