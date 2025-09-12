@@ -485,7 +485,7 @@ export default function DepartmentList() {
           }}
         >
           <Box sx={{ 
-            height: { xs: 500, sm: 600, md: 700 },
+            height: Math.max(400, Math.min(700, (filteredRows.length + 1) * 52 + 100)),
             width: '100%',
             overflow: 'auto',
           }}>

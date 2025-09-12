@@ -1,28 +1,36 @@
 # Employee Management System - API Documentation
 
-## Base URL
+## 📋 Overview
+
+The Employee Management System (EMS) API provides a comprehensive RESTful interface for managing employees, departments, attendance, and generating reports. Built with ASP.NET Web API (.NET 8), it offers secure, scalable, and well-documented endpoints for all HR management operations.
+
+## 🌐 Base URLs
 - **Development**: `http://localhost:5000/api`
 - **Production**: `https://api.ems.srikanthkandi.tech/api`
+- **Swagger UI**: `https://api.ems.srikanthkandi.tech/swagger`
 
-## Authentication
-All endpoints (except login/register) require JWT authentication. Include the token in the Authorization header:
+## 🔐 Authentication
+
+The API uses JWT (JSON Web Token) based authentication. All endpoints except login and register require authentication.
+
+### Authentication Header
+Include the JWT token in the Authorization header for all protected endpoints:
 ```
 Authorization: Bearer <your-jwt-token>
 ```
 
-## API Endpoints
+### Token Information
+- **Token Type**: JWT (JSON Web Token)
+- **Algorithm**: HS256
+- **Expiration**: 60 minutes (configurable)
+- **Refresh**: Automatic token refresh on frontend
+- **Roles**: Admin, HR, Manager, User
 
-### Authentication
-
-#### POST /auth/login
-Authenticate user and get JWT token.
-
-**Request Body:**
-```json
-{
-  "username": "admin",
-  "password": "admin123"
-}
+### Getting a Token
+```bash
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
 ```
 
 **Response:**
@@ -36,8 +44,54 @@ Authenticate user and get JWT token.
 }
 ```
 
+## 📚 API Endpoints
+
+### 🔐 Authentication Endpoints
+
+#### POST /auth/login
+Authenticate user and get JWT token.
+
+**Description:** Authenticates a user with username and password, returning a JWT token for subsequent API calls.
+
+**Request Body:**
+```json
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+**Validation Rules:**
+- `username`: Required, string, max 50 characters
+- `password`: Required, string, min 6 characters
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "username": "admin",
+  "email": "admin@ems.com",
+  "role": "Admin",
+  "expiresAt": "2024-01-01T12:00:00Z"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request`: Invalid request body or validation errors
+- `401 Unauthorized`: Invalid credentials
+- `500 Internal Server Error`: Server error
+
+**Example Usage:**
+```bash
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+```
+
 #### POST /auth/register
-Register a new user.
+Register a new user account.
+
+**Description:** Creates a new user account with the specified credentials and role.
 
 **Request Body:**
 ```json
@@ -49,7 +103,13 @@ Register a new user.
 }
 ```
 
-**Response:**
+**Validation Rules:**
+- `username`: Required, string, max 50 characters, unique
+- `email`: Required, valid email format, max 255 characters, unique
+- `password`: Required, string, min 6 characters
+- `role`: Optional, string, default "User", values: Admin, HR, Manager, User
+
+**Response (200 OK):**
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -60,18 +120,39 @@ Register a new user.
 }
 ```
 
-### Employee Management
+**Error Responses:**
+- `400 Bad Request`: Invalid request body or validation errors
+- `409 Conflict`: Username or email already exists
+- `500 Internal Server Error`: Server error
+
+**Example Usage:**
+```bash
+curl -X POST http://localhost:5000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"newuser","email":"user@example.com","password":"password123","role":"User"}'
+```
+
+### 👥 Employee Management Endpoints
 
 #### GET /employees
-Get all employees with pagination.
+Get paginated list of employees with search and filtering capabilities.
+
+**Description:** Retrieves a paginated list of employees with optional search and filtering options.
+
+**Authentication:** Required (All roles)
 
 **Query Parameters:**
-- `page` (optional): Page number (default: 1)
-- `pageSize` (optional): Items per page (default: 10)
-- `search` (optional): Search term for name or email
-- `departmentId` (optional): Filter by department
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `page` | integer | No | 1 | Page number (1-based) |
+| `pageSize` | integer | No | 10 | Items per page (max 100) |
+| `search` | string | No | - | Search term for name or email |
+| `departmentId` | integer | No | - | Filter by department ID |
+| `isActive` | boolean | No | - | Filter by active status |
+| `sortBy` | string | No | "firstName" | Sort field (firstName, lastName, email, dateOfJoining) |
+| `sortOrder` | string | No | "asc" | Sort order (asc, desc) |
 
-**Response:**
+**Response (200 OK):**
 ```json
 {
   "data": [
@@ -100,10 +181,38 @@ Get all employees with pagination.
 }
 ```
 
-#### GET /employees/{id}
-Get employee by ID.
+**Error Responses:**
+- `401 Unauthorized`: Missing or invalid authentication token
+- `500 Internal Server Error`: Server error
 
-**Response:**
+**Example Usage:**
+```bash
+# Get first page of employees
+curl -X GET "http://localhost:5000/api/employees" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+
+# Search employees by name
+curl -X GET "http://localhost:5000/api/employees?search=john" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+
+# Filter by department with pagination
+curl -X GET "http://localhost:5000/api/employees?departmentId=1&page=2&pageSize=20" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+#### GET /employees/{id}
+Get specific employee by ID.
+
+**Description:** Retrieves detailed information for a specific employee by their unique identifier.
+
+**Authentication:** Required (All roles)
+
+**Path Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Employee ID |
+
+**Response (200 OK):**
 ```json
 {
   "id": 1,
@@ -124,8 +233,23 @@ Get employee by ID.
 }
 ```
 
+**Error Responses:**
+- `401 Unauthorized`: Missing or invalid authentication token
+- `404 Not Found`: Employee with specified ID not found
+- `500 Internal Server Error`: Server error
+
+**Example Usage:**
+```bash
+curl -X GET "http://localhost:5000/api/employees/1" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
 #### POST /employees
 Create a new employee.
+
+**Description:** Creates a new employee record with the provided information.
+
+**Authentication:** Required (Admin, HR roles)
 
 **Request Body:**
 ```json
@@ -143,7 +267,19 @@ Create a new employee.
 }
 ```
 
-**Response:**
+**Validation Rules:**
+- `firstName`: Required, string, max 100 characters
+- `lastName`: Required, string, max 100 characters
+- `email`: Required, valid email format, max 255 characters, unique
+- `phoneNumber`: Optional, string, max 20 characters
+- `address`: Optional, string, max 500 characters
+- `dateOfBirth`: Required, valid date
+- `dateOfJoining`: Required, valid date
+- `position`: Optional, string, max 100 characters
+- `salary`: Required, positive decimal
+- `departmentId`: Required, valid department ID
+
+**Response (201 Created):**
 ```json
 {
   "id": 2,
@@ -164,8 +300,43 @@ Create a new employee.
 }
 ```
 
+**Error Responses:**
+- `400 Bad Request`: Invalid request body or validation errors
+- `401 Unauthorized`: Missing or invalid authentication token
+- `403 Forbidden`: Insufficient permissions
+- `409 Conflict`: Email already exists
+- `500 Internal Server Error`: Server error
+
+**Example Usage:**
+```bash
+curl -X POST "http://localhost:5000/api/employees" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "email": "jane.smith@company.com",
+    "phoneNumber": "+1234567891",
+    "address": "456 Oak Ave, City, State",
+    "dateOfBirth": "1992-05-15T00:00:00Z",
+    "dateOfJoining": "2024-01-01T00:00:00Z",
+    "position": "Marketing Manager",
+    "salary": 65000.00,
+    "departmentId": 4
+  }'
+```
+
 #### PUT /employees/{id}
 Update an existing employee.
+
+**Description:** Updates an existing employee record with the provided information.
+
+**Authentication:** Required (Admin, HR roles)
+
+**Path Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Employee ID to update |
 
 **Request Body:**
 ```json
@@ -184,10 +355,40 @@ Update an existing employee.
 }
 ```
 
+**Response (200 OK):**
+```json
+{
+  "id": 2,
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@company.com",
+  "phoneNumber": "+1234567891",
+  "address": "456 Oak Ave, City, State",
+  "dateOfBirth": "1992-05-15T00:00:00Z",
+  "dateOfJoining": "2024-01-01T00:00:00Z",
+  "position": "Senior Marketing Manager",
+  "salary": 75000.00,
+  "departmentId": 4,
+  "departmentName": "Marketing",
+  "isActive": true,
+  "createdAt": "2024-01-01T00:00:00Z",
+  "updatedAt": "2024-01-01T12:00:00Z"
+}
+```
+
 #### DELETE /employees/{id}
 Delete an employee.
 
-**Response:**
+**Description:** Permanently deletes an employee record from the system.
+
+**Authentication:** Required (Admin role only)
+
+**Path Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Employee ID to delete |
+
+**Response (200 OK):**
 ```json
 {
   "message": "Employee deleted successfully"
@@ -195,12 +396,18 @@ Delete an employee.
 ```
 
 #### POST /employees/bulk
-Bulk import employees from CSV/Excel.
+Bulk import employees from CSV/Excel file.
+
+**Description:** Imports multiple employees from a CSV or Excel file.
+
+**Authentication:** Required (Admin, HR roles)
 
 **Request Body:** (multipart/form-data)
-- `file`: CSV or Excel file containing employee data
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `file` | file | Yes | CSV or Excel file containing employee data |
 
-**Response:**
+**Response (200 OK):**
 ```json
 {
   "message": "Bulk import completed successfully",
@@ -209,6 +416,12 @@ Bulk import employees from CSV/Excel.
   "errors": []
 }
 ```
+
+**Error Responses:**
+- `400 Bad Request`: Invalid file format or validation errors
+- `401 Unauthorized`: Missing or invalid authentication token
+- `403 Forbidden`: Insufficient permissions
+- `500 Internal Server Error`: Server error
 
 ### Department Management
 

@@ -233,7 +233,7 @@ export default function EmployeeListRefactored() {
             overflow: 'hidden',
           }}
         >
-          <Box sx={{ height: 600, width: '100%' }}>
+          <Box sx={{ height: Math.max(400, Math.min(700, (employees.length + 1) * 52 + 100)), width: '100%' }}>
             <DataGrid 
               rows={employees} 
               columns={columns} 

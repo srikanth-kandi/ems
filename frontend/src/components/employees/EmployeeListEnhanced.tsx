@@ -401,7 +401,7 @@ export default function EmployeeListEnhanced() {
           </Tabs>
         </Box>
         <TabPanel value={tabValue} index={0}>
-          <div style={{ height: 520, width: "100%" }}>
+          <div style={{ height: Math.max(400, Math.min(700, (rows.length + 1) * 52 + 100)), width: "100%" }}>
             <DataGrid
               rows={rows}
               columns={columns}

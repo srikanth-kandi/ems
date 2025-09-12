@@ -267,9 +267,10 @@ export default function Attendance() {
                   sx={{ 
                     mt: 1,
                     p: 1,
-                    bgcolor: "grey.50",
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.800' : 'grey.50',
                     borderRadius: 1,
                     fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                    border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'grey.700' : 'grey.200'}`,
                   }}
                 >
                   <strong>Notes:</strong> {a.notes}
