@@ -107,8 +107,13 @@ coverage/
 # pnpm-lock.yaml
 
 # Docker
-.dockerignore
+# .dockerignore  # Commented out to allow .dockerignore files
 docker-compose.override.yml
+
+# Explicitly include Docker and Make files
+!.dockerignore
+!Makefile
+!makefile
 
 # Kubernetes
 *.kubeconfig
@@ -378,7 +383,7 @@ CMakeCache.txt
 CMakeFiles/
 CMakeScripts/
 Testing/
-Makefile
+# Makefile  # Commented out to allow Makefile files
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json

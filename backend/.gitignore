@@ -404,3 +404,8 @@ appsettings.Staging.json
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Explicitly include Docker and Make files
+!.dockerignore
+!Makefile
+!makefile

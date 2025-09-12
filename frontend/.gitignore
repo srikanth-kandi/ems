@@ -300,6 +300,11 @@ yarn-audit-results.json
 # Explicitly include lib folder
 !src/lib/
 
+# Explicitly include Docker and Make files
+!.dockerignore
+!Makefile
+!makefile
+
 # Dependencies
 node_modules/
 .pnp
@@ -533,3 +538,8 @@ yarn-audit-results.json
 
 # Explicitly include lib folder
 !src/lib/
+
+# Explicitly include Docker and Make files
+!.dockerignore
+!Makefile
+!makefile
