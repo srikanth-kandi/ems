@@ -252,23 +252,18 @@ export default function EmployeeListEnhanced() {
         return {
           firstName: firstName?.trim(),
           lastName: lastName?.trim(),
-          name: `${firstName?.trim()} ${lastName?.trim()}`,
           email: email?.trim(),
-          department: "IT", // Placeholder
           departmentId: parseInt(departmentId?.trim()) || 1,
-          departmentName: "Information Technology", // Placeholder
           position: position?.trim() || "",
           salary: parseFloat(salary?.trim()) || 0,
-          isActive: true, // Default value
+          isActive: true,
           dateOfBirth: "1990-01-01",
           dateOfJoining: new Date().toISOString().split("T")[0],
         };
       });
 
-      // Create employees one by one (in real app, you'd have a bulk endpoint)
-      for (const employee of employees) {
-        await api.createEmployee(employee);
-      }
+      // Use bulk create endpoint
+      await api.bulkCreateEmployees(employees);
 
       setSnackbar({
         open: true,
@@ -277,7 +272,8 @@ export default function EmployeeListEnhanced() {
       });
       setBulkData("");
       await load();
-    } catch {
+    } catch (error) {
+      console.error('Bulk create error:', error);
       setSnackbar({
         open: true,
         message: "Error creating employees",

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using EMS.API.DTOs;
 using EMS.API.Interfaces;
 
@@ -6,6 +7,7 @@ namespace EMS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class EmployeesController : ControllerBase
 {
     private readonly IEmployeeRepository _employeeRepository;
@@ -52,6 +54,7 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<ActionResult<EmployeeDto>> CreateEmployee(CreateEmployeeDto createEmployeeDto)
     {
         try
@@ -72,6 +75,7 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> UpdateEmployee(int id, UpdateEmployeeDto updateEmployeeDto)
     {
         try
@@ -97,6 +101,7 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteEmployee(int id)
     {
         try
@@ -117,6 +122,7 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpPost("bulk")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<ActionResult<IEnumerable<EmployeeDto>>> BulkCreateEmployees([FromBody] IEnumerable<CreateEmployeeDto> employees)
     {
         try
@@ -141,6 +147,7 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpDelete("bulk")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> BulkDeleteEmployees([FromBody] IEnumerable<int> employeeIds)
     {
         try

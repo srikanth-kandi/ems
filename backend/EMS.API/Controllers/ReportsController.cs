@@ -1,10 +1,12 @@
 using EMS.API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EMS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ReportsController : ControllerBase
 {
     private readonly IReportService _reportService;
@@ -14,7 +16,8 @@ public class ReportsController : ControllerBase
         _reportService = reportService;
     }
 
-    [HttpGet("employees")] 
+    [HttpGet("employees")]
+    [Authorize(Roles = "Admin,HR,Manager")]
     public async Task<IActionResult> Employees()
     {
         var bytes = await _reportService.GenerateEmployeeDirectoryReportAsync();
@@ -36,6 +39,7 @@ public class ReportsController : ControllerBase
     }
 
     [HttpGet("salaries")]
+    [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> Salaries()
     {
         var bytes = await _reportService.GenerateSalaryReportAsync();

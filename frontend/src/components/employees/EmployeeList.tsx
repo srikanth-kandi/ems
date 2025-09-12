@@ -31,6 +31,7 @@ import {
   Zoom,
 } from '@mui/material';
 import { convertUtcToLocalDate, formatDateForInput } from '../../utils/timezone';
+import RoleGuard from '../common/RoleGuard';
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -86,12 +87,14 @@ export default function EmployeeList() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState<number | ''>('');
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success' as 'success' | 'error',
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const load = async () => {
     setLoading(true);
@@ -116,6 +119,47 @@ export default function EmployeeList() {
 
   const showSnackbar = (message: string, severity: 'success' | 'error' = 'success') => {
     setSnackbar({ open: true, message, severity });
+  };
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    
+    if (!form.firstName?.trim()) {
+      errors.firstName = 'First name is required';
+    }
+    
+    if (!form.lastName?.trim()) {
+      errors.lastName = 'Last name is required';
+    }
+    
+    if (!form.email?.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    if (!form.position?.trim()) {
+      errors.position = 'Position is required';
+    }
+    
+    if (!form.salary || form.salary <= 0) {
+      errors.salary = 'Salary must be greater than 0';
+    }
+    
+    if (!form.departmentId) {
+      errors.departmentId = 'Department is required';
+    }
+    
+    if (form.dateOfBirth && new Date(form.dateOfBirth) > new Date()) {
+      errors.dateOfBirth = 'Date of birth cannot be in the future';
+    }
+    
+    if (form.dateOfJoining && new Date(form.dateOfJoining) > new Date()) {
+      errors.dateOfJoining = 'Date of joining cannot be in the future';
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleDownload = async (format: 'pdf' | 'excel' | 'csv') => {
@@ -310,32 +354,36 @@ export default function EmployeeList() {
           width: '100%'
         }}>
           <Stack direction="row" spacing={0.5}>
-            <Tooltip title="Edit">
-              <IconButton 
-                size="small" 
-                color="primary"
-                onClick={() => onEdit(params.row)}
-                sx={{ 
-                  bgcolor: 'primary.50',
-                  '&:hover': { bgcolor: 'primary.100' }
-                }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete">
-              <IconButton 
-                size="small" 
-                color="error"
-                onClick={() => onDelete(params.row.id)}
-                sx={{ 
-                  bgcolor: 'error.50',
-                  '&:hover': { bgcolor: 'error.100' }
-                }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            <RoleGuard allowedRoles={['Admin', 'HR']}>
+              <Tooltip title="Edit">
+                <IconButton 
+                  size="small" 
+                  color="primary"
+                  onClick={() => onEdit(params.row)}
+                  sx={{ 
+                    bgcolor: 'primary.50',
+                    '&:hover': { bgcolor: 'primary.100' }
+                  }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </RoleGuard>
+            <RoleGuard allowedRoles={['Admin']}>
+              <Tooltip title="Delete">
+                <IconButton 
+                  size="small" 
+                  color="error"
+                  onClick={() => onDelete(params.row.id)}
+                  sx={{ 
+                    bgcolor: 'error.50',
+                    '&:hover': { bgcolor: 'error.100' }
+                  }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </RoleGuard>
           </Stack>
         </Box>
       )
@@ -370,16 +418,22 @@ export default function EmployeeList() {
   };
 
   const onSave = async () => {
-    try {
-    if (editingId) {
-      await api.updateEmployee(editingId, form);
-        showSnackbar('Employee updated successfully');
-    } else {
-      await api.createEmployee(form);
-        showSnackbar('Employee created successfully');
+    if (!validateForm()) {
+      showSnackbar('Please fix the form errors', 'error');
+      return;
     }
-    setOpen(false);
-    await load();
+    
+    try {
+      if (editingId) {
+        await api.updateEmployee(editingId, form);
+        showSnackbar('Employee updated successfully');
+      } else {
+        await api.createEmployee(form);
+        showSnackbar('Employee created successfully');
+      }
+      setOpen(false);
+      setFormErrors({});
+      await load();
     } catch (error) {
       showSnackbar('Error saving employee', 'error');
     }
@@ -392,6 +446,22 @@ export default function EmployeeList() {
     await load();
     } catch (error) {
       showSnackbar('Error deleting employee', 'error');
+    }
+  };
+
+  const onBulkDelete = async () => {
+    if (selectedRows.length === 0) {
+      showSnackbar('Please select employees to delete', 'error');
+      return;
+    }
+    
+    try {
+      await api.bulkDeleteEmployees(selectedRows);
+      showSnackbar(`${selectedRows.length} employees deleted successfully`);
+      setSelectedRows([]);
+      await load();
+    } catch (error) {
+      showSnackbar('Error deleting employees', 'error');
     }
   };
 
@@ -467,27 +537,54 @@ export default function EmployeeList() {
                 spacing={{ xs: 1, sm: 2 }}
                 sx={{ width: { xs: "100%", md: "auto" } }}
               >
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={onCreate}
-                  sx={{
-                    bgcolor: 'rgba(255,255,255,0.2)',
-                    color: 'white',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    '&:hover': {
-                      bgcolor: 'rgba(255,255,255,0.3)',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                    },
-                    transition: 'all 0.3s ease',
-                    width: { xs: "100%", sm: "auto" },
-                    py: { xs: 1.5, sm: 1 },
-                  }}
-                >
-                  Add Employee
-                </Button>
+                <RoleGuard allowedRoles={['Admin', 'HR']}>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={onCreate}
+                    sx={{
+                      bgcolor: 'rgba(255,255,255,0.2)',
+                      color: 'white',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      '&:hover': {
+                        bgcolor: 'rgba(255,255,255,0.3)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                      },
+                      transition: 'all 0.3s ease',
+                      width: { xs: "100%", sm: "auto" },
+                      py: { xs: 1.5, sm: 1 },
+                    }}
+                  >
+                    Add Employee
+                  </Button>
+                </RoleGuard>
+                <RoleGuard allowedRoles={['Admin']}>
+                  {selectedRows.length > 0 && (
+                    <Button
+                      variant="contained"
+                      startIcon={<DeleteIcon />}
+                      onClick={onBulkDelete}
+                      sx={{
+                        bgcolor: 'rgba(244, 67, 54, 0.8)',
+                        color: 'white',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(244, 67, 54, 0.3)',
+                        '&:hover': {
+                          bgcolor: 'rgba(244, 67, 54, 0.9)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(244, 67, 54, 0.3)',
+                        },
+                        transition: 'all 0.3s ease',
+                        width: { xs: "100%", sm: "auto" },
+                        py: { xs: 1.5, sm: 1 },
+                      }}
+                    >
+                      Delete Selected ({selectedRows.length})
+                    </Button>
+                  )}
+                </RoleGuard>
                 <IconButton
                   onClick={handleMenuClick}
                   sx={{
@@ -610,6 +707,11 @@ export default function EmployeeList() {
                   paginationModel: { pageSize: 10 } 
                 } 
               }}
+              checkboxSelection
+              onRowSelectionModelChange={(newSelection) => {
+                setSelectedRows(newSelection as unknown as number[]);
+              }}
+              rowSelectionModel={selectedRows as any}
               sx={{
                 '& .MuiDataGrid-root': {
                   border: 'none',
@@ -709,6 +811,8 @@ export default function EmployeeList() {
                 onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                 fullWidth
                 required
+                error={!!formErrors.firstName}
+                helperText={formErrors.firstName}
               />
               <TextField 
                 label="Last Name" 
@@ -716,6 +820,8 @@ export default function EmployeeList() {
                 onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                 fullWidth
                 required
+                error={!!formErrors.lastName}
+                helperText={formErrors.lastName}
               />
             </Stack>
             <TextField 
@@ -725,6 +831,8 @@ export default function EmployeeList() {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               fullWidth
               required
+              error={!!formErrors.email}
+              helperText={formErrors.email}
             />
             <Stack direction="row" spacing={2}>
               <TextField 
@@ -740,7 +848,7 @@ export default function EmployeeList() {
                 fullWidth
               />
             </Stack>
-            <FormControl fullWidth required>
+            <FormControl fullWidth required error={!!formErrors.departmentId}>
               <InputLabel>Department</InputLabel>
               <Select
                 value={form.departmentId}
@@ -753,12 +861,20 @@ export default function EmployeeList() {
                   </MenuItem>
                 ))}
               </Select>
+              {formErrors.departmentId && (
+                <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.75 }}>
+                  {formErrors.departmentId}
+                </Typography>
+              )}
             </FormControl>
             <TextField 
               label="Position" 
               value={form.position || ''} 
               onChange={(e) => setForm({ ...form, position: e.target.value })}
               fullWidth
+              required
+              error={!!formErrors.position}
+              helperText={formErrors.position}
             />
             <Stack direction="row" spacing={2}>
               <TextField 
@@ -768,6 +884,8 @@ export default function EmployeeList() {
                 onChange={(e) => setForm({ ...form, salary: Number(e.target.value) })}
                 fullWidth
                 required
+                error={!!formErrors.salary}
+                helperText={formErrors.salary}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">$</InputAdornment>,
                 }}
@@ -779,6 +897,8 @@ export default function EmployeeList() {
                 onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
                 fullWidth
                 InputLabelProps={{ shrink: true }}
+                error={!!formErrors.dateOfBirth}
+                helperText={formErrors.dateOfBirth}
               />
             </Stack>
             <TextField 
@@ -788,6 +908,8 @@ export default function EmployeeList() {
               onChange={(e) => setForm({ ...form, dateOfJoining: e.target.value })}
               fullWidth
               InputLabelProps={{ shrink: true }}
+              error={!!formErrors.dateOfJoining}
+              helperText={formErrors.dateOfJoining}
             />
           </Stack>
         </DialogContent>

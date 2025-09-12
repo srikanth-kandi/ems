@@ -6,7 +6,7 @@ namespace EMS.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-// [Authorize(Roles = "Admin")] // Temporarily disabled for testing
+[Authorize(Roles = "Admin")]
 public class SeedController : ControllerBase
 {
     private readonly SeedDataService _seedDataService;
