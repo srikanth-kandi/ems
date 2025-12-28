@@ -18,6 +18,7 @@ A comprehensive, full-stack Employee Management System built with modern technol
 The EMS follows a clean, layered architecture pattern with clear separation of concerns, implementing SOLID principles and modern design patterns:
 
 ### High-Level Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                              Frontend Layer (React.js)                         │
@@ -66,6 +67,7 @@ The EMS follows a clean, layered architecture pattern with clear separation of c
 ```
 
 ### Technology Stack Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                              Frontend Technologies                             │
@@ -242,6 +244,7 @@ ems/
 ```
 
 ### 📊 Project Statistics
+
 - **Backend**: 15+ API endpoints across 6 controllers
 - **Frontend**: 20+ React components with TypeScript
 - **Database**: 5 entities with comprehensive relationships
@@ -254,6 +257,7 @@ ems/
 ## 🛠️ Technology Stack
 
 ### Backend Technologies
+
 - **ASP.NET Web API** (.NET 8) - Modern, high-performance web framework
 - **Entity Framework Core** - Object-relational mapping with MySQL provider
 - **JWT Authentication** - Secure token-based authentication
@@ -266,6 +270,7 @@ ems/
 - **Serilog** - Structured logging
 
 ### Frontend Technologies
+
 - **React 18** with **TypeScript** - Modern UI framework with type safety
 - **Vite** - Fast build tool and development server
 - **Material-UI (MUI)** - Comprehensive component library
@@ -277,6 +282,7 @@ ems/
 - **React Query** - Server state management and caching
 
 ### Database & Infrastructure
+
 - **MySQL 8.0** - Relational database management system
 - **Docker & Docker Compose** - Containerization and orchestration
 - **Nginx** - Reverse proxy and static file serving
@@ -284,6 +290,7 @@ ems/
 - **Let's Encrypt** - SSL/TLS certificate management
 
 ### Development Tools
+
 - **Visual Studio Code** - Primary development environment
 - **Git** - Version control system
 - **Postman** - API testing and documentation
@@ -293,6 +300,7 @@ ems/
 ## ✨ Features
 
 ### 🔐 Authentication & Security
+
 - **JWT-based Authentication** - Secure token-based user authentication
 - **Role-based Access Control** - Admin, HR, Manager, and User roles
 - **Password Security** - BCrypt hashing with salt
@@ -300,6 +308,7 @@ ems/
 - **Protected Routes** - Frontend route protection based on authentication status
 
 ### 👥 Employee Management
+
 - **Complete CRUD Operations** - Create, read, update, and delete employees
 - **Advanced Search & Filtering** - Search by name, email, department, position
 - **Pagination** - Efficient handling of large employee datasets
@@ -309,12 +318,14 @@ ems/
 - **Salary Management** - Track and manage employee compensation
 
 ### 🏢 Department Management
+
 - **Department CRUD** - Full department lifecycle management
 - **Manager Assignment** - Assign department managers
 - **Employee Count Tracking** - Real-time department size monitoring
 - **Department Analytics** - Growth and performance metrics per department
 
 ### ⏰ Attendance Tracking
+
 - **Check-in/Check-out System** - Real-time attendance tracking
 - **Attendance History** - Complete attendance records with filtering
 - **Overtime Calculation** - Automatic overtime hours calculation
@@ -322,6 +333,7 @@ ems/
 - **Time Zone Support** - UTC time handling with local time display
 
 ### 📊 Reports & Analytics
+
 - **Employee Directory** - Comprehensive employee listing (PDF/Excel)
 - **Department Reports** - Department-wise analytics and summaries
 - **Attendance Reports** - Detailed attendance analysis and trends
@@ -332,6 +344,7 @@ ems/
 - **Performance Metrics** - Employee performance tracking and evaluation
 
 ### 🎨 User Interface
+
 - **Responsive Design** - Mobile-first, responsive layout
 - **Dark/Light Theme** - User preference-based theme switching
 - **Material Design** - Modern, intuitive Material-UI components
@@ -341,6 +354,7 @@ ems/
 - **Loading States** - User-friendly loading indicators and feedback
 
 ### 🔧 System Features
+
 - **Database Seeding** - Comprehensive test data generation (200+ employees)
 - **API Documentation** - Complete Swagger/OpenAPI documentation
 - **Error Handling** - Comprehensive error handling and user feedback
@@ -352,6 +366,7 @@ ems/
 ## Getting Started
 
 ### Prerequisites
+
 - .NET 8 SDK
 - Node.js 18+
 - MySQL Server
@@ -359,6 +374,7 @@ ems/
 - Docker & Docker Compose (for containerized setup)
 
 ### Option 1: Docker Compose (Recommended)
+
 ```bash
 # Clone the repository
 git clone https://github.com/srikanth-kandi/ems
@@ -372,6 +388,7 @@ docker-compose -f docker-compose.dev.yml -f docker-compose.dev-seed.yml up
 ```
 
 ### Option 2: Manual Setup
+
 ```bash
 # Backend Setup
 cd backend/EMS.API
@@ -386,11 +403,13 @@ npm run dev
 ```
 
 ### Database Seeding
+
 The EMS API includes comprehensive seed data generation for development and testing:
 
 #### Quick Start
 
 **Docker Compose (Recommended):**
+
 ```bash
 # Production with comprehensive seeding
 docker-compose -f docker-compose.yml -f docker-compose.seed.yml up
@@ -403,6 +422,7 @@ SEED_TYPE=reseed docker-compose -f docker-compose.yml -f docker-compose.seed.yml
 ```
 
 **Manual Setup:**
+
 ```bash
 # Using Batch File (Windows)
 cd backend
@@ -415,6 +435,7 @@ curl -X POST http://localhost:5000/api/seed/seed
 #### Available Seeding Commands
 
 **Batch File (`seed-database.bat`):**
+
 ```cmd
 # Show all available commands
 .\seed-database.bat help
@@ -433,7 +454,9 @@ curl -X POST http://localhost:5000/api/seed/seed
 ```
 
 #### Seed Data Overview
+
 The seeding system generates realistic test data including:
+
 - **10 Departments** with detailed descriptions and managers
 - **200+ Employees** with realistic names, positions, and salaries
 - **90 Days of Attendance Records** per employee with realistic work schedules
@@ -441,6 +464,7 @@ The seeding system generates realistic test data including:
 - **Multiple User Accounts** with different roles (Admin, HR, Manager)
 
 #### API Seeding Endpoints
+
 All seeding endpoints require Admin authentication:
 
 ```bash
@@ -458,6 +482,7 @@ GET /api/seed/status
 ```
 
 **Example API Usage:**
+
 ```bash
 # Get authentication token first
 TOKEN=$(curl -X POST http://localhost:5000/api/auth/login \
@@ -475,6 +500,7 @@ curl -X GET http://localhost:5000/api/seed/status \
 ```
 
 ### Frontend Setup
+
 ```bash
 cd frontend
 npm install
@@ -487,6 +513,7 @@ npm run dev
 ```
 
 **Environment Configuration:**
+
 - Copy `.env.example` to `.env` and configure the API URL
 - Default API URL: `http://localhost:5001`
 - See `frontend/README.md` for detailed configuration options
@@ -494,100 +521,114 @@ npm run dev
 ## 🔌 API Endpoints
 
 ### 🔐 Authentication Endpoints
-| Method | Endpoint | Description | Features | Auth Required |
-|--------|----------|-------------|----------|---------------|
-| `POST` | `/api/auth/login` | User authentication and JWT token generation | BCrypt password verification, Last login tracking | No |
-| `POST` | `/api/auth/register` | User registration with role assignment | Password hashing, Email validation, Role assignment | No |
+
+| Method | Endpoint             | Description                                  | Features                                            | Auth Required |
+| ------ | -------------------- | -------------------------------------------- | --------------------------------------------------- | ------------- |
+| `POST` | `/api/auth/login`    | User authentication and JWT token generation | BCrypt password verification, Last login tracking   | No            |
+| `POST` | `/api/auth/register` | User registration with role assignment       | Password hashing, Email validation, Role assignment | No            |
 
 **Default Admin Credentials:**
+
 - Username: `admin` | Password: `admin123` | Role: `Admin`
 - Username: `hr` | Password: `hr123` | Role: `HR`
 
 ### 👥 Employee Management Endpoints
-| Method | Endpoint | Description | Features | Auth Required | Roles |
-|--------|----------|-------------|----------|---------------|-------|
-| `GET` | `/api/employees` | Get paginated employee list | Search by name/email, Filter by department/status, Sort by multiple fields, Pagination (max 100) | Yes | All |
-| `GET` | `/api/employees/{id}` | Get specific employee details | Complete employee profile with department info | Yes | All |
-| `POST` | `/api/employees` | Create new employee | Email uniqueness validation, Department validation, Salary validation | Yes | Admin, HR |
-| `PUT` | `/api/employees/{id}` | Update employee information | Partial updates supported, Timestamp tracking | Yes | Admin, HR |
-| `DELETE` | `/api/employees/{id}` | Delete employee (soft delete) | Maintains data integrity, Cascade handling | Yes | Admin |
-| `POST` | `/api/employees/bulk` | Bulk import employees from CSV/Excel | Validation per row, Error reporting, Transaction safety | Yes | Admin, HR |
+
+| Method   | Endpoint              | Description                          | Features                                                                                         | Auth Required | Roles     |
+| -------- | --------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------- | --------- |
+| `GET`    | `/api/employees`      | Get paginated employee list          | Search by name/email, Filter by department/status, Sort by multiple fields, Pagination (max 100) | Yes           | All       |
+| `GET`    | `/api/employees/{id}` | Get specific employee details        | Complete employee profile with department info                                                   | Yes           | All       |
+| `POST`   | `/api/employees`      | Create new employee                  | Email uniqueness validation, Department validation, Salary validation                            | Yes           | Admin, HR |
+| `PUT`    | `/api/employees/{id}` | Update employee information          | Partial updates supported, Timestamp tracking                                                    | Yes           | Admin, HR |
+| `DELETE` | `/api/employees/{id}` | Delete employee (soft delete)        | Maintains data integrity, Cascade handling                                                       | Yes           | Admin     |
+| `POST`   | `/api/employees/bulk` | Bulk import employees from CSV/Excel | Validation per row, Error reporting, Transaction safety                                          | Yes           | Admin, HR |
 
 ### 🏢 Department Management Endpoints
-| Method | Endpoint | Description | Features | Auth Required | Roles |
-|--------|----------|-------------|----------|---------------|-------|
-| `GET` | `/api/departments` | Get all departments | Employee count per department, Manager information | Yes | All |
-| `GET` | `/api/departments/{id}` | Get specific department details | Department employees list, Statistics | Yes | All |
-| `POST` | `/api/departments` | Create new department | Name uniqueness validation, Manager assignment | Yes | Admin, HR |
-| `PUT` | `/api/departments/{id}` | Update department information | Manager reassignment, Description updates | Yes | Admin, HR |
-| `DELETE` | `/api/departments/{id}` | Delete department | Employee reassignment validation, Safe deletion | Yes | Admin |
+
+| Method   | Endpoint                | Description                     | Features                                           | Auth Required | Roles     |
+| -------- | ----------------------- | ------------------------------- | -------------------------------------------------- | ------------- | --------- |
+| `GET`    | `/api/departments`      | Get all departments             | Employee count per department, Manager information | Yes           | All       |
+| `GET`    | `/api/departments/{id}` | Get specific department details | Department employees list, Statistics              | Yes           | All       |
+| `POST`   | `/api/departments`      | Create new department           | Name uniqueness validation, Manager assignment     | Yes           | Admin, HR |
+| `PUT`    | `/api/departments/{id}` | Update department information   | Manager reassignment, Description updates          | Yes           | Admin, HR |
+| `DELETE` | `/api/departments/{id}` | Delete department               | Employee reassignment validation, Safe deletion    | Yes           | Admin     |
 
 ### ⏰ Attendance Tracking Endpoints
-| Method | Endpoint | Description | Features | Auth Required | Roles |
-|--------|----------|-------------|----------|---------------|-------|
-| `POST` | `/api/attendance/check-in` | Employee check-in with timestamp | UTC time handling, Duplicate check-in prevention | Yes | All |
-| `POST` | `/api/attendance/check-out` | Employee check-out with timestamp | Automatic hours calculation, Overtime detection | Yes | All |
-| `GET` | `/api/attendance/{employeeId}` | Get employee attendance history | Date range filtering, Work hours summary, Attendance patterns | Yes | All |
-| `GET` | `/api/attendance/today/{employeeId}` | Get today's attendance for employee | Current day status, Hours worked | Yes | All |
+
+| Method | Endpoint                             | Description                         | Features                                                      | Auth Required | Roles |
+| ------ | ------------------------------------ | ----------------------------------- | ------------------------------------------------------------- | ------------- | ----- |
+| `POST` | `/api/attendance/check-in`           | Employee check-in with timestamp    | UTC time handling, Duplicate check-in prevention              | Yes           | All   |
+| `POST` | `/api/attendance/check-out`          | Employee check-out with timestamp   | Automatic hours calculation, Overtime detection               | Yes           | All   |
+| `GET`  | `/api/attendance/{employeeId}`       | Get employee attendance history     | Date range filtering, Work hours summary, Attendance patterns | Yes           | All   |
+| `GET`  | `/api/attendance/today/{employeeId}` | Get today's attendance for employee | Current day status, Hours worked                              | Yes           | All   |
 
 ### 📊 Report Generation Endpoints
-| Method | Endpoint | Description | Features | Formats | Auth Required | Roles |
-|--------|----------|-------------|----------|---------|---------------|-------|
-| `GET` | `/api/reports/employees` | Employee directory report | Complete employee listings with contact info | CSV/PDF/Excel | Yes | Admin, HR, Manager |
-| `GET` | `/api/reports/departments` | Department analytics report | Department breakdown, employee distribution | CSV/PDF/Excel | Yes | All |
-| `GET` | `/api/reports/attendance` | Attendance analysis report | Date range filtering, attendance statistics | CSV/PDF/Excel | Yes | All |
-| `GET` | `/api/reports/salaries` | Salary and compensation report | Salary ranges, department averages, confidential data | CSV/PDF/Excel | Yes | Admin, HR |
-| `GET` | `/api/reports/hiring-trends` | Hiring trend analysis | Monthly/yearly hiring patterns, growth metrics | CSV/PDF/Excel | Yes | All |
-| `GET` | `/api/reports/department-growth` | Department growth tracking | Department expansion over time, headcount trends | CSV/PDF/Excel | Yes | All |
-| `GET` | `/api/reports/attendance-patterns` | Attendance pattern analysis | Work behavior analysis, attendance insights | CSV/PDF/Excel | Yes | All |
-| `GET` | `/api/reports/performance-metrics` | Performance metrics report | Employee performance data, quarterly reviews | CSV/PDF/Excel | Yes | Admin, HR |
+
+| Method | Endpoint                           | Description                    | Features                                              | Formats       | Auth Required | Roles              |
+| ------ | ---------------------------------- | ------------------------------ | ----------------------------------------------------- | ------------- | ------------- | ------------------ |
+| `GET`  | `/api/reports/employees`           | Employee directory report      | Complete employee listings with contact info          | CSV/PDF/Excel | Yes           | Admin, HR, Manager |
+| `GET`  | `/api/reports/departments`         | Department analytics report    | Department breakdown, employee distribution           | CSV/PDF/Excel | Yes           | All                |
+| `GET`  | `/api/reports/attendance`          | Attendance analysis report     | Date range filtering, attendance statistics           | CSV/PDF/Excel | Yes           | All                |
+| `GET`  | `/api/reports/salaries`            | Salary and compensation report | Salary ranges, department averages, confidential data | CSV/PDF/Excel | Yes           | Admin, HR          |
+| `GET`  | `/api/reports/hiring-trends`       | Hiring trend analysis          | Monthly/yearly hiring patterns, growth metrics        | CSV/PDF/Excel | Yes           | All                |
+| `GET`  | `/api/reports/department-growth`   | Department growth tracking     | Department expansion over time, headcount trends      | CSV/PDF/Excel | Yes           | All                |
+| `GET`  | `/api/reports/attendance-patterns` | Attendance pattern analysis    | Work behavior analysis, attendance insights           | CSV/PDF/Excel | Yes           | All                |
+| `GET`  | `/api/reports/performance-metrics` | Performance metrics report     | Employee performance data, quarterly reviews          | CSV/PDF/Excel | Yes           | Admin, HR          |
 
 **Report Features:**
+
 - **PDF Reports**: Professional formatting with iTextSharp, company branding, charts
 - **Excel Reports**: Advanced formatting with EPPlus, formulas, conditional formatting
 - **CSV Reports**: Data export for external analysis, raw data format
 
 ### 🌱 Database Seeding Endpoints (Admin Only)
-| Method | Endpoint | Description | Features | Auth Required | Roles |
-|--------|----------|-------------|----------|---------------|-------|
-| `POST` | `/api/seed/seed` | Seed database with initial test data | 200+ employees, 10 departments, 90 days attendance, 2 years performance data | Yes | Admin |
-| `POST` | `/api/seed/reseed` | Clear and reseed with fresh data | Complete data reset, fresh realistic data generation | Yes | Admin |
-| `DELETE` | `/api/seed/clear` | Clear all data from database | Safe cascading deletion, foreign key handling | Yes | Admin |
-| `GET` | `/api/seed/status` | Get current database record counts | Table statistics, data verification | Yes | Admin |
+
+| Method   | Endpoint           | Description                          | Features                                                                     | Auth Required | Roles |
+| -------- | ------------------ | ------------------------------------ | ---------------------------------------------------------------------------- | ------------- | ----- |
+| `POST`   | `/api/seed/seed`   | Seed database with initial test data | 200+ employees, 10 departments, 90 days attendance, 2 years performance data | Yes           | Admin |
+| `POST`   | `/api/seed/reseed` | Clear and reseed with fresh data     | Complete data reset, fresh realistic data generation                         | Yes           | Admin |
+| `DELETE` | `/api/seed/clear`  | Clear all data from database         | Safe cascading deletion, foreign key handling                                | Yes           | Admin |
+| `GET`    | `/api/seed/status` | Get current database record counts   | Table statistics, data verification                                          | Yes           | Admin |
 
 **Seeding Features:**
+
 - **Realistic Data**: Names, emails, addresses, phone numbers
 - **Consistent Relationships**: Proper department assignments, manager hierarchies
 - **Time-based Data**: Realistic hire dates, attendance patterns, performance cycles
 - **Configurable**: Environment-based seeding options
 
 ### 📋 System Health & Monitoring Endpoints
-| Method | Endpoint | Description | Features | Auth Required |
-|--------|----------|-------------|----------|---------------|
-| `GET` | `/health` | System health check | Database connectivity, service status, timestamp | No |
-| `GET` | `/swagger` | API documentation (Swagger UI) | Interactive API testing, endpoint documentation | No |
+
+| Method | Endpoint   | Description                    | Features                                         | Auth Required |
+| ------ | ---------- | ------------------------------ | ------------------------------------------------ | ------------- |
+| `GET`  | `/health`  | System health check            | Database connectivity, service status, timestamp | No            |
+| `GET`  | `/swagger` | API documentation (Swagger UI) | Interactive API testing, endpoint documentation  | No            |
 
 ### 🔧 Technical Implementation Details
 
 **Authentication & Security:**
+
 - **JWT Tokens**: HS256 algorithm, 60-minute expiration, role-based claims
 - **Password Security**: BCrypt hashing with salt, minimum 6 characters
 - **CORS**: Configured for localhost and production domains
 - **Rate Limiting**: Built-in ASP.NET rate limiting (future enhancement)
 
 **Data Validation:**
+
 - **Model Validation**: DataAnnotations with custom validators
 - **Business Rules**: Service-level validation logic
 - **Database Constraints**: Entity Framework constraints and indexes
 - **Input Sanitization**: XSS protection, SQL injection prevention
 
 **Performance Optimizations:**
+
 - **Pagination**: Efficient large dataset handling
 - **Lazy Loading**: Related entity loading optimization
 - **Caching**: Memory caching for frequently accessed data
 - **Query Optimization**: LINQ query optimization, indexing strategy
 
 **Error Handling:**
+
 - **Global Exception Handling**: Centralized error processing
 - **Structured Logging**: Serilog integration with request tracking
 - **User-Friendly Messages**: Abstracted technical errors
@@ -596,11 +637,13 @@ npm run dev
 ## 🚀 Deployment
 
 ### 🌐 Production URLs
-- **Frontend**: `https://ems.srikanthkandi.tech`
-- **Backend API**: `https://api.ems.srikanthkandi.tech`
-- **API Documentation**: `https://api.ems.srikanthkandi.tech/swagger`
+
+- **Frontend**: `https://ems.srikanthkandi.dev`
+- **Backend API**: `https://api.ems.srikanthkandi.dev`
+- **API Documentation**: `https://api.ems.srikanthkandi.dev/swagger`
 
 ### ☁️ Oracle Cloud Infrastructure Setup
+
 - **Compute Instance**: Ubuntu 22.04 LTS (VM.Standard.E2.1.Micro - Always Free)
 - **Database**: MySQL Database Service (Always Free Tier)
 - **Load Balancer**: Nginx reverse proxy with SSL termination
@@ -610,6 +653,7 @@ npm run dev
 ### 🐳 Docker Deployment Options
 
 #### Production Deployment
+
 ```bash
 # Start all services with production configuration
 docker-compose up -d
@@ -621,6 +665,7 @@ docker-compose up -d
 ```
 
 #### Development Deployment
+
 ```bash
 # Start development environment with hot reload
 docker-compose -f docker-compose.dev.yml up -d
@@ -631,6 +676,7 @@ docker-compose -f docker-compose.dev.yml up -d
 ```
 
 #### Database Seeding Deployment
+
 ```bash
 # Start with comprehensive database seeding
 docker-compose -f docker-compose.yml -f docker-compose.seed.yml up -d
@@ -642,12 +688,14 @@ docker-compose -f docker-compose.dev.yml -f docker-compose.dev-seed.yml up -d
 ## 🔄 Development Workflow
 
 ### Phase 1: Project Setup & Architecture
+
 1. **Monorepo Structure** - Organized backend and frontend directories
 2. **Database Design** - Entity models, relationships, and migrations
 3. **API Architecture** - Controller, service, and repository patterns
 4. **Frontend Architecture** - Component structure and state management
 
 ### Phase 2: Backend Implementation
+
 1. **Authentication System** - JWT implementation with role-based access
 2. **Core APIs** - Employee, Department, and Attendance management
 3. **Report Generation** - PDF and Excel report services
@@ -655,6 +703,7 @@ docker-compose -f docker-compose.dev.yml -f docker-compose.dev-seed.yml up -d
 5. **API Documentation** - Swagger/OpenAPI integration
 
 ### Phase 3: Frontend Implementation
+
 1. **Authentication UI** - Login and registration components
 2. **Employee Management** - CRUD operations with advanced filtering
 3. **Dashboard** - Analytics and statistics visualization
@@ -662,6 +711,7 @@ docker-compose -f docker-compose.dev.yml -f docker-compose.dev-seed.yml up -d
 5. **Reports Interface** - Report generation and download functionality
 
 ### Phase 4: Integration & Testing
+
 1. **API Integration** - Frontend-backend communication
 2. **State Management** - Zustand store implementation
 3. **Error Handling** - Comprehensive error handling and user feedback
@@ -669,6 +719,7 @@ docker-compose -f docker-compose.dev.yml -f docker-compose.dev-seed.yml up -d
 5. **Testing** - Unit tests and integration testing
 
 ### Phase 5: Deployment & DevOps
+
 1. **Docker Containerization** - Multi-stage builds and optimization
 2. **Oracle Cloud Setup** - Infrastructure provisioning and configuration
 3. **CI/CD Pipeline** - Automated testing and deployment
@@ -682,42 +733,47 @@ docker-compose -f docker-compose.dev.yml -f docker-compose.dev-seed.yml up -d
 #### Database Seeding Issues
 
 **Problem**: "API is not running" Error
-   ```bash
+
+```bash
 # Solution: Start the API first
-   cd backend/EMS.API
-   dotnet run
+cd backend/EMS.API
+dotnet run
 
 # Or using Docker
 docker-compose up -d backend
-   ```
+```
 
 **Problem**: "Database already contains data" Error
-   ```bash
+
+```bash
 # Solution: Use reseed instead of seed
-   .\seed-database.bat reseed
+.\seed-database.bat reseed
 
 # Or via API
 curl -X POST http://localhost:5000/api/seed/reseed \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-   ```
+-H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
 
 **Problem**: Authentication Required
-   ```bash
+
+```bash
 # Solution: Get admin token first
-   curl -X POST http://localhost:5000/api/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"username":"admin","password":"admin123"}'
-   ```
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+```
 
 #### Database Connection Issues
 
 **Problem**: Cannot connect to database
+
 - ✅ Verify connection string in `appsettings.json`
 - ✅ Ensure MySQL server is running
 - ✅ Check database permissions and credentials
 - ✅ Verify network connectivity
 
 **Problem**: Migration errors
+
 ```bash
 # Solution: Reset and recreate database
 dotnet ef database drop
@@ -727,12 +783,14 @@ dotnet ef database update
 #### Frontend Issues
 
 **Problem**: Frontend not loading
+
 - ✅ Check if backend API is running
 - ✅ Verify API URL in `.env` file
 - ✅ Check browser console for errors
 - ✅ Ensure CORS is properly configured
 
 **Problem**: Authentication not working
+
 - ✅ Verify JWT token is valid
 - ✅ Check token expiration
 - ✅ Ensure proper API endpoint URLs
@@ -740,6 +798,7 @@ dotnet ef database update
 #### Docker Issues
 
 **Problem**: Container won't start
+
 ```bash
 # Check container logs
 docker-compose logs [service-name]
@@ -750,6 +809,7 @@ docker-compose up -d
 ```
 
 **Problem**: Port conflicts
+
 - ✅ Ensure ports 3000, 5000, and 3306 are available
 - ✅ Change ports in `docker-compose.yml` if needed
 
@@ -774,6 +834,7 @@ docker-compose up -d
 We welcome contributions to the Employee Management System! Here's how you can help:
 
 ### 🚀 Getting Started
+
 1. **Fork the repository** to your GitHub account
 2. **Clone your fork** locally
 3. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
@@ -784,6 +845,7 @@ We welcome contributions to the Employee Management System! Here's how you can h
 8. **Create a Pull Request** with a detailed description
 
 ### 📋 Development Guidelines
+
 - Follow the existing code style and patterns
 - Write comprehensive tests for new features
 - Update documentation for any API changes
@@ -791,6 +853,7 @@ We welcome contributions to the Employee Management System! Here's how you can h
 - Use meaningful commit messages
 
 ### 🐛 Reporting Issues
+
 - Use the GitHub Issues tracker
 - Provide detailed reproduction steps
 - Include system information and logs
@@ -799,6 +862,7 @@ We welcome contributions to the Employee Management System! Here's how you can h
 ## 📈 Project Status
 
 ### ✅ Completed Features
+
 - **Authentication System** - JWT-based authentication with role management
 - **Employee Management** - Complete CRUD operations with advanced filtering
 - **Department Management** - Full department lifecycle management
@@ -810,12 +874,14 @@ We welcome contributions to the Employee Management System! Here's how you can h
 - **Responsive UI** - Mobile-first design with Material-UI components
 
 ### 🔄 In Progress
+
 - **Performance Optimization** - Query optimization and caching
 - **Advanced Analytics** - Enhanced reporting and dashboard features
 - **Testing Coverage** - Comprehensive unit and integration tests
 - **CI/CD Pipeline** - Automated testing and deployment
 
 ### 📋 Future Enhancements
+
 - **Real-time Notifications** - WebSocket-based live updates
 - **Mobile App** - React Native mobile application
 - **Advanced Reporting** - Custom report builder
@@ -856,7 +922,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For support, questions, or feature requests:
-- 📧 Email: hello@srikanthkandi.tech
+
+- 📧 Email: hello@srikanthkandi.dev
 - 🐛 Issues: [GitHub Issues](https://github.com/srikanth-kandi/ems/issues)
 - 📖 Documentation: [Project Wiki](https://github.com/srikanth-kandi/ems/wiki)
 

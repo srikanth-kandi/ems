@@ -5,6 +5,7 @@
 The Employee Management System (EMS) API provides a comprehensive RESTful interface for managing employees, departments, attendance, and generating reports. Built with ASP.NET Web API (.NET 8), it offers secure, scalable, and well-documented endpoints for all HR management operations.
 
 ### 🚀 API Highlights
+
 - **15+ Endpoints**: Comprehensive coverage of HR operations
 - **JWT Authentication**: Secure token-based authentication with role-based access
 - **Advanced Reporting**: PDF/Excel generation with 8 different report types
@@ -13,21 +14,25 @@ The Employee Management System (EMS) API provides a comprehensive RESTful interf
 - **Interactive Documentation**: Swagger UI for API testing and exploration
 
 ## 🌐 Base URLs
+
 - **Development**: `http://localhost:5000/api`
-- **Production**: `https://api.ems.srikanthkandi.tech/api`
-- **Swagger UI**: `https://api.ems.srikanthkandi.tech/swagger`
+- **Production**: `https://api.ems.srikanthkandi.dev/api`
+- **Swagger UI**: `https://api.ems.srikanthkandi.dev/swagger`
 
 ## 🔐 Authentication
 
 The API uses JWT (JSON Web Token) based authentication. All endpoints except login and register require authentication.
 
 ### Authentication Header
+
 Include the JWT token in the Authorization header for all protected endpoints:
+
 ```
 Authorization: Bearer <your-jwt-token>
 ```
 
 ### Token Information
+
 - **Token Type**: JWT (JSON Web Token)
 - **Algorithm**: HS256
 - **Expiration**: 60 minutes (configurable)
@@ -35,6 +40,7 @@ Authorization: Bearer <your-jwt-token>
 - **Roles**: Admin, HR, Manager, User
 
 ### Getting a Token
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -42,6 +48,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 ```
 
 **Response:**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -57,11 +64,13 @@ curl -X POST http://localhost:5000/api/auth/login \
 ### 🔐 Authentication Endpoints
 
 #### POST /auth/login
+
 Authenticate user and get JWT token.
 
 **Description:** Authenticates a user with username and password, returning a JWT token for subsequent API calls.
 
 **Request Body:**
+
 ```json
 {
   "username": "admin",
@@ -70,10 +79,12 @@ Authenticate user and get JWT token.
 ```
 
 **Validation Rules:**
+
 - `username`: Required, string, max 50 characters
 - `password`: Required, string, min 6 characters
 
 **Response (200 OK):**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -85,11 +96,13 @@ Authenticate user and get JWT token.
 ```
 
 **Error Responses:**
+
 - `400 Bad Request`: Invalid request body or validation errors
 - `401 Unauthorized`: Invalid credentials
 - `500 Internal Server Error`: Server error
 
 **Example Usage:**
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -97,11 +110,13 @@ curl -X POST http://localhost:5000/api/auth/login \
 ```
 
 #### POST /auth/register
+
 Register a new user account.
 
 **Description:** Creates a new user account with the specified credentials and role.
 
 **Request Body:**
+
 ```json
 {
   "username": "newuser",
@@ -112,12 +127,14 @@ Register a new user account.
 ```
 
 **Validation Rules:**
+
 - `username`: Required, string, max 50 characters, unique
 - `email`: Required, valid email format, max 255 characters, unique
 - `password`: Required, string, min 6 characters
 - `role`: Optional, string, default "User", values: Admin, HR, Manager, User
 
 **Response (200 OK):**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -129,11 +146,13 @@ Register a new user account.
 ```
 
 **Error Responses:**
+
 - `400 Bad Request`: Invalid request body or validation errors
 - `409 Conflict`: Username or email already exists
 - `500 Internal Server Error`: Server error
 
 **Example Usage:**
+
 ```bash
 curl -X POST http://localhost:5000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -143,6 +162,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 ### 👥 Employee Management Endpoints
 
 #### GET /employees
+
 Get paginated list of employees with search and filtering capabilities.
 
 **Description:** Retrieves a paginated list of employees with optional search and filtering options.
@@ -161,6 +181,7 @@ Get paginated list of employees with search and filtering capabilities.
 | `sortOrder` | string | No | "asc" | Sort order (asc, desc) |
 
 **Response (200 OK):**
+
 ```json
 {
   "data": [
@@ -174,7 +195,7 @@ Get paginated list of employees with search and filtering capabilities.
       "dateOfBirth": "1990-01-01T00:00:00Z",
       "dateOfJoining": "2020-01-01T00:00:00Z",
       "position": "Software Developer",
-      "salary": 75000.00,
+      "salary": 75000.0,
       "departmentId": 1,
       "departmentName": "Information Technology",
       "isActive": true,
@@ -190,10 +211,12 @@ Get paginated list of employees with search and filtering capabilities.
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized`: Missing or invalid authentication token
 - `500 Internal Server Error`: Server error
 
 **Example Usage:**
+
 ```bash
 # Get first page of employees
 curl -X GET "http://localhost:5000/api/employees" \
@@ -209,6 +232,7 @@ curl -X GET "http://localhost:5000/api/employees?departmentId=1&page=2&pageSize=
 ```
 
 #### GET /employees/{id}
+
 Get specific employee by ID.
 
 **Description:** Retrieves detailed information for a specific employee by their unique identifier.
@@ -221,6 +245,7 @@ Get specific employee by ID.
 | `id` | integer | Yes | Employee ID |
 
 **Response (200 OK):**
+
 ```json
 {
   "id": 1,
@@ -232,7 +257,7 @@ Get specific employee by ID.
   "dateOfBirth": "1990-01-01T00:00:00Z",
   "dateOfJoining": "2020-01-01T00:00:00Z",
   "position": "Software Developer",
-  "salary": 75000.00,
+  "salary": 75000.0,
   "departmentId": 1,
   "departmentName": "Information Technology",
   "isActive": true,
@@ -242,17 +267,20 @@ Get specific employee by ID.
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized`: Missing or invalid authentication token
 - `404 Not Found`: Employee with specified ID not found
 - `500 Internal Server Error`: Server error
 
 **Example Usage:**
+
 ```bash
 curl -X GET "http://localhost:5000/api/employees/1" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 #### POST /employees
+
 Create a new employee.
 
 **Description:** Creates a new employee record with the provided information.
@@ -260,6 +288,7 @@ Create a new employee.
 **Authentication:** Required (Admin, HR roles)
 
 **Request Body:**
+
 ```json
 {
   "firstName": "Jane",
@@ -270,12 +299,13 @@ Create a new employee.
   "dateOfBirth": "1992-05-15T00:00:00Z",
   "dateOfJoining": "2024-01-01T00:00:00Z",
   "position": "Marketing Manager",
-  "salary": 65000.00,
+  "salary": 65000.0,
   "departmentId": 4
 }
 ```
 
 **Validation Rules:**
+
 - `firstName`: Required, string, max 100 characters
 - `lastName`: Required, string, max 100 characters
 - `email`: Required, valid email format, max 255 characters, unique
@@ -288,6 +318,7 @@ Create a new employee.
 - `departmentId`: Required, valid department ID
 
 **Response (201 Created):**
+
 ```json
 {
   "id": 2,
@@ -299,7 +330,7 @@ Create a new employee.
   "dateOfBirth": "1992-05-15T00:00:00Z",
   "dateOfJoining": "2024-01-01T00:00:00Z",
   "position": "Marketing Manager",
-  "salary": 65000.00,
+  "salary": 65000.0,
   "departmentId": 4,
   "departmentName": "Marketing",
   "isActive": true,
@@ -309,6 +340,7 @@ Create a new employee.
 ```
 
 **Error Responses:**
+
 - `400 Bad Request`: Invalid request body or validation errors
 - `401 Unauthorized`: Missing or invalid authentication token
 - `403 Forbidden`: Insufficient permissions
@@ -316,6 +348,7 @@ Create a new employee.
 - `500 Internal Server Error`: Server error
 
 **Example Usage:**
+
 ```bash
 curl -X POST "http://localhost:5000/api/employees" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -335,6 +368,7 @@ curl -X POST "http://localhost:5000/api/employees" \
 ```
 
 #### PUT /employees/{id}
+
 Update an existing employee.
 
 **Description:** Updates an existing employee record with the provided information.
@@ -347,6 +381,7 @@ Update an existing employee.
 | `id` | integer | Yes | Employee ID to update |
 
 **Request Body:**
+
 ```json
 {
   "firstName": "Jane",
@@ -357,13 +392,14 @@ Update an existing employee.
   "dateOfBirth": "1992-05-15T00:00:00Z",
   "dateOfJoining": "2024-01-01T00:00:00Z",
   "position": "Senior Marketing Manager",
-  "salary": 75000.00,
+  "salary": 75000.0,
   "departmentId": 4,
   "isActive": true
 }
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": 2,
@@ -375,7 +411,7 @@ Update an existing employee.
   "dateOfBirth": "1992-05-15T00:00:00Z",
   "dateOfJoining": "2024-01-01T00:00:00Z",
   "position": "Senior Marketing Manager",
-  "salary": 75000.00,
+  "salary": 75000.0,
   "departmentId": 4,
   "departmentName": "Marketing",
   "isActive": true,
@@ -385,6 +421,7 @@ Update an existing employee.
 ```
 
 #### DELETE /employees/{id}
+
 Delete an employee.
 
 **Description:** Permanently deletes an employee record from the system.
@@ -397,6 +434,7 @@ Delete an employee.
 | `id` | integer | Yes | Employee ID to delete |
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Employee deleted successfully"
@@ -404,6 +442,7 @@ Delete an employee.
 ```
 
 #### POST /employees/bulk
+
 Bulk import employees from CSV/Excel file.
 
 **Description:** Imports multiple employees from a CSV or Excel file.
@@ -416,6 +455,7 @@ Bulk import employees from CSV/Excel file.
 | `file` | file | Yes | CSV or Excel file containing employee data |
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Bulk import completed successfully",
@@ -426,6 +466,7 @@ Bulk import employees from CSV/Excel file.
 ```
 
 **Error Responses:**
+
 - `400 Bad Request`: Invalid file format or validation errors
 - `401 Unauthorized`: Missing or invalid authentication token
 - `403 Forbidden`: Insufficient permissions
@@ -434,9 +475,11 @@ Bulk import employees from CSV/Excel file.
 ### Department Management
 
 #### GET /departments
+
 Get all departments.
 
 **Response:**
+
 ```json
 [
   {
@@ -451,12 +494,15 @@ Get all departments.
 ```
 
 #### GET /departments/{id}
+
 Get department by ID.
 
 #### POST /departments
+
 Create a new department.
 
 **Request Body:**
+
 ```json
 {
   "name": "Research & Development",
@@ -466,17 +512,21 @@ Create a new department.
 ```
 
 #### PUT /departments/{id}
+
 Update department.
 
 #### DELETE /departments/{id}
+
 Delete department.
 
 ### Attendance Management
 
 #### POST /attendance/check-in
+
 Employee check-in.
 
 **Request Body:**
+
 ```json
 {
   "employeeId": 1,
@@ -485,6 +535,7 @@ Employee check-in.
 ```
 
 **Response:**
+
 ```json
 {
   "id": 1,
@@ -500,9 +551,11 @@ Employee check-in.
 ```
 
 #### POST /attendance/check-out
+
 Employee check-out.
 
 **Request Body:**
+
 ```json
 {
   "employeeId": 1,
@@ -511,6 +564,7 @@ Employee check-out.
 ```
 
 **Response:**
+
 ```json
 {
   "id": 1,
@@ -526,13 +580,16 @@ Employee check-out.
 ```
 
 #### GET /attendance/{employeeId}
+
 Get employee attendance history.
 
 **Query Parameters:**
+
 - `startDate` (optional): Start date filter
 - `endDate` (optional): End date filter
 
 **Response:**
+
 ```json
 [
   {
@@ -550,51 +607,63 @@ Get employee attendance history.
 ```
 
 #### GET /attendance/today/{employeeId}
+
 Get today's attendance for employee.
 
 ### Report Generation
 
 #### GET /reports/directory
+
 Generate employee directory report.
 
 **Query Parameters:**
+
 - `format` (optional): "pdf" or "excel" (default: "pdf")
 
 **Response:** File download (PDF or Excel)
 
 #### GET /reports/departments
+
 Generate department report.
 
 **Query Parameters:**
+
 - `format` (optional): "pdf" or "excel" (default: "pdf")
 
 #### GET /reports/attendance
+
 Generate attendance report.
 
 **Query Parameters:**
+
 - `startDate` (optional): Start date
 - `endDate` (optional): End date
 - `format` (optional): "pdf" or "excel" (default: "pdf")
 
 #### GET /reports/salary
+
 Generate salary report.
 
 **Query Parameters:**
+
 - `format` (optional): "pdf" or "excel" (default: "pdf")
 
 ### 🌟 Advanced Analytics Reports
 
 #### GET /reports/hiring-trends
+
 Generate comprehensive hiring trend analysis report.
 
 **Description:** Analyzes hiring patterns over time, providing insights into recruitment trends, seasonal variations, and growth metrics.
 
 **Query Parameters:**
+
 - `format` (optional): "pdf", "excel", or "csv" (default: "csv")
 - `startDate` (optional): Start date for analysis
 - `endDate` (optional): End date for analysis
 
 **Features:**
+
 - Monthly and yearly hiring trends
 - Department-wise hiring patterns
 - Growth rate calculations
@@ -604,15 +673,18 @@ Generate comprehensive hiring trend analysis report.
 **Response:** File download with hiring trend analysis
 
 #### GET /reports/department-growth
+
 Generate department growth tracking report.
 
 **Description:** Tracks department expansion over time, showing headcount changes, growth rates, and organizational development.
 
 **Query Parameters:**
+
 - `format` (optional): "pdf", "excel", or "csv" (default: "csv")
 - `departmentId` (optional): Specific department analysis
 
 **Features:**
+
 - Department size evolution
 - Growth percentage calculations
 - Comparative analysis between departments
@@ -622,17 +694,20 @@ Generate department growth tracking report.
 **Response:** File download with department growth metrics
 
 #### GET /reports/attendance-patterns
+
 Generate comprehensive attendance pattern analysis report.
 
 **Description:** Analyzes employee work behavior patterns, identifying trends in check-in times, work hours, and attendance regularity.
 
 **Query Parameters:**
+
 - `format` (optional): "pdf", "excel", or "csv" (default: "csv")
 - `employeeId` (optional): Specific employee analysis
 - `startDate` (optional): Analysis start date
 - `endDate` (optional): Analysis end date
 
 **Features:**
+
 - Average work hours analysis
 - Check-in/check-out time patterns
 - Attendance regularity scoring
@@ -642,17 +717,20 @@ Generate comprehensive attendance pattern analysis report.
 **Response:** File download with attendance behavior insights
 
 #### GET /reports/performance-metrics
+
 Generate detailed performance metrics report.
 
 **Description:** Comprehensive employee performance evaluation report with quarterly reviews, performance scores, and goal tracking.
 
 **Query Parameters:**
+
 - `employeeId` (optional): Specific employee ID
 - `format` (optional): "pdf", "excel", or "csv" (default: "csv")
 - `year` (optional): Performance year
 - `quarter` (optional): Specific quarter (1-4)
 
 **Features:**
+
 - Performance score tracking
 - Goal achievement analysis
 - Quarterly review summaries
@@ -665,6 +743,7 @@ Generate detailed performance metrics report.
 ## Error Responses
 
 ### 400 Bad Request
+
 ```json
 {
   "error": "Validation failed",
@@ -678,6 +757,7 @@ Generate detailed performance metrics report.
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "error": "Unauthorized",
@@ -686,6 +766,7 @@ Generate detailed performance metrics report.
 ```
 
 ### 403 Forbidden
+
 ```json
 {
   "error": "Forbidden",
@@ -694,6 +775,7 @@ Generate detailed performance metrics report.
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "error": "Not Found",
@@ -702,6 +784,7 @@ Generate detailed performance metrics report.
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
   "error": "Internal Server Error",
@@ -710,19 +793,22 @@ Generate detailed performance metrics report.
 ```
 
 ## Rate Limiting
+
 - **Authentication endpoints**: 5 requests per minute
 - **Other endpoints**: 100 requests per minute
 
 ## CORS Configuration
-- **Allowed Origins**: 
+
+- **Allowed Origins**:
   - `http://localhost:3000` (development)
-  - `https://ems.srikanthkandi.tech` (production)
+  - `https://ems.srikanthkandi.dev` (production)
 - **Allowed Methods**: GET, POST, PUT, DELETE, OPTIONS
 - **Allowed Headers**: Content-Type, Authorization
 
 ## Data Validation
 
 ### Employee Validation Rules
+
 - **FirstName**: Required, max 100 characters
 - **LastName**: Required, max 100 characters
 - **Email**: Required, valid email format, max 255 characters, unique
@@ -735,17 +821,21 @@ Generate detailed performance metrics report.
 - **DepartmentId**: Required, valid department ID
 
 ### User Validation Rules
+
 - **Username**: Required, max 50 characters, unique
 - **Email**: Required, valid email format, max 255 characters, unique
 - **Password**: Required, min 6 characters
 - **Role**: Optional, max 50 characters, default "User"
 
 ## Pagination
+
 All list endpoints support pagination with the following parameters:
+
 - `page`: Page number (1-based)
 - `pageSize`: Items per page (max 100)
 
 Response includes pagination metadata:
+
 ```json
 {
   "data": [...],
@@ -757,35 +847,44 @@ Response includes pagination metadata:
 ```
 
 ## File Upload
+
 Bulk import endpoints accept CSV and Excel files with the following specifications:
 
 ### CSV Format
+
 ```csv
 FirstName,LastName,Email,PhoneNumber,Address,DateOfBirth,DateOfJoining,Position,Salary,DepartmentId
 John,Doe,john.doe@company.com,+1234567890,123 Main St,1990-01-01,2020-01-01,Developer,75000,1
 ```
 
 ### Excel Format
+
 Same columns as CSV, with headers in the first row.
 
 ## WebSocket Support (Future Enhancement)
+
 Real-time features for:
+
 - Live attendance updates
 - Notification system
 - Dashboard updates
 
 ## API Versioning
+
 Current version: v1
+
 - Base URL: `/api/v1/`
 - Future versions will be backward compatible
 
 ## SDKs and Libraries
+
 - **JavaScript/TypeScript**: Axios, Fetch API
 - **C#/.NET**: HttpClient, RestSharp
 - **Python**: Requests, httpx
 - **Java**: OkHttp, Retrofit
 
 ## Testing
+
 - **Postman Collection**: Available in `/docs/postman/`
 - **Swagger UI**: Available at `/swagger` (development only)
 - **OpenAPI Spec**: Available at `/swagger/v1/swagger.json`
